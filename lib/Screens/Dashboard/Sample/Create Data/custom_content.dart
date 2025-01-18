@@ -93,7 +93,7 @@
 //   };
 
 //   final TextEditingController _fieldNameController = TextEditingController();
-//   String _selectedFieldType = 'Char';
+//   String selectedFieldType = 'Char';
 
 //   @override
 //   void dispose() {
@@ -124,7 +124,7 @@
 //                     ),
 //                     const SizedBox(height: 16),
 //                     DropdownButtonFormField<String>(
-//                       value: _selectedFieldType,
+//                       value: selectedFieldType,
 //                       decoration: const InputDecoration(
 //                         labelText: 'Field Type',
 //                         border: OutlineInputBorder(),
@@ -137,7 +137,7 @@
 //                       }).toList(),
 //                       onChanged: (value) {
 //                         setStateDialog(() {
-//                           _selectedFieldType = value!;
+//                           selectedFieldType = value!;
 //                         });
 //                       },
 //                     ),
@@ -154,7 +154,7 @@
 //                     if (_fieldNameController.text.isNotEmpty) {
 //                       _addNewField(
 //                         _fieldNameController.text,
-//                         _selectedFieldType,
+//                         selectedFieldType,
 //                       );
 //                       Navigator.pop(context);
 //                     }

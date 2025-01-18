@@ -920,7 +920,7 @@
 // //   ];
 
 // //   final TextEditingController _fieldNameController = TextEditingController();
-// //   String _selectedFieldType = 'text';
+// //   String selectedFieldType = 'text';
 // //   List<String>? _dropdownOptions = [];
 // //   Color _selectedBorderColor = Colors.blue;
 
@@ -955,7 +955,7 @@
 // //                     ),
 // //                     const SizedBox(height: 16),
 // //                     DropdownButtonFormField<String>(
-// //                       value: _selectedFieldType,
+// //                       value: selectedFieldType,
 // //                       decoration: const InputDecoration(
 // //                         labelText: 'Field Type',
 // //                         border: OutlineInputBorder(),
@@ -968,7 +968,7 @@
 // //                       }).toList(),
 // //                       onChanged: (value) {
 // //                         setStateDialog(() {
-// //                           _selectedFieldType = value!;
+// //                           selectedFieldType = value!;
 // //                         });
 // //                       },
 // //                     ),
@@ -1017,7 +1017,7 @@
 // //                     //     ),
 // //                     //   ],
 // //                     // ),
-// //                     if (_selectedFieldType == 'dropdown') ...[
+// //                     if (selectedFieldType == 'dropdown') ...[
 // //                       const SizedBox(height: 16),
 // //                       ElevatedButton(
 // //                         onPressed: () {
@@ -1092,7 +1092,7 @@
 // //                     if (_fieldNameController.text.isNotEmpty) {
 // //                       _addNewField(
 // //                         _fieldNameController.text,
-// //                         _selectedFieldType,
+// //                         selectedFieldType,
 // //                         _dropdownOptions,
 // //                         _selectedBorderColor,
 // //                       );
@@ -1437,7 +1437,7 @@
 // //   final TextEditingController _defaultValueController = TextEditingController();
 // //   final TextEditingController _formatController = TextEditingController();
   
-// //   String _selectedFieldType = 'Char';
+// //   String selectedFieldType = 'Char';
 // //   List<Map<dynamic, String>> _choices = [];
 // //   bool _isRequired = false;
 // //   bool _readOnly = false;
@@ -1516,11 +1516,11 @@
 // //     _choices = [];
 // //     _isRequired = false;
 // //     _readOnly = false;
-// //     _selectedFieldType = 'Char';
+// //     selectedFieldType = 'Char';
 // //   }
 
 // //   Widget _buildFieldTypeSpecificInputs(StateSetter setStateDialog) {
-// //     switch (_selectedFieldType) {
+// //     switch (selectedFieldType) {
 // //       case 'Char':
 // //       case 'Text':
 // //         return Column(
@@ -1613,9 +1613,9 @@
 // //               decoration: InputDecoration(
 // //                 labelText: 'Format',
 // //                 border: const OutlineInputBorder(),
-// //                 hintText: _selectedFieldType == 'DateTime'
+// //                 hintText: selectedFieldType == 'DateTime'
 // //                     ? '%d-%m-%Y %I:%M %p'
-// //                     : _selectedFieldType == 'Date'
+// //                     : selectedFieldType == 'Date'
 // //                         ? '%d-%m-%Y'
 // //                         : '%I:%M %p',
 // //               ),
@@ -1717,7 +1717,7 @@
 // //                     ),
 // //                     const SizedBox(height: 16),
 // //                     DropdownButtonFormField<String>(
-// //                       value: _selectedFieldType,
+// //                       value: selectedFieldType,
 // //                       decoration: const InputDecoration(
 // //                         labelText: 'Field Type',
 // //                         border: OutlineInputBorder(),
@@ -1730,7 +1730,7 @@
 // //                       }).toList(),
 // //                       onChanged: (value) {
 // //                         setStateDialog(() {
-// //                           _selectedFieldType = value!;
+// //                           selectedFieldType = value!;
 // //                         });
 // //                       },
 // //                     ),
@@ -1760,7 +1760,7 @@
 // //                         formFields.add(DynamicFormField(
 // //                           id: _fieldNameController.text.toLowerCase(),
 // //                           label: _fieldNameController.text,
-// //                           type: _selectedFieldType,
+// //                           type: selectedFieldType,
 // //                           isRequired: _isRequired,
 // //                           maxLength: int.tryParse(_maxLengthController.text),
 // //                           minLength: int.tryParse(_minLengthController.text),
@@ -2037,435 +2037,435 @@
 
 
 
-// // import 'package:flutter/material.dart';
-// // import 'package:get/get.dart';
-// // import 'package:implementation_panel/BreakPoints/breakpoints.dart';
-// // import 'package:implementation_panel/Common/Common%20Components/common_components.dart';
-// // import 'package:implementation_panel/Screens/Dashboard/Sample/Controller/dynamic_controller.dart';
-// // import 'package:implementation_panel/Screens/Dashboard/custom_appbar.dart';
-// // import 'package:responsive_toolkit/responsive_grid.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:implementation_panel/BreakPoints/breakpoints.dart';
+import 'package:implementation_panel/Common/Common%20Components/common_components.dart';
+import 'package:implementation_panel/Screens/Dashboard/Sample/Controller/dynamic_controller.dart';
+import 'package:implementation_panel/Screens/Dashboard/custom_appbar.dart';
+import 'package:responsive_toolkit/responsive_grid.dart';
 
-// // class DynamicFormField {
-// //   final String id;
-// //   final String label;
-// //   final String type;
-// //   final bool isRequired;
-// //   final List<Map<dynamic, String>>? choices;
-// //   final int? maxLength;
-// //   final int? minLength;
-// //   final String? format;
-// //   final List<String>? inputFormats;
-// //   final bool? readOnly;
-// //   final dynamic defaultValue;
-// //   dynamic value;
-// //   String? errorText;
+class DynamicFormField {
+  final String id;
+  final String label;
+  final String type;
+  final bool isRequired;
+  final List<Map<dynamic, String>>? choices;
+  final int? maxLength;
+  final int? minLength;
+  final String? format;
+  final List<String>? inputFormats;
+  final bool? readOnly;
+  final dynamic defaultValue;
+  dynamic value;
+  String? errorText;
 
-// //   DynamicFormField({
-// //     required this.id,
-// //     required this.label,
-// //     required this.type,
-// //     this.isRequired = false,
-// //     this.choices,
-// //     this.maxLength,
-// //     this.minLength,
-// //     this.format,
-// //     this.inputFormats,
-// //     this.readOnly,
-// //     this.defaultValue,
-// //     this.value,
-// //     this.errorText,
-// //   });
-// // }
+  DynamicFormField({
+    required this.id,
+    required this.label,
+    required this.type,
+    this.isRequired = false,
+    this.choices,
+    this.maxLength,
+    this.minLength,
+    this.format,
+    this.inputFormats,
+    this.readOnly,
+    this.defaultValue,
+    this.value,
+    this.errorText,
+  });
+}
 
-// // class HomeScreen extends StatefulWidget {
-// //   const HomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
-// //   @override
-// //   _HomeScreenState createState() => _HomeScreenState();
-// // }
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
 
-// // class _HomeScreenState extends State<HomeScreen> {
-// //   final _formKey = GlobalKey<FormState>();
-// //   final controller = Get.put(DynamicController());
-// //   List<DynamicFormField> formFields = [];
-// //   Map<String, dynamic> formData = {};
+class _HomeScreenState extends State<HomeScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final controller = Get.put(DynamicController());
+  List<DynamicFormField> formFields = [];
+  Map<String, dynamic> formData = {};
 
-// //   final List<String> fieldTypes = [
-// //     'Char',
-// //     'Text',
-// //     'Choice',
-// //     'Integer',
-// //     'DateTime',
-// //     'Date',
-// //     'Time',
-// //   ];
+  final List<String> fieldTypes = [
+    'Char',
+    'Text',
+    'Choice',
+    'Integer',
+    'DateTime',
+    'Date',
+    'Time',
+  ];
 
-// //   @override
-// //   Widget build(BuildContext context) {
-// //     return CommonScaffoldWithAppBar(
-// //       body: Padding(
-// //         padding: const EdgeInsets.all(20.0),
-// //         child: Form(
-// //           key: _formKey,
-// //           child: Column(
-// //             crossAxisAlignment: CrossAxisAlignment.start,
-// //             children: [
-// //               Row(
-// //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-// //                 children: [
-// //                   Text(
-// //                     'Create Data',
-// //                     style: Theme.of(context).textTheme.headlineSmall,
-// //                   ),
-// //                   ElevatedButton.icon(
-// //                     onPressed: _showFieldListDialog,
-// //                     icon: const Icon(Icons.add),
-// //                     label: const Text('Add Fields'),
-// //                   ),
-// //                 ],
-// //               ),
-// //               const SizedBox(height: 20),
-// //               ResponsiveRow(
-// //                 runSpacing: 10,
-// //                 spacing: 20,
-// //                 columns: [
-// //                   ResponsiveColumn(
-// //                     ResponsiveConstants().searchBreakPoint,
-// //                     child: CommonComponents.defaultTextField(
-// //                       context,
-// //                       title: 'App Label',
-// //                       hintText: 'Enter App Label',
-// //                       controller: controller.appLabel,
-// //                       validator: (String? val) {
-// //                         if (val == '') {
-// //                           return 'Please enter a valid App Label';
-// //                         }
-// //                         return null;
-// //                       },
-// //                       keyboardType: TextInputType.text,
-// //                       textInputAction: TextInputAction.next,
-// //                       onChange: (val) {},
-// //                     ),
-// //                   ),
-// //                   ResponsiveColumn(
-// //                     ResponsiveConstants().searchBreakPoint,
-// //                     child: CommonComponents.defaultTextField(
-// //                       context,
-// //                       title: 'Model Name',
-// //                       hintText: 'Enter Model Name',
-// //                       controller: controller.modelName,
-// //                       validator: (String? val) {
-// //                         if (val == '') {
-// //                           return 'Please enter a valid Model Name';
-// //                         }
-// //                         return null;
-// //                       },
-// //                       keyboardType: TextInputType.text,
-// //                       textInputAction: TextInputAction.next,
-// //                       onChange: (val) {},
-// //                     ),
-// //                   ),
-// //                 ],
-// //               ),
-// //               const SizedBox(height: 20),
-// //               if (formFields.isNotEmpty) ...[
-// //                 Text(
-// //                   'Added Fields',
-// //                   style: Theme.of(context).textTheme.titleMedium,
-// //                 ),
-// //                 const SizedBox(height: 10),
-// //                 Expanded(
-// //                   child: ListView.builder(
-// //                     itemCount: formFields.length,
-// //                     itemBuilder: (context, index) {
-// //                       final field = formFields[index];
-// //                       return Card(
-// //                         margin: const EdgeInsets.only(bottom: 8),
-// //                         child: ListTile(
-// //                           title: Text(field.label),
-// //                           subtitle: Text('Type: ${field.type}'),
-// //                           trailing: IconButton(
-// //                             icon: const Icon(Icons.delete),
-// //                             onPressed: () {
-// //                               setState(() {
-// //                                 formFields.removeAt(index);
-// //                               });
-// //                             },
-// //                           ),
-// //                         ),
-// //                       );
-// //                     },
-// //                   ),
-// //                 ),
-// //               ],
-// //               const SizedBox(height: 20),
-// //                 if(formFields.isNotEmpty)...[
-// // ElevatedButton(
-// //                 onPressed: () {
-// //                   if (_formKey.currentState?.validate() ?? false) {
-// //                     // Handle form submission
-// //                     final formConfig = {
-// //                       'app_label': controller.appLabel.text,
-// //                       'model_name': controller.modelName.text,
-// //                       'fields': formFields.map((field) => {
-// //                         'id': field.id,
-// //                         'label': field.label,
-// //                         'type': field.type,
-// //                         'required': field.isRequired,
-// //                         'max_length': field.maxLength,
-// //                         'min_length': field.minLength,
-// //                         'choices': field.choices,
-// //                         'format': field.format,
-// //                         'read_only': field.readOnly,
-// //                         // 'default_value': field.defaultValue,
-// //                       }).toList(),
-// //                     };
-// //                     print('Form Data: $formConfig');
-// //                   }
-// //                 },
-// //                 // if(formFields.isNotEmpty)...[]
-// //                 child: const Padding(
-// //                   padding: EdgeInsets.symmetric(vertical: 16.0),
-// //                   child: Text('Save Data'),
-// //                 ),
-// //               ),
-// //                 ]
+  @override
+  Widget build(BuildContext context) {
+    return CommonScaffoldWithAppBar(
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Create Data',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: _showFieldListDialog,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Fields'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              ResponsiveRow(
+                runSpacing: 10,
+                spacing: 20,
+                columns: [
+                  ResponsiveColumn(
+                    ResponsiveConstants().searchBreakPoint,
+                    child: CommonComponents.defaultTextField(
+                      context,
+                      title: 'App Label',
+                      hintText: 'Enter App Label',
+                      controller: controller.appLabel,
+                      validator: (String? val) {
+                        if (val == '') {
+                          return 'Please enter a valid App Label';
+                        }
+                        return null;
+                      },
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.next,
+                      onChange: (val) {},
+                    ),
+                  ),
+                  ResponsiveColumn(
+                    ResponsiveConstants().searchBreakPoint,
+                    child: CommonComponents.defaultTextField(
+                      context,
+                      title: 'Model Name',
+                      hintText: 'Enter Model Name',
+                      controller: controller.modelName,
+                      validator: (String? val) {
+                        if (val == '') {
+                          return 'Please enter a valid Model Name';
+                        }
+                        return null;
+                      },
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.next,
+                      onChange: (val) {},
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              if (formFields.isNotEmpty) ...[
+                Text(
+                  'Added Fields',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: formFields.length,
+                    itemBuilder: (context, index) {
+                      final field = formFields[index];
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        child: ListTile(
+                          title: Text(field.label),
+                          subtitle: Text('Type: ${field.type}'),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              setState(() {
+                                formFields.removeAt(index);
+                              });
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+              const SizedBox(height: 20),
+                if(formFields.isNotEmpty)...[
+ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState?.validate() ?? false) {
+                    // Handle form submission
+                    final formConfig = {
+                      'app_label': controller.appLabel.text,
+                      'model_name': controller.modelName.text,
+                      'fields': formFields.map((field) => {
+                        'id': field.id,
+                        'label': field.label,
+                        'type': field.type,
+                        'required': field.isRequired,
+                        'max_length': field.maxLength,
+                        'min_length': field.minLength,
+                        'choices': field.choices,
+                        'format': field.format,
+                        'read_only': field.readOnly,
+                        // 'default_value': field.defaultValue,
+                      }).toList(),
+                    };
+                    print('Form Data: $formConfig');
+                  }
+                },
+                // if(formFields.isNotEmpty)...[]
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.0),
+                  child: Text('Save Data'),
+                ),
+              ),
+                ]
 
               
-// //             ],
-// //           ),
-// //         ),
-// //       ),
-// //     );
-// //   }
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-// //   void _showFieldListDialog() {
-// //     showDialog(
-// //       context: context,
-// //       builder: (BuildContext context) {
-// //         return DynamicFieldDialog(
-// //           onFieldsAdded: (List<DynamicFormField> newFields) {
-// //             setState(() {
-// //               formFields.addAll(newFields);
-// //             });
-// //           },
-// //         );
-// //       },
-// //     );
-// //   }
+  void _showFieldListDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return DynamicFieldDialog(
+          onFieldsAdded: (List<DynamicFormField> newFields) {
+            setState(() {
+              formFields.addAll(newFields);
+            });
+          },
+        );
+      },
+    );
+  }
 
 
-// //   @override
-// //   void dispose() {
-// //     controller.appLabel.dispose();
-// //     controller.modelName.dispose();
-// //     super.dispose();
-// //   }
-// // }
+  @override
+  void dispose() {
+    controller.appLabel.dispose();
+    controller.modelName.dispose();
+    super.dispose();
+  }
+}
 
-// // class DynamicFieldDialog extends StatefulWidget {
-// //   final Function(List<DynamicFormField>) onFieldsAdded;
+class DynamicFieldDialog extends StatefulWidget {
+  final Function(List<DynamicFormField>) onFieldsAdded;
 
-// //   const DynamicFieldDialog({
-// //     Key? key,
-// //     required this.onFieldsAdded,
-// //   }) : super(key: key);
+  const DynamicFieldDialog({
+    Key? key,
+    required this.onFieldsAdded,
+  }) : super(key: key);
 
-// //   @override
-// //   _DynamicFieldDialogState createState() => _DynamicFieldDialogState();
-// // }
+  @override
+  _DynamicFieldDialogState createState() => _DynamicFieldDialogState();
+}
 
-// // class _DynamicFieldDialogState extends State<DynamicFieldDialog> {
-// //   final List<DynamicFormField> _fields = [];
-// //   final TextEditingController _fieldNameController = TextEditingController();
-// //   final TextEditingController _maxLengthController = TextEditingController();
-// //   final TextEditingController _minLengthController = TextEditingController();
-// //   final TextEditingController _defaultValueController = TextEditingController();
-// //   final TextEditingController _formatController = TextEditingController();
-// //   String _selectedFieldType = 'Char';
-// //   List<Map<dynamic, String>> _choices = [];
-// //   bool _isRequired = false;
-// //   bool _readOnly = false;
+class _DynamicFieldDialogState extends State<DynamicFieldDialog> {
+  final List<DynamicFormField> _fields = [];
+  final TextEditingController _fieldNameController = TextEditingController();
+  final TextEditingController _maxLengthController = TextEditingController();
+  final TextEditingController _minLengthController = TextEditingController();
+  final TextEditingController _defaultValueController = TextEditingController();
+  final TextEditingController _formatController = TextEditingController();
+  String selectedFieldType = 'Char';
+  List<Map<dynamic, String>> _choices = [];
+  bool _isRequired = false;
+  bool _readOnly = false;
 
-// //   @override
-// //   Widget build(BuildContext context) {
-// //     return AlertDialog(
-// //       title: const Text('Add Fields'),
-// //       content: SingleChildScrollView(
-// //         child: Column(
-// //           mainAxisSize: MainAxisSize.min,
-// //           children: [
-// //             TextField(
-// //               controller: _fieldNameController,
-// //               decoration: const InputDecoration(
-// //                 labelText: 'Field Name',
-// //                 hintText: 'Enter field name',
-// //                 border: OutlineInputBorder(),
-// //               ),
-// //             ),
-// //             const SizedBox(height: 16),
-// //             DropdownButtonFormField<String>(
-// //               value: _selectedFieldType,
-// //               decoration: const InputDecoration(
-// //                 labelText: 'Field Type',
-// //                 border: OutlineInputBorder(),
-// //               ),
-// //               items: [
-// //                 'Char',
-// //                 'Text',
-// //                 'Choice',
-// //                 'Integer',
-// //                 'DateTime',
-// //                 'Date',
-// //                 'Time',
-// //               ].map((type) {
-// //                 return DropdownMenuItem(
-// //                   value: type,
-// //                   child: Text(type),
-// //                 );
-// //               }).toList(),
-// //               onChanged: (value) {
-// //                 setState(() {
-// //                   _selectedFieldType = value!;
-// //                 });
-// //               },
-// //             ),
-// //             const SizedBox(height: 16),
-// //             CheckboxListTile(
-// //               title: const Text('Required'),
-// //               value: _isRequired,
-// //               onChanged: (value) {
-// //                 setState(() {
-// //                   _isRequired = value ?? false;
-// //                 });
-// //               },
-// //             ),
-// //             _buildFieldTypeSpecificInputs(),
-// //             const SizedBox(height: 16),
-// //             if (_fields.isNotEmpty) ...[
-// //               const Divider(),
-// //               Text(
-// //                 'Added Fields',
-// //                 style: Theme.of(context).textTheme.titleMedium,
-// //               ),
-// //               ...List.generate(_fields.length, (index) {
-// //                 final field = _fields[index];
-// //                 return ListTile(
-// //                   title: Text(field.label),
-// //                   subtitle: Text('Type: ${field.type}'),
-// //                   trailing: IconButton(
-// //                     icon: const Icon(Icons.delete),
-// //                     onPressed: () {
-// //                       setState(() {
-// //                         _fields.removeAt(index);
-// //                       });
-// //                     },
-// //                   ),
-// //                 );
-// //               }),
-// //             ],
-// //           ],
-// //         ),
-// //       ),
-// //       actions: [
-// //         TextButton(
-// //           onPressed: () {
-// //             Navigator.pop(context);
-// //           },
-// //           child: const Text('Cancel'),
-// //         ),
-// //         TextButton(
-// //           onPressed: () {
-// //             _addField();
-// //           },
-// //           child: const Text('Add Field'),
-// //         ),
-// //         ElevatedButton(
-// //           onPressed: () {
-// //             widget.onFieldsAdded(_fields);
-// //             Navigator.pop(context);
-// //           },
-// //           child: const Text('Save Fields'),
-// //         ),
-// //       ],
-// //     );
-// //   }
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Add Fields'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _fieldNameController,
+              decoration: const InputDecoration(
+                labelText: 'Field Name',
+                hintText: 'Enter field name',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: selectedFieldType,
+              decoration: const InputDecoration(
+                labelText: 'Field Type',
+                border: OutlineInputBorder(),
+              ),
+              items: [
+                'Char',
+                'Text',
+                'Choice',
+                'Integer',
+                'DateTime',
+                'Date',
+                'Time',
+              ].map((type) {
+                return DropdownMenuItem(
+                  value: type,
+                  child: Text(type),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedFieldType = value!;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+            CheckboxListTile(
+              title: const Text('Required'),
+              value: _isRequired,
+              onChanged: (value) {
+                setState(() {
+                  _isRequired = value ?? false;
+                });
+              },
+            ),
+            _buildFieldTypeSpecificInputs(),
+            const SizedBox(height: 16),
+            if (_fields.isNotEmpty) ...[
+              const Divider(),
+              Text(
+                'Added Fields',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              ...List.generate(_fields.length, (index) {
+                final field = _fields[index];
+                return ListTile(
+                  title: Text(field.label),
+                  subtitle: Text('Type: ${field.type}'),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () {
+                      setState(() {
+                        _fields.removeAt(index);
+                      });
+                    },
+                  ),
+                );
+              }),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            _addField();
+          },
+          child: const Text('Add Field'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            widget.onFieldsAdded(_fields);
+            Navigator.pop(context);
+          },
+          child: const Text('Save Fields'),
+        ),
+      ],
+    );
+  }
 
-// //   Widget _buildFieldTypeSpecificInputs() {
-// //     // This remains the same as in your previous implementation
-// //     // Add the specific input fields based on the selected field type
-// //     switch (_selectedFieldType) {
-// //       case 'Char':
-// //       case 'Text':
-// //         return Column(
-// //           children: [
-// //             TextField(
-// //               controller: _maxLengthController,
-// //               decoration: const InputDecoration(
-// //                 labelText: 'Max Length',
-// //                 border: OutlineInputBorder(),
-// //               ),
-// //               keyboardType: TextInputType.number,
-// //             ),
-// //             const SizedBox(height: 16),
-// //             TextField(
-// //               controller: _minLengthController,
-// //               decoration: const InputDecoration(
-// //                 labelText: 'Min Length',
-// //                 border: OutlineInputBorder(),
-// //               ),
-// //               keyboardType: TextInputType.number,
-// //             ),
-// //           ],
-// //         );
-// //       // Add other cases for different field types
-// //       default:
-// //         return Container();
-// //     }
-// //   }
+  Widget _buildFieldTypeSpecificInputs() {
+    // This remains the same as in your previous implementation
+    // Add the specific input fields based on the selected field type
+    switch (selectedFieldType) {
+      case 'Char':
+      case 'Text':
+        return Column(
+          children: [
+            TextField(
+              controller: _maxLengthController,
+              decoration: const InputDecoration(
+                labelText: 'Max Length',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _minLengthController,
+              decoration: const InputDecoration(
+                labelText: 'Min Length',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number,
+            ),
+          ],
+        );
+      // Add other cases for different field types
+      default:
+        return Container();
+    }
+  }
 
-// //   void _addField() {
-// //     if (_fieldNameController.text.isNotEmpty) {
-// //       setState(() {
-// //         _fields.add(DynamicFormField(
-// //           id: _fieldNameController.text.toLowerCase(),
-// //           label: _fieldNameController.text,
-// //           type: _selectedFieldType,
-// //           isRequired: _isRequired,
-// //           maxLength: int.tryParse(_maxLengthController.text),
-// //           minLength: int.tryParse(_minLengthController.text),
-// //           choices: _choices.isNotEmpty ? _choices : null,
-// //           format: _formatController.text.isNotEmpty ? _formatController.text : null,
-// //           readOnly: _readOnly,
-// //           defaultValue: _defaultValueController.text.isNotEmpty
-// //               ? int.tryParse(_defaultValueController.text)
-// //               : null,
-// //         ));
+  void _addField() {
+    if (_fieldNameController.text.isNotEmpty) {
+      setState(() {
+        _fields.add(DynamicFormField(
+          id: _fieldNameController.text.toLowerCase(),
+          label: _fieldNameController.text,
+          type: selectedFieldType,
+          isRequired: _isRequired,
+          maxLength: int.tryParse(_maxLengthController.text),
+          minLength: int.tryParse(_minLengthController.text),
+          choices: _choices.isNotEmpty ? _choices : null,
+          format: _formatController.text.isNotEmpty ? _formatController.text : null,
+          readOnly: _readOnly,
+          defaultValue: _defaultValueController.text.isNotEmpty
+              ? int.tryParse(_defaultValueController.text)
+              : null,
+        ));
         
-// //         // Clear the input fields
-// //         _fieldNameController.clear();
-// //         _maxLengthController.clear();
-// //         _minLengthController.clear();
-// //         _defaultValueController.clear();
-// //         _formatController.clear();
-// //         _choices = [];
-// //         _isRequired = false;
-// //         _readOnly = false;
-// //         _selectedFieldType = 'Char';
-// //       });
-// //     }
-// //   }
+        // Clear the input fields
+        _fieldNameController.clear();
+        _maxLengthController.clear();
+        _minLengthController.clear();
+        _defaultValueController.clear();
+        _formatController.clear();
+        _choices = [];
+        _isRequired = false;
+        _readOnly = false;
+        selectedFieldType = 'Char';
+      });
+    }
+  }
 
-// //   @override
-// //   void dispose() {
-// //     _fieldNameController.dispose();
-// //     _maxLengthController.dispose();
-// //     _minLengthController.dispose();
-// //     _defaultValueController.dispose();
-// //     _formatController.dispose();
-// //     super.dispose();
-// //   }
-// // }
+  @override
+  void dispose() {
+    _fieldNameController.dispose();
+    _maxLengthController.dispose();
+    _minLengthController.dispose();
+    _defaultValueController.dispose();
+    _formatController.dispose();
+    super.dispose();
+  }
+}
 
 
 
@@ -2677,7 +2677,7 @@
 
 // // class _FieldDialogState extends State<FieldDialog> {
 // //   final TextEditingController _fieldNameController = TextEditingController();
-// //   String _selectedFieldType = 'Char';
+// //   String selectedFieldType = 'Char';
 // //   final TextEditingController _maxLengthController = TextEditingController();
 // //   final TextEditingController _minLengthController = TextEditingController();
 // //   bool _isRequired = false;
@@ -2698,13 +2698,13 @@
 // //           ),
 // //           const SizedBox(height: 10),
 // //           DropdownButtonFormField<String>(
-// //             value: _selectedFieldType,
+// //             value: selectedFieldType,
 // //             items: ['Char', 'Text', 'Choice', 'Integer', 'DateTime', 'Date', 'Time']
 // //                 .map((type) => DropdownMenuItem(value: type, child: Text(type)))
 // //                 .toList(),
 // //             onChanged: (value) {
 // //               setState(() {
-// //                 _selectedFieldType = value!;
+// //                 selectedFieldType = value!;
 // //               });
 // //             },
 // //             decoration: const InputDecoration(
@@ -2754,7 +2754,7 @@
 // //             final field = DynamicFormField(
 // //               id: _fieldNameController.text.trim().toLowerCase(),
 // //               label: _fieldNameController.text.trim(),
-// //               type: _selectedFieldType,
+// //               type: selectedFieldType,
 // //               isRequired: _isRequired,
 // //               maxLength: int.tryParse(_maxLengthController.text),
 // //               minLength: int.tryParse(_minLengthController.text),
@@ -3454,7 +3454,7 @@
 //   final TextEditingController _maxDigitsController = TextEditingController();
 //   final TextEditingController _decimalPlacesController = TextEditingController();
   
-//   String _selectedFieldType = 'Char';
+//   String selectedFieldType = 'Char';
 //   bool _isRequired = false;
 //   bool _isReadOnly = false;
 
@@ -3471,7 +3471,7 @@
 //   }
 
 //   Widget _buildFieldOptions() {
-//     final options = getDefaultOptions()[_selectedFieldType] ?? {};
+//     final options = getDefaultOptions()[selectedFieldType] ?? {};
 //     List<Widget> optionWidgets = [];
 
 //     // Replace CheckboxListTile with Switch
@@ -3490,7 +3490,7 @@
 //     );
 
 //     // Type-specific options (same as before)
-//     switch (_selectedFieldType) {
+//     switch (selectedFieldType) {
 //       case 'Char':
 //       case 'Text':
 //         optionWidgets.addAll([

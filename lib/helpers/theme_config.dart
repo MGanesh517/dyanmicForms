@@ -254,15 +254,7 @@ class MyTheme with ChangeNotifier {
   Color currentColor() {
     switch (accentColor) {
       case 'App Primary':
-        // return Color(0xff001F2A);
-        // return Color(0xff001F25);
-        // return Color(0xff36618E);
-        //  return Color(0xff001F2A);
-        // return Color(0xff6854BE);
-        return Color(0xff204ecf);
-        // return Color(0xffFFDF9E);
-        // return Color(0xFF15130C);
-        // return Color(0xff86F6E5);
+        return Color(0xff1562ab);
       case 'Red':
         return Colors.redAccent[currentHue()]!;
       case 'Teal':

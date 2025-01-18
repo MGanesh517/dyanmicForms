@@ -112,6 +112,153 @@ class CommonComponents {
     );
   }
 
+  static Column defaultTextFormField(
+  BuildContext context, {
+  TextEditingController? controller,
+  String? title = '',
+  String? hintText,
+  String? errorText,
+  String? initialValue,
+  bool readOnly = false,
+  bool enable = true,
+  Widget? prefixIcon,
+  Widget? suffixIcon,
+  int? maxLength,
+  bool obscureText = false,
+  List<TextInputFormatter>? inputFormatters,
+  TextInputAction? textInputAction,
+  TextInputType? keyboardType,
+  FocusNode? focusNode,
+  TextCapitalization textCapitalization = TextCapitalization.none,
+  TextAlign textAlign = TextAlign.left,
+  InputDecoration? decoration,
+  String? Function(String?)? validator,
+  void Function(String?)? onSaved,
+  void Function()? onTap,
+  void Function()? onEditingComplete,
+  void Function(String)? onChange,
+  void Function(String)? onFieldSubmitted,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      if (title != '')
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Text(
+            title!,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
+        ),
+      TextFormField(
+        controller: controller,
+        maxLength: maxLength,
+        readOnly: readOnly,
+        enabled: enable,
+        initialValue: initialValue,
+        obscureText: obscureText,
+        textCapitalization: textCapitalization,
+        focusNode: focusNode,
+        textInputAction: textInputAction,
+        textAlign: textAlign,
+        keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.normal,
+          color: Colors.black87,
+        ),
+        cursorColor: Theme.of(context).colorScheme.primary,
+        decoration: InputDecoration(
+          hintText: hintText,
+          hintStyle: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[500],
+          ),
+          counterText: '',
+          prefixIcon: prefixIcon,
+          suffixIcon: suffixIcon,
+          filled: true,
+          fillColor: Colors.white,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: BorderSide(color: Colors.red, width: 1.5),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: BorderSide(color: Colors.red, width: 1.5),
+          ),
+        ),
+        onChanged: onChange,
+        onFieldSubmitted: onFieldSubmitted,
+        onSaved: onSaved,
+        onTap: onTap,
+        validator: validator,
+        onEditingComplete: onEditingComplete,
+      ),
+      if (errorText != null)
+        Padding(
+          padding: const EdgeInsets.only(top: 4.0),
+          child: Text(
+            errorText,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.red,
+            ),
+          ),
+        ),
+    ],
+  );
+}
+
+
+  static CheckboxListTile defaultCheckBoxListTile(
+    BuildContext context, {
+    required bool value,
+    required String title,
+    required ValueChanged<bool?> onChanged,
+    Color? activeColor,
+    Color? checkColor,
+    Color? titleColor,
+    TextStyle? titleStyle,
+    EdgeInsets? padding,
+    ListTileControlAffinity controlAffinity = ListTileControlAffinity.leading,
+  }) {
+    return CheckboxListTile(
+      value: value,
+      title: Text(
+        title,
+        style: titleStyle ??
+            TextStyle(
+              // color: titleColor ?? Theme.of(context).colorScheme.primary,
+              color: titleColor ?? Colors.black,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+      ),
+      activeColor: activeColor ?? Theme.of(context).colorScheme.primary,
+      checkColor: checkColor ?? Colors.white,
+      onChanged: onChanged,
+      controlAffinity: controlAffinity,
+      contentPadding: padding ?? EdgeInsets.zero, // Optional padding
+    );
+  }
+
+
+
   static Column defaultDropdownSearch<T>(context,
       {Key? key,
       //   TextEditingController? controller,

@@ -9,6 +9,23 @@ class ResponsiveConstants {
     lg: const ResponsiveColumnConfig(span: 2),
     // xl: const ResponsiveColumnConfig(span: 3),
   );
+
+  final noBreakPoints = Breakpoints(
+    xs: const ResponsiveColumnConfig(span: 6),
+    sm: const ResponsiveColumnConfig(span: 6),
+    md: const ResponsiveColumnConfig(span: 6),
+    lg: const ResponsiveColumnConfig(span: 6),
+    xl: const ResponsiveColumnConfig(span: 6),
+    xxl: const ResponsiveColumnConfig(span: 6),
+  );
+
+  final fixedBreakPoints = Breakpoints(
+    xs: const ResponsiveColumnConfig(span: 3),
+    // sm: const ResponsiveColumnConfig(span: 4),
+    // md: const ResponsiveColumnConfig(span: 3),
+    // lg: const ResponsiveColumnConfig(span: 2),
+    // xl: const ResponsiveColumnConfig(span: 3),
+  );
   
   final searchBreakPoint = Breakpoints(
     xs: const ResponsiveColumnConfig(span: 12),

@@ -26,6 +26,13 @@ class AppTheme {
               // letterSpacing: 018,
             )),
       ),
+      drawerTheme: DrawerThemeData(
+        shape: BeveledRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.zero)
+        ),
+        backgroundColor: Colors.white,
+        endShape: Border(right: BorderSide(width: 2, color: Colors.black))
+      ),
       bottomSheetTheme: const BottomSheetThemeData(
           elevation: 10.0,
           shape: RoundedRectangleBorder(

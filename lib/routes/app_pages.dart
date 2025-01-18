@@ -1,7 +1,7 @@
 
 
 import 'package:get/get.dart';
-import 'package:implementation_panel/Screens/Dashboard/Sample/Create%20Data/post_screen_new.dart';
+import 'package:implementation_panel/Screens/Dashboard/Sample/Create%20Data/new_post_screen.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/list_screen.dart';
 import 'package:implementation_panel/Screens/Login/login_screen.dart';
 import 'package:implementation_panel/Screens/illustration/splash_screen.dart';

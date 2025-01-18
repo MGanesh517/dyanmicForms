@@ -54,13 +54,13 @@ class CommonScaffoldWithAppBar extends StatelessWidget {
         );
 
         return Scaffold(
-          backgroundColor: Colors.grey[200],
+          backgroundColor: Colors.grey[50],
           key: scaffoldKey,
           appBar: AppBar(
             toolbarHeight: 64,
             automaticallyImplyLeading: false,
             elevation: 0.0,
-            backgroundColor: const Color(0xff1562ab),
+            backgroundColor: Theme.of(context).colorScheme.primary,
             leading: leadingChild != null
                 ? Align(
                     alignment: Alignment.center,
@@ -105,6 +105,7 @@ class CommonScaffoldWithAppBar extends StatelessWidget {
                             : 070,
                         child: drawer,
                       )),
+                      VerticalDivider(thickness: 0.5,width: 0.5,),
                 Expanded(child: SingleChildScrollView(child: body)),
               ],
             ),
@@ -185,7 +186,7 @@ void onItemTapped(int index, String route) {
           //     )),
           Obx(() => CommonCardForDrawer(
                 title: drawerController.isTextNotVisible
-                    ? const Text('HomeScreen')
+                    ? const Text('Create Screen')
                     : const SizedBox.shrink(),
                 icon: const Icon(Icons.store),
                 isSelected: drawerController.selectedIndex == 0,

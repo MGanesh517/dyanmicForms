@@ -57,7 +57,6 @@ dependencies:
   get_storage: ^2.1.1
   responsive_toolkit: ^0.0.6
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
