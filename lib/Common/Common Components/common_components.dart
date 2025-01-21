@@ -1,6 +1,7 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 class CommonComponents {
   static Column defaultTextField(context,
@@ -258,172 +259,235 @@ class CommonComponents {
   }
 
 
-
-  static Column defaultDropdownSearch<T>(context,
-      {Key? key,
-      //   TextEditingController? controller,
-      String? title,
-      String? hintText,
-      bool? enabled,
-      List<T>? items,
-      validator,
-      Future<List<T>> Function(String)? asyncItems,
-      compareFn,
-      itemAsString,
-      selectedItem,
-      onChanged,
-      itemBuilder,
-      bool? showTitle = true,
-      bool? showBottomSheet = true,
-      }) {
-    return Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Visibility(
-        visible: showTitle == true ? true : false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  static AlertDialog showAlertDialog(
+      BuildContext context, {
+    required String title,
+    required String message,
+    required Widget icon,
+    VoidCallback? onConfirm,
+    VoidCallback? onCancel,
+  }) {
+    Get.dialog(
+      AlertDialog(
+        title: Text(title),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(title!, style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w500, fontSize: 10)),
-            Container(height: 8),
+            icon,
+            SizedBox(height: 20),
+            Text(message),
           ],
         ),
+        actions: [
+          if (onCancel != null)
+            TextButton(
+              onPressed: () {
+                Get.back();
+                onCancel();
+              },
+              child: Text('Cancel'),
+            ),
+          if (onConfirm != null)
+            TextButton(
+              onPressed: () {
+                Get.back();
+                onConfirm();
+              },
+              child: Text('Confirm'),
+            ),
+        ],
       ),
-      DropdownSearch<T>(
-          autoValidateMode: AutovalidateMode.onUserInteraction,
-          asyncItems: asyncItems ?? asyncItems,
-          items: items ?? [],
-          key: ValueKey(title),
-          dropdownButtonProps: const DropdownButtonProps(icon: Icon(Icons.keyboard_arrow_down)),
-          // clearButtonProps:  ClearButtonProps(isVisible: true),
-          validator: validator,
-          compareFn: compareFn,
-          enabled: enabled ?? true,
-          dropdownDecoratorProps: DropDownDecoratorProps(
-            dropdownSearchDecoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Theme.of(context).colorScheme.onPrimary, width: 1)
-              ),
-
-              // border: OutlineInputBorder(
-              //     borderSide: BorderSide(color: Theme.of(context).colorScheme.primaryContainer), borderRadius: BorderRadius.circular(15)),
-              // labelText: title,
-              filled: true,
-              fillColor: Theme.of(context).colorScheme.secondary,
-              labelStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-              hintStyle: TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
-              floatingLabelAlignment: FloatingLabelAlignment.start,
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              hintText: "Select $title",
-              // filled: true,
-              // fillColor: Colors.grey[100],
-            ),
+    );
+    return AlertDialog(
+      title: Text(title),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          icon,
+          SizedBox(height: 20),
+          Text(message),
+        ],
+      ),
+      actions: [
+        if (onCancel != null)
+          TextButton(
+            onPressed: () {
+              Get.back();
+              onCancel();
+            },
+            child: Text('Cancel'),
           ),
-    popupProps: showBottomSheet==false?PopupProps.menu(
-    fit: FlexFit.loose, constraints: BoxConstraints())
-          :PopupPropsMultiSelection.modalBottomSheet(
-        showSelectedItems: true,
-        showSearchBox: true,
-        itemBuilder: itemBuilder,
-        fit: FlexFit.tight,
-        searchFieldProps: const TextFieldProps(
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              filled: true,
-              fillColor: Color(0xffFAFAFF),
-              // border: OutlineInputBorder(
-              //     borderSide: BorderSide(color: Theme.of(context).colorScheme.primaryContainer), borderRadius: BorderRadius.circular(15)),
-              suffixIcon: Icon(Icons.search),
-              // labelText: 'Search Here',
-              // labelStyle:  TextStyle(fontSize: 16),
-              // floatingLabelAlignment: FloatingLabelAlignment.start,
-              // floatingLabelBehavior: FloatingLabelBehavior.always,
-              hintText: 'Search Here',
-            )),
-        modalBottomSheetProps: ModalBottomSheetProps(
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(25),
-                topRight: Radius.circular(25),
-              ),
-            )),
-        title: Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(25),
-              topRight: Radius.circular(25),
-            ),
-            // boxShadow:  [BoxShadow(color: Theme.of(context).colorScheme.secondary, blurRadius: 10.0)],
+        if (onConfirm != null)
+          TextButton(
+            onPressed: () {
+              Get.back();
+              onConfirm();
+            },
+            child: Text('Confirm'),
           ),
-          child: Center(
-            child: Text(
-              title,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.secondary,
-              ),
-            ),
-          ),
-        )
-    ),
-        //   popupProps: PopupPropsMultiSelection.modalBottomSheet(
-        //       showSelectedItems: true,
-        //       showSearchBox: true,
-        //       itemBuilder: itemBuilder,
-        //       fit: FlexFit.tight,
-        //       searchFieldProps: const TextFieldProps(
-        //           decoration: InputDecoration(
-        //         border: InputBorder.none,
-        //         filled: true,
-        //         fillColor: Color(0xffFAFAFF),
-        //         // border: OutlineInputBorder(
-        //         //     borderSide: BorderSide(color: Theme.of(context).colorScheme.primaryContainer), borderRadius: BorderRadius.circular(15)),
-        //         suffixIcon: Icon(Icons.search),
-        //         // labelText: 'Search Here',
-        //         // labelStyle:  TextStyle(fontSize: 16),
-        //         // floatingLabelAlignment: FloatingLabelAlignment.start,
-        //         // floatingLabelBehavior: FloatingLabelBehavior.always,
-        //         hintText: 'Search Here',
-        //       )),
-        //       modalBottomSheetProps: ModalBottomSheetProps(
-        //           backgroundColor: Theme.of(context).colorScheme.secondary,
-        //           shape: const RoundedRectangleBorder(
-        //             borderRadius: BorderRadius.only(
-        //               topLeft: Radius.circular(25),
-        //               topRight: Radius.circular(25),
-        //             ),
-        //           )),
-        //       title: Container(
-        //         height: 50,
-        //         decoration: BoxDecoration(
-        //           color: Theme.of(context).colorScheme.primary,
-        //           borderRadius: const BorderRadius.only(
-        //             topLeft: Radius.circular(25),
-        //             topRight: Radius.circular(25),
-        //           ),
-        //           // boxShadow:  [BoxShadow(color: Theme.of(context).colorScheme.secondary, blurRadius: 10.0)],
-        //         ),
-        //         child: Center(
-        //           child: Text(
-        //             title,
-        //             style: TextStyle(
-        //               fontSize: 24,
-        //               fontWeight: FontWeight.bold,
-        //               color: Theme.of(context).colorScheme.secondary,
-        //             ),
-        //           ),
-        //         ),
-        //       )
-        // ),
-          itemAsString: itemAsString,
-          selectedItem: selectedItem,
-          onChanged: onChanged),
-      // const SizedBox(height: 24)
-    ]);
+      ],
+    );
   }
+      // Dialog(
+      //   shape: RoundedRectangleBorder(
+      //     borderRadius: BorderRadius.circular(15),
+      //   ),
+      //   child: Container(
+      //     width: Get.width * 0.8, // 80% of screen width
+      //     padding: const EdgeInsets.all(20),
+      //     child: Column(
+      //       mainAxisSize: MainAxisSize.min,
+      //       children: [
+      //         // Icon
+      //         Container(
+      //           height: 60,
+      //           width: 60,
+      //           decoration: BoxDecoration(
+      //             shape: BoxShape.circle,
+      //             boxShadow: [
+      //               BoxShadow(
+      //                 color: const Color.fromRGBO(89, 89, 89, 1.0).withOpacity(0.4),
+      //                 spreadRadius: 2,
+      //                 blurRadius: 8,
+      //                 offset: const Offset(0, 2),
+      //               ),
+      //             ],
+      //             color: Colors.white,
+      //           ),
+      //           child: icon,
+      //         ),
+      //         const SizedBox(height: 20),
+
+      //         // Title
+      //         Text(
+      //           title,
+      //           style: const TextStyle(
+      //             fontWeight: FontWeight.bold,
+      //             fontSize: 18,
+      //           ),
+      //           textAlign: TextAlign.center,
+      //         ),
+      //         const SizedBox(height: 10),
+
+      //         // Message
+      //         Text(
+      //           message,
+      //           style: const TextStyle(
+      //             fontSize: 14,
+      //             color: Colors.grey,
+      //           ),
+      //           textAlign: TextAlign.center,
+      //         ),
+      //         const SizedBox(height: 20),
+
+      //         // Buttons
+      //         Row(
+      //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //           children: [
+      //             // Cancel Button
+      //             if (onCancel != null)
+      //               ElevatedButton(
+      //                 onPressed: () {
+      //                   Get.back(); // Close dialog
+      //                   onCancel();
+      //                 },
+      //                 style: ElevatedButton.styleFrom(
+      //                   backgroundColor: Colors.grey.shade300,
+      //                 ),
+      //                 child: const Text(
+      //                   'Cancel',
+      //                   style: TextStyle(color: Colors.black),
+      //                 ),
+      //               ),
+
+      //             // Confirm Button
+      //             if (onConfirm != null)
+      //               ElevatedButton(
+      //                 onPressed: () {
+      //                   Get.back(); // Close dialog
+      //                   onConfirm();
+      //                 },
+      //                 child: const Text('Confirm'),
+      //               ),
+      //           ],
+      //         ),
+      //       ],
+      //     ),
+      //   ),
+      // )
+
+  static Column defaultDropdownSearch<T>(
+  BuildContext context, {
+  Key? key,
+  String? title,
+  String? hintText,
+  bool? enabled,
+  List<T>? items,
+  String? Function(T?)? validator,
+  Future<List<T>> Function(String)? asyncItems,
+  bool? showTitle = true,
+  bool? showBottomSheet = true,
+  T? selectedItem,
+  void Function(T?)? onChanged,
+  String Function(T)? itemAsString,
+  Widget Function(BuildContext, T, bool)? itemBuilder,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      if (showTitle == true && title != null)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Text(
+            title,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
+        ),
+      DropdownSearch<T>(
+        key: key,
+        items: items ?? [],
+        asyncItems: asyncItems,
+        validator: validator,
+        selectedItem: selectedItem,
+        onChanged: onChanged,
+        itemAsString: itemAsString,
+        dropdownDecoratorProps: DropDownDecoratorProps(
+          dropdownSearchDecoration: InputDecoration(
+            hintText: hintText ?? 'Select $title',
+            hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
+            ),
+            filled: true,
+            fillColor: Colors.white,
+          ),
+        ),
+        popupProps: showBottomSheet == true
+            ? PopupPropsMultiSelection.modalBottomSheet(
+                showSearchBox: true,
+                itemBuilder: itemBuilder,
+                modalBottomSheetProps: ModalBottomSheetProps(
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(20.0),
+                    ),
+                  ),
+                ),
+              )
+            : PopupProps.menu(
+                fit: FlexFit.loose,
+                itemBuilder: itemBuilder,
+              ),
+      ),
+    ],
+  );
+}
+
 
   static Column defaultMultiSelectionDropdownSearch<T>(context,
       {Key? key,

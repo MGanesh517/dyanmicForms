@@ -188,7 +188,7 @@ void onItemTapped(int index, String route) {
                 title: drawerController.isTextNotVisible
                     ? const Text('Create Screen')
                     : const SizedBox.shrink(),
-                icon: const Icon(Icons.store),
+                icon: const Icon(Icons.add_circle_outline_outlined),
                 isSelected: drawerController.selectedIndex == 0,
                 onTapNavigation: () => onItemTapped(0, '/dashboardView'),
               )),

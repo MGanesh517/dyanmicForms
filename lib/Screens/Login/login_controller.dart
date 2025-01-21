@@ -143,7 +143,7 @@ class LoginController extends GetxController {
     "user_type": "User",
     "device_name": commonService.deviceName,
     "device_uuid": commonService.deviceId,
-    "device_type": kIsWeb ? "3" : Platform.isIOS ? "2" : "1",
+    "device_type": kIsWeb ? "3" : Platform.isMacOS ? "4" : Platform.isIOS ? "2" : "1",
     "device_fcmtoken": "string",
     "device_apntoken": "string"
   });
