@@ -118,7 +118,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // commonService.isFirstTime = await SessionManager.getIsFirstTime();
     debugPrint("isFirstUserOrNot :::::Access Token::::::${commonService.accessToken}");
     if (commonService.accessToken != '') {
-      Get.toNamed(Routes.dashboardView);
+      Get.toNamed(Routes.listScreen);
       // Get.offAllNamed('/loginView');
     } else {
       Get.toNamed(Routes.loginPage);

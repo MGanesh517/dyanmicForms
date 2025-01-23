@@ -22,7 +22,7 @@ class LoginController extends GetxController {
 
       // selectedValue = 1;
       if (commonService.accessToken != '') {
-        Get.toNamed(Routes.dashboardView);
+        Get.toNamed(Routes.listScreen);
       } else {
         Get.toNamed(Routes.loginPage);
       }
@@ -163,7 +163,7 @@ class LoginController extends GetxController {
       SessionManager.setRefreshToken(data.tokens != null && data.tokens!.refresh != null ? data.tokens!.refresh ?? '' : '');
       usernameController.clear();
       passwordController.clear();
-      Get.toNamed(Routes.dashboardView);
+      Get.toNamed(Routes.listScreen);
 
       return true;
     } else {

@@ -11,6 +11,7 @@ import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:implementation_panel/Common/common_service.dart';
 import 'package:implementation_panel/Common/session_manager.dart';
+import 'package:implementation_panel/utils/scroll.dart';
 import 'package:implementation_panel/helpers/app_theme.dart';
 import 'package:implementation_panel/helpers/theme_config.dart';
 import 'package:implementation_panel/initial_binding.dart';
@@ -162,6 +163,7 @@ class _MyAppState extends State<MyApp> {
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         child: GetMaterialApp(
+          scrollBehavior: CustomScrollBehavior(),
           smartManagement: SmartManagement.keepFactory,
           debugShowCheckedModeBanner: false,
           initialBinding: InitialBinding(),
