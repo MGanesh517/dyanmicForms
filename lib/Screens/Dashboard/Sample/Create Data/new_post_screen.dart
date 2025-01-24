@@ -283,12 +283,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         IconButton(onPressed: () {
                           Get.back();
-                          DynamicController.to.dynamicDetails.id == null ? controller.disposeController() : null;
+                          // controller.dynamicDetails.id == null ? controller.disposeController() : null;
                           controller.disposeController();
 
-                          controller.update();
+                          // controller.update();
                         }, icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary)),
-                        Text(DynamicController.to.dynamicDetails.id != null
+                        Text(controller.dynamicDetails.id != null
                         ? "Edit Data"
                         : "Create Data",
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.primary),),
@@ -313,7 +313,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               context,
                               title: 'App Label',
                               hintText: 'Enter App Label',
-                              readOnly: DynamicController.to.dynamicDetails.id != null ? true : false,
+                              readOnly: controller.dynamicDetails.id != null ? true : false,
                               controller: controller.appLabel,
                               validator: (String? val) {
                                 if (val?.isEmpty ?? true) {
@@ -359,7 +359,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Visibility(
-                            visible: DynamicController.to.dynamicDetails.id == null,
+                            visible: controller.dynamicDetails.id == null,
                             child: ResponsiveRow(
                               runSpacing: 10,
                               spacing: 20,
@@ -474,6 +474,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ResponsiveColumn(
                                 ResponsiveConstants().buttonBreakpoints,
                                 child: DropdownButtonFormField<String>(
+                                  menuMaxHeight: 250,
                                   hint: const Text("Added Choices"),
                                   dropdownColor: Theme.of(context).colorScheme.secondary,
                                   decoration: InputDecoration(
@@ -770,10 +771,40 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           Visibility(
-                            visible:  DynamicController.to.dynamicDetails.id == null ,
+                            visible:  controller.dynamicDetails.id == null ,
                             child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.end,
                                                   children: [
+                                                    Container(
+                                                                                color: Theme.of(context).colorScheme.secondary,
+                                                                                  child: MaterialButton(
+                                                                                    elevation: 2,
+                                                                                    onPressed: () {
+                                                                                      print("Printing the Data ${jsonEncode(controller.formFields)}");
+                                                                                     controller.addFieldsDisposeController();
+                                                                                      controller.update();
+                                                                                    },
+                                                                                    height: 50,
+                                                                                    minWidth: 100,
+                                                                                    color: Theme.of(context).colorScheme.primary,
+                                                                                    shape: const RoundedRectangleBorder(
+                                                                                      borderRadius:
+                                                                                          BorderRadius.all(Radius.circular(6)),
+                                                                                    ),
+                                                                                    child: Center(
+                                                                                      child: Text(
+                                                                                        "Clear",
+                                                                                        style: TextStyle(
+                                                                                          color:
+                                                                                              Theme.of(context).colorScheme.secondary,
+                                                                                          fontSize: 15,
+                                                                                          fontWeight: FontWeight.w600,
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ),
+                                                                                // ),
+                                                    ),
                                                     const SizedBox(width: 8),
                                                     Container(
                             color: Theme.of(context).colorScheme.secondary,
@@ -845,7 +876,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     //     ? controller.createDynamicData() : controller.updateModelName();
                                     // }
                                     if (formKey.currentState?.validate() ?? false) {
-                            if (DynamicController.to.dynamicDetails.id != null) {
+                            if (controller.dynamicDetails.id != null) {
                               controller.updateModelName({
                                 // "app_label": controller.appLabel.text,
                                 "model_name": controller.modelName.text,

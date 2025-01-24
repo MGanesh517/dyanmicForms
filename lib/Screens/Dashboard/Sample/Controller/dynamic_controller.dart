@@ -330,14 +330,14 @@ void addItemField() {
       fieldData['multiple_filter'] = isMultipleFilter.value;
       fieldData['read_fields'] = ['name'];
       fieldData['filter_data'] = {};
-      fieldData['related_name'] = '${modelName.text.toLowerCase()}_${fieldNameController.text}_items';
+      // fieldData['related_name'] = '${modelName.text.toLowerCase()}_${fieldNameController.text}_items';
       break;
 
     case 'ForeignKey':
       fieldData['to'] = 'auth.Group';
       fieldData['read_fields'] = ['name'];
       fieldData['filter_data'] = {};
-      fieldData['related_name'] = '${modelName.text.toLowerCase()}_${fieldNameController.text}_items';
+      // fieldData['related_name'] = '${modelName.text.toLowerCase()}_${fieldNameController.text}_items';
       fieldData['import_fields'] = ['name'];
       fieldData['export_fields'] = ['name'];
       break;
@@ -435,14 +435,14 @@ void addItemField() {
   }
 
   createDynamicData() async {
-    if (appLabel.text.isEmpty || modelName.text.isEmpty) {
-      showSnackBar(
-        title: 'Error',
-        message: 'App Label and Model Name are required',
-        icon: Icon(Icons.error, color: Colors.red),
-      );
-      return;
-    }
+      if (appLabel.text.isEmpty || modelName.text.isEmpty || formFields.isEmpty) {
+        showSnackBar(
+          title: 'Error',
+          message: 'App Label, Model Name, and at least one Field are required',
+          icon: Icon(Icons.error, color: Colors.red),
+        );
+        return;
+      }
     submit = true;
     var postData = {
       "app_label": appLabel.text,
@@ -505,6 +505,7 @@ void addItemField() {
   }
 
   void addFieldsDisposeController() {
+    dynamicDetails = GetDynamicViewById();
     editingIndex = -1;
     fieldNameController.clear();
     maxLengthController.clear();
@@ -638,7 +639,7 @@ void addItemField() {
       rethrow;
     }
   }
-
+  //
   // initEditState() {
   //   WidgetsBinding.instance.addPostFrameCallback((_) {
   //     _initializeFields();
