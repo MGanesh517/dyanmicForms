@@ -135,7 +135,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
       // //////  For Mobile
       // ? Center(child: Image.asset("assets/ab_logo_blue.png",width: MediaQuery.of(context).size.width *0.7))
-      
+
 
       // //////  For Web
       // :
@@ -144,9 +144,9 @@ class _SplashScreenState extends State<SplashScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Image.asset("assets/ab_logo_blue.png", height: MediaQuery.of(context).size.width < 600 ? MediaQuery.of(context).size.width * 0.7 : MediaQuery.of(context).size.height *0.5),
+          Image.asset("assets/app_icon.webp", height: MediaQuery.of(context).size.width < 600 ? MediaQuery.of(context).size.width * 0.7 : MediaQuery.of(context).size.height *0.5),
           // SizedBox(height: 15),
-          FlutterLogo(size: 100),
+          // FlutterLogo(size: 100),
           // Visibility(visible: MediaQuery.of(context).size.width >= 600,
           //   child: Image.asset("assets/absolin_text.png", width: MediaQuery.of(context).size.width *0.5))
         ],
