@@ -1,14 +1,76 @@
 // To parse this JSON data, do
 //
-//     final getFieldTypeList = getFieldTypeListFromJson(jsonString);
+//     final getDynamicViewById = getDynamicViewByIdFromJson(jsonString);
 
 import 'dart:convert';
 
-GetFieldTypeList getFieldTypeListFromJson(String str) => GetFieldTypeList.fromJson(json.decode(str));
+GetDynamicViewById getDynamicViewByIdFromJson(String str) => GetDynamicViewById.fromJson(json.decode(str));
 
-String getFieldTypeListToJson(GetFieldTypeList data) => json.encode(data.toJson());
+String getDynamicViewByIdToJson(GetDynamicViewById data) => json.encode(data.toJson());
 
-class GetFieldTypeList {
+// class GetDynamicViewById {
+//     int? id;
+//     String? appLabel;
+//     String? modelName;
+//     Fields? fields;
+//     dynamic fields1;
+
+//     GetDynamicViewById({
+//         this.id,
+//         this.appLabel,
+//         this.modelName,
+//         this.fields,
+//         this.fields1,
+//     });
+
+//     factory GetDynamicViewById.fromJson(Map<String, dynamic> json) => GetDynamicViewById(
+//     id: json["id"],
+//     appLabel: json["app_label"],
+//     modelName: json["model_name"],
+//     fields: json["fields"] == null ? null : Fields.fromJson(json["fields"]),
+//     fields1: json["fields"] is String ? jsonDecode(json["fields"]) : json["fields"],
+// );
+
+//     Map<String, dynamic> toJson() => {
+//         "id": id,
+//         "app_label": appLabel,
+//         "model_name": modelName,
+//         "fields": fields?.toJson(),
+//     };
+// }
+
+class GetDynamicViewById {
+    int? id;
+    String? appLabel;
+    String? modelName;
+    Fields? fields;
+    dynamic fields1;
+
+    GetDynamicViewById({
+        this.id,
+        this.appLabel,
+        this.modelName,
+        this.fields,
+        this.fields1,
+    });
+
+    factory GetDynamicViewById.fromJson(Map<String, dynamic> json) => GetDynamicViewById(
+        id: json["id"],
+        appLabel: json["app_label"],
+        modelName: json["model_name"],
+        fields: json["fields"] == null ? null : Fields.fromJson(json["fields"]),
+        fields1: json["fields"] is String ? jsonDecode(json["fields"]) : json["fields"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "id": id,
+        "app_label": appLabel,
+        "model_name": modelName,
+        "fields": fields?.toJson(),
+    };
+}
+
+class Fields {
     Boolean? char;
     Boolean? text;
     Boolean? choice;
@@ -21,7 +83,7 @@ class GetFieldTypeList {
     ForeignKey? foreignKey;
     Boolean? boolean;
 
-    GetFieldTypeList({
+    Fields({
         this.char,
         this.text,
         this.choice,
@@ -35,7 +97,7 @@ class GetFieldTypeList {
         this.boolean,
     });
 
-    factory GetFieldTypeList.fromJson(Map<String, dynamic> json) => GetFieldTypeList(
+    factory Fields.fromJson(Map<String, dynamic> json) => Fields(
         char: json["Char"] == null ? null : Boolean.fromJson(json["Char"]),
         text: json["Text"] == null ? null : Boolean.fromJson(json["Text"]),
         choice: json["Choice"] == null ? null : Boolean.fromJson(json["Choice"]),

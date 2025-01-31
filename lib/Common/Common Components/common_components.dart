@@ -417,76 +417,112 @@ class CommonComponents {
       // )
 
   static Column defaultDropdownSearch<T>(
-  BuildContext context, {
-  Key? key,
-  String? title,
-  String? hintText,
-  bool? enabled,
-  List<T>? items,
-  String? Function(T?)? validator,
-  Future<List<T>> Function(String)? asyncItems,
-  bool? showTitle = true,
-  bool? showBottomSheet = true,
-  T? selectedItem,
-  void Function(T?)? onChanged,
-  String Function(T)? itemAsString,
-  Widget Function(BuildContext, T, bool)? itemBuilder,
-}) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      if (showTitle == true && title != null)
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-          child: Text(
-            title,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
-          ),
+      context, {
+        Key? key,
+        //   TextEditingController? controller,
+        String? title,
+        String? hintText,
+        bool? enabled,
+        List<T>? items,
+        validator,
+        Future<List<T>> Function(String)? asyncItems,
+        compareFn,
+        itemAsString,
+        selectedItem,
+        onChanged,
+        itemBuilder,
+        bool? showTitle =true
+      }) {
+    return Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Visibility(
+        visible: showTitle==true?true:false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title!, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400)),
+            Container(height: 8),
+          ],
         ),
+      ),
       DropdownSearch<T>(
-        key: key,
-        items: items ?? [],
-        asyncItems: asyncItems,
-        validator: validator,
-        selectedItem: selectedItem,
-        onChanged: onChanged,
-        itemAsString: itemAsString,
-        dropdownDecoratorProps: DropDownDecoratorProps(
-          dropdownSearchDecoration: InputDecoration(
-            hintText: hintText ?? 'Select $title',
-            hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
+          autoValidateMode: AutovalidateMode.onUserInteraction,
+          asyncItems: asyncItems ?? asyncItems,
+          items: items ?? [],
+          key: ValueKey(title),
+          dropdownButtonProps: const DropdownButtonProps(icon: Icon(Icons.keyboard_arrow_down)),
+          // clearButtonProps: const ClearButtonProps(isVisible: true),
+          validator: validator,
+          compareFn: compareFn,
+          enabled: enabled ?? true,
+          dropdownDecoratorProps: DropDownDecoratorProps(
+            dropdownSearchDecoration: InputDecoration(border: InputBorder.none,
+              // border: OutlineInputBorder(
+              //     borderSide: BorderSide(color: Theme.of(context).colorScheme.primaryContainer), borderRadius: BorderRadius.circular(15)),
+              // labelText: title,
+              filled: true,
+              fillColor: const Color(0xffFAFAFF),
+              labelStyle: const TextStyle(fontSize: 16,fontWeight: FontWeight.w400),
+              floatingLabelAlignment: FloatingLabelAlignment.start,
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              hintText: "Select $title",
+              // filled: true,
+              // fillColor: Colors.grey[100],
             ),
-            filled: true,
-            fillColor: Colors.white,
           ),
-        ),
-        popupProps: showBottomSheet == true
-            ? PopupPropsMultiSelection.modalBottomSheet(
-                showSearchBox: true,
-                itemBuilder: itemBuilder,
-                modalBottomSheetProps: ModalBottomSheetProps(
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(20.0),
+          popupProps: PopupPropsMultiSelection.modalBottomSheet(
+              showSelectedItems: true,
+              showSearchBox: true,
+              itemBuilder: itemBuilder,
+              fit: FlexFit.tight,
+              searchFieldProps: const TextFieldProps(
+                  decoration: InputDecoration(border: InputBorder.none,
+                    filled: true,
+                    fillColor: Color(0xffFAFAFF),
+                    // border: OutlineInputBorder(
+                    //     borderSide: BorderSide(color: Theme.of(context).colorScheme.primaryContainer), borderRadius: BorderRadius.circular(15)),
+                    suffixIcon:  Icon(Icons.search),
+                    // labelText: 'Search Here',
+                    // labelStyle: const TextStyle(fontSize: 16),
+                    // floatingLabelAlignment: FloatingLabelAlignment.start,
+                    // floatingLabelBehavior: FloatingLabelBehavior.always,
+                    hintText: 'Search Here',
+                  )),
+              modalBottomSheetProps: const ModalBottomSheetProps(
+                  backgroundColor: Colors.white,
+
+                  shape:  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(25),
+                      topRight: Radius.circular(25),
+                    ),
+                  )),
+              title: Container(
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(25),
+                    topRight: Radius.circular(25),
+                  ),
+                  // boxShadow: const [BoxShadow(color: Colors.white, blurRadius: 10.0)],
+                ),
+                child: Center(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                 ),
-              )
-            : PopupProps.menu(
-                fit: FlexFit.loose,
-                itemBuilder: itemBuilder,
-              ),
-      ),
-    ],
-  );
-}
+              )),
+          itemAsString: itemAsString,
+          selectedItem: selectedItem,
+          onChanged: onChanged),const SizedBox(height: 24)
+    ]
+    );
+  }
 
 
   static Column defaultMultiSelectionDropdownSearch<T>(context,

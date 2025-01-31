@@ -5,8 +5,11 @@ import 'package:get/get.dart';
 import 'package:implementation_panel/BreakPoints/breakpoints.dart';
 import 'package:implementation_panel/Common/Common%20Components/common_components.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Controller/dynamic_controller.dart';
+import 'package:implementation_panel/Screens/Dashboard/Sample/Create%20Data/view_by_id.dart';
 import 'package:implementation_panel/Screens/Dashboard/custom_appbar.dart';
 import 'package:responsive_toolkit/responsive_grid.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
+import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,9 +21,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final controller = Get.put(DynamicController());
   final formKey = GlobalKey<FormState>();
+  int index = 0;
 
   Widget buildFieldList() {
-    return Obx(() => SingleChildScrollView(
+    print("Fields :::::::${controller.formFields}");
+    print("Fields Length :::::::${controller.formFields.length}");
+    return  SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Container(
         decoration: BoxDecoration(
@@ -34,13 +40,15 @@ class _HomeScreenState extends State<HomeScreen> {
             scrollDirection: Axis.horizontal,
             physics: const AlwaysScrollableScrollPhysics(),
             child: DataTable(
+              showCheckboxColumn: true,
+              checkboxHorizontalMargin: 10.0,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10.0),
               ),
               dataTextStyle: const TextStyle(fontWeight: FontWeight.w400),
               headingRowColor: const WidgetStatePropertyAll(Color(0xfff7fafc)),
               dataRowColor: WidgetStatePropertyAll(Color(0xffffffff)),
-              columns: const <DataColumn>[
+              columns: <DataColumn>[
                 DataColumn(
                   label: Text('S.No',
                       style: TextStyle(
@@ -55,10 +63,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   label: Text('Field Type',
                       style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
-                // DataColumn(
-                //   label: Text('Child Field Type',
-                //       style: TextStyle(fontWeight: FontWeight.bold)),
-                // ),
                 DataColumn(
                   label: Text('Required',
                       style: TextStyle(fontWeight: FontWeight.bold)),
@@ -89,6 +93,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 DataColumn(
                   label: Text('Choices',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+                DataColumn(
+                  label: Text('ForeignKey Val',
                       style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
                 DataColumn(
@@ -124,134 +132,371 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
                 DataColumn(
-                  label: Text('Default Value',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                DataColumn(
                   label: Text('Actions',
                       style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ],
-              rows: controller.formFields.asMap().entries.map((entry) {
-                final index = entry.key;
-                final field = entry.value;
-                final fieldName = field.keys.first;
-                final fieldData = field[fieldName] as Map<String, dynamic>;
-                        
-                return DataRow(
-                  cells: <DataCell>[
-                    DataCell(Text('${index + 1}')),
-                    DataCell(Text(fieldName)),
-                    // DataCell(Text(fieldData['type'].toString())),
-                    // DataCell(fieldData['type'] == 'Children' && fieldData['fields'] != null
-                    //       ? Text(json.decode(fieldData['fields'].toString()).keys.join('')): Text("-"),
-                    // ),
-                    // DataCell(fieldData['type'] == 'Children'
-                    //   ? const Text('Children')
-                    //   : Text(fieldData['type'].toString())
-                    // ),
-                    // DataCell(
-                    //   fieldData['type'] == 'Children' && fieldData['fields'] != null
-                    //   ? Column(
-                    //       crossAxisAlignment: CrossAxisAlignment.start,
-                    //       mainAxisAlignment: MainAxisAlignment.center,
-                    //       children: [
-                    //         ...List<Widget>.from(
-                    //           (json.decode(fieldData['fields'].toString()) as Map<String, dynamic>)
-                    //           .entries
-                    //           .map((entry) => Text(
-                    //             '${entry.key}: ${entry.value['type']}',
-                    //             style: const TextStyle(fontSize: 12),
-                    //           ))
-                    //         )
-                    //       ],
-                    //     )
-                    //   : const Text("-")
-                    // ),
-                    DataCell(Text(fieldData['type'].toString())),
-                  // Updated Child Field Type cell
-                  // DataCell(
-                  //   fieldData['type'] == 'Children' && fieldData['fields'] != null
-                  //   ? Column(
-                  //       crossAxisAlignment: CrossAxisAlignment.start,
-                  //       mainAxisAlignment: MainAxisAlignment.center,
-                  //       children: [
-                  //         ...List<Widget>.from(
-                  //           (json.decode(fieldData['fields'].toString()) as Map<String, dynamic>)
-                  //           .entries
-                  //           .map((entry) => Text(
-                  //             '${entry.key}: ${entry.value['type']}',
-                  //             style: const TextStyle(fontSize: 12),
-                  //           ))
-                  //         )
-                  //       ],
-                  //     )
-                  //   : const Text("-")
-                  // ),
-                    DataCell(Text(fieldData['required']?.toString() ?? "-")),
-                    DataCell(Text(fieldData['show_in_view']?.toString() ?? "-")),
-                    DataCell(Text(fieldData['show_in_report']?.toString() ?? "-")),
-                    DataCell(Text(fieldData['show_in_edit']?.toString() ?? "-")),
-                    DataCell(Text(fieldData['show_in_filter']?.toString() ?? "-")),
-                    DataCell(Text(fieldData['show_in_list']?.toString() ?? "-")),
-                    DataCell(Text(fieldData['show_in_add']?.toString() ?? "-")),
-                    // DataCell(Text(fieldData['choices']?.toString() ?? "-")),
-                    // DataCell(Text(fieldData['type'] == 'Choice' && fieldData['choices'] != null
-                    //               ? (fieldData['choices'] as List).map((choice) => choice[1].toString()).join(', '): "-")),
-                    DataCell(fieldData['type'] == 'Choice' && fieldData['choices'] != null
-                            ? Container(
-                              margin: EdgeInsets.all(5.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                border: Border.all(color: Colors.grey.shade300)
+              rows: controller.formFields.length == 0 || controller.formFields.isEmpty ?
+              const [
+                DataRow(cells: [
+                  DataCell(SizedBox.shrink()),
+                  DataCell(SizedBox.shrink()),
+                  DataCell(SizedBox.shrink()),
+                  DataCell(SizedBox.shrink()),
+                  DataCell(SizedBox.shrink()),
+                  DataCell(SizedBox.shrink()),
+                  DataCell(SizedBox.shrink()),
+                  DataCell(SizedBox.shrink()),
+                  DataCell(SizedBox.shrink()),
+                  DataCell(SizedBox.shrink()),
+                  DataCell(SizedBox.shrink()),
+                  DataCell(Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children:  [Text('No Records Found')],
+                    ),
+                  )),
+                  DataCell(SizedBox.shrink()),
+                  DataCell(SizedBox.shrink()),
+                  DataCell(SizedBox.shrink()),
+                  DataCell(SizedBox.shrink()),
+                  DataCell(SizedBox.shrink()),
+                  DataCell(SizedBox.shrink()),
+                  DataCell(SizedBox.shrink()),
+                  DataCell(SizedBox.shrink()),
+                  DataCell(SizedBox.shrink()),
+                ])
+              ]
+              :controller.formFields.expand((entry) {
+                index=0;
+          return entry.entries.map((field) {
+          final fieldName = field.key;
+          // final index = field.key;
+          index++;
+          final attributes = field.value as Map<String, dynamic>;
+
+          return DataRow(cells: [
+                  DataCell(Text('${controller.dynamicDetails.fields1 != null ? index : controller.formFields.indexOf(entry)+ 1}')),
+                  DataCell(Text(fieldName)),
+                  DataCell(Text(attributes['type'].toString())),
+                  DataCell(Text(attributes['required']?.toString() ?? "-")),
+                  DataCell(Text(attributes['show_in_view']?.toString() ?? "-")),
+                  DataCell(Text(attributes['show_in_report']?.toString() ?? "-")),
+                  DataCell(Text(attributes['show_in_edit']?.toString() ?? "-")),
+                  DataCell(Text(attributes['show_in_filter']?.toString() ?? "-")),
+                  DataCell(Text(attributes['show_in_list']?.toString() ?? "-")),
+                  DataCell(Text(attributes['show_in_add']?.toString() ?? "-")),
+                  DataCell(attributes['type'] == 'Choice' && attributes['choices'] != null
+                          ? Container(
+                            margin: EdgeInsets.all(5.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+                              border: Border.all(color: Colors.grey.shade300)
+                            ),
+                            child: DropdownButton<String>(
+                              menuMaxHeight: 150,
+                              borderRadius: BorderRadius.circular(10.0),
+                              dropdownColor: Theme.of(context).colorScheme.secondary,
+                                value: null,
+                                items: (attributes['choices'] as List).map<DropdownMenuItem<String>>((choice) {
+                                  return DropdownMenuItem<String>(
+                                    value: choice[1].toString(),
+                                    child: Text(choice[1].toString()),
+                                  );
+                                }).toList(),
+                                onChanged: (String? newValue) {
+                                  print('Selected: $newValue');
+                                },
                               ),
-                              child: DropdownButton<String>(
-                                menuMaxHeight: 150,
-                                borderRadius: BorderRadius.circular(10.0),
-                                dropdownColor: Theme.of(context).colorScheme.secondary,
-                                  value: null,
-                                  items: (fieldData['choices'] as List).map<DropdownMenuItem<String>>((choice) {
-                                    return DropdownMenuItem<String>(
-                                      value: choice[1].toString(),
-                                      child: Text(choice[1].toString()),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    print('Selected: $newValue');
-                                  },
-                                ),
-                            )
-                            : Text("-"),
-                        ),
-                    DataCell(Text(fieldData['min_length']?.toString() ?? "-")),
-                    DataCell(Text(fieldData['max_length']?.toString() ?? "-")),
-                    DataCell(Text(fieldData['read_only']?.toString() ?? "-")),
-                    DataCell(Text(fieldData['max_digits']?.toString() ?? "-")),
-                    DataCell(Text(fieldData['decimal_places']?.toString() ?? "-")),
-                    DataCell(Text(fieldData['range_filter']?.toString() ?? "-")),
-                    DataCell(Text(fieldData['default']?.toString() ?? "-")),
-                    DataCell(Text(fieldData['multiple_filter']?.toString() ?? "-")),
-                    DataCell(Text(fieldData['default']?.toString() ?? "-")),
-                    DataCell(Row(
-                      children: [
-                        IconButton(
+                          )
+                          : Text("-"),
+                      ),
+                  DataCell(Text(attributes['to']?.toString() ?? "-")),
+                  DataCell(Text(attributes['min_length']?.toString() ?? "-")),
+                  DataCell(Text(attributes['max_length']?.toString() ?? "-")),
+                  DataCell(Text(attributes['read_only']?.toString() ?? "-")),
+                  DataCell(Text(attributes['max_digits']?.toString() ?? "-")),
+                  DataCell(Text(attributes['decimal_places']?.toString() ?? "-")),
+                  DataCell(Text(attributes['range_filter']?.toString() ?? "-")),
+                  DataCell(Text(attributes['default']?.toString() ?? "-")),
+                  DataCell(Text(attributes['multiple_filter']?.toString() ?? "-")),
+                  DataCell(Row(
+                    children: [
+                      // IconButton(
+                      //   icon: const Icon(Icons.edit),
+                      //   onPressed: () => controller.editField(index, attributes),
+                      // ),
+                      IconButton(
                           icon: const Icon(Icons.edit),
-                          onPressed: () => controller.editField(index, field),
+                          onPressed: () {
+                            print("Printing the Field Name value ::::: ${field}");
+                            controller.editField(index, field.value);},
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () => controller.removeField(index),
-                        ),
-                      ],
-                    )),
-                  ],
-                );
-              }).toList(),
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () => controller.deleteField(fieldName),
+                      ),
+                    ],
+                  )),
+          ]);
+          }).toList();
+          }).toList()
             ),
           ),
         ),
       ),
-    ));
+    );
+  }
+
+  Widget buildSFDataFieldList() {
+    print("Fields controller.formFields.isNotEmpty :::::::${controller.formFields.isNotEmpty}");
+    final fieldDataSource = Get.put(
+      FieldDataSource(controller.formFields, context, controller),
+      tag: 'fieldDataSource'
+    );
+
+    ever(controller.formFields, (fields) {
+      fieldDataSource.updateData(fields);
+    });
+
+    return SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            children: [
+              Visibility(
+                visible: controller.dynamicDetails.id != null || controller.formFields.isNotEmpty,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  fieldDataSource.shuffleDataTB();
+                },
+                // child: Text('Shuffle Rows Top_Bottom'),
+                child: Text('Top_Bottom'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  fieldDataSource.shuffleDataBT();
+                },
+                child: Text('Bottom_Top'),
+              ),
+            ],
+          ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300, width: 1.0),
+                  borderRadius: BorderRadius.circular(10),
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: SfDataGridTheme(
+                    data: SfDataGridThemeData(
+                      indentColumnWidth: 50,
+                      headerColor: const Color(0xfff7fafc),
+                      gridLineColor: const Color(0xfff7fafc),
+                      indentColumnColor: Colors.grey.shade200,
+                    ),
+                    child: SfDataGrid(
+                      allowColumnsResizing: true,
+                      allowColumnsDragging: true,
+                      columnResizeMode: ColumnResizeMode.onResize,
+                      source: fieldDataSource,
+                      columnWidthMode: ColumnWidthMode.auto,
+                      headerGridLinesVisibility: GridLinesVisibility.both,
+                      gridLinesVisibility: GridLinesVisibility.both,
+                      columns: fieldDataSource.columnOrder.map((columnName) {
+                        return GridColumn(
+                          width: 150,
+                          columnName: columnName,
+                          label: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                            alignment: Alignment.center,
+                            child: Text(
+                              fieldDataSource.getColumnLabel(columnName),
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      // allowColumnsResizing: true,
+                      // allowColumnsDragging: true,
+                      // columnResizeMode: ColumnResizeMode.onResize,
+                      // source: fieldDataSource,
+                      // columnWidthMode: ColumnWidthMode.auto,
+                      // headerGridLinesVisibility: GridLinesVisibility.both,
+                      // gridLinesVisibility: GridLinesVisibility.both,
+                      onColumnDragging: (DataGridColumnDragDetails details) {
+                        if (details.action == DataGridColumnDragAction.dropped && details.to != null) {
+                          fieldDataSource.rearrangeColumns(details.from, details.to!);
+                        }
+                        return true;
+                      },
+                      columnDragFeedbackBuilder: (context, column) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.secondary,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 1,
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.drag_indicator, color: Theme.of(context).primaryColor),
+                              const SizedBox(width: 8),
+                              Text(
+                                fieldDataSource.getColumnLabel(column.columnName),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      // columns: fieldDataSource.columnOrder.map((columnName) {
+                      //   return GridColumn(
+                      //     width: 150, //////// fixed Width for the Column
+                      //     columnName: columnName,
+                      //     label: Container(
+                      //       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      //       alignment: Alignment.center,
+                      //       child: Text(
+                      //         fieldDataSource.getColumnLabel(columnName),
+                      //         style: const TextStyle(fontWeight: FontWeight.bold),
+                      //       ),
+                      //     ),
+                      //   );
+                      // }).toList(),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );}
+    // ElevatedButton(
+    //   onPressed: () {
+    //     fieldDataSource.shuffleData();
+    //   },
+    //   child: Text('Shuffle Rows'),
+    // ),
+    Widget SfDataFieldList() {
+    final fieldDataSource = Get.put(
+      FieldDataSource(controller.formFields, context, controller),
+      tag: 'fieldDataSource'
+    );
+
+    ever(controller.formFields, (fields) {
+      fieldDataSource.updateData(fields);
+    });
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  fieldDataSource.shuffleDataTB();
+                },
+                child: Text('Shuffle Rows Top_Bottom'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  fieldDataSource.shuffleDataBT();
+                },
+                child: Text('Shuffle Rows Bottom_Top'),
+              ),
+            ],
+          ),
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade300, width: 1.0),
+              borderRadius: BorderRadius.circular(10),
+              color: Theme.of(context).colorScheme.secondary,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: SfDataGridTheme(
+                data: SfDataGridThemeData(
+                  indentColumnWidth: 50,
+                  headerColor: const Color(0xfff7fafc),
+                  gridLineColor: const Color(0xfff7fafc),
+                  indentColumnColor: Colors.grey.shade200,
+                ),
+                child: SfDataGrid(
+                  allowColumnsResizing: true,
+                  allowColumnsDragging: true,
+                  columnResizeMode: ColumnResizeMode.onResize,
+                  source: fieldDataSource,
+                  columnWidthMode: ColumnWidthMode.auto,
+                  headerGridLinesVisibility: GridLinesVisibility.both,
+                  gridLinesVisibility: GridLinesVisibility.both,
+                  columns: fieldDataSource.columnOrder.map((columnName) {
+                    return GridColumn(
+                      width: 150,
+                      columnName: columnName,
+                      label: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        alignment: Alignment.center,
+                        child: Text(
+                          fieldDataSource.getColumnLabel(columnName),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                // child: SfDataGrid(
+                //     allowSorting: true,
+                //     allowEditing: true,
+                //     allowSwiping: true,
+                //     selectionMode: SelectionMode.single,
+                //     source: fieldDataSource,
+                //     columnWidthMode: ColumnWidthMode.auto,
+                //     headerGridLinesVisibility: GridLinesVisibility.both,
+                //     gridLinesVisibility: GridLinesVisibility.both,
+                    
+                //     rowHeight: 50,
+                //     // allowRowDragAndDrop: true,  // Enable drag-and-drop
+                //     // onRowDrop: (RowDropDetails details) {
+                //     //   if (details.fromIndex != null && details.toIndex != null) {
+                //     //     fieldDataSource.moveRow(details.fromIndex!, details.toIndex!);
+                //     //   }
+                //     // },
+                //     columns: fieldDataSource.columnOrder.map((columnName) {
+                //       return GridColumn(
+                //         columnName: columnName,
+                //         label: Container(
+                //           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                //           alignment: Alignment.center,
+                //           child: Text(
+                //             fieldDataSource.getColumnLabel(columnName),
+                //             style: const TextStyle(fontWeight: FontWeight.bold),
+                //           ),
+                //         ),
+                //       );
+                //     }).toList(),
+                //   ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -263,16 +508,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Form(
           key: formKey,
           child: GetBuilder<DynamicController>(
-        // initState: (_) => DynamicController.to.initPostDynamicDataState(),
           initState: (_) => DynamicController.to.initEditState(),
-          // initState: (_) {
-          //   if (DynamicController.to.dynamicDetails.id == null) {
-          //     print("printng the is ::::: ${controller.dynamicDetails.id}");
-          //     Obx(() => DynamicController.to.initPostDynamicDataState());
-          //   } else {
-          //     DynamicController.to.initEditState();
-          //   }
-          // },
           builder: (value) =>  Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -283,10 +519,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         IconButton(onPressed: () {
                           Get.back();
-                          // controller.dynamicDetails.id == null ? controller.disposeController() : null;
                           controller.disposeController();
 
-                          // controller.update();
                         }, icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary)),
                         Text(controller.dynamicDetails.id != null
                         ? "Edit Data"
@@ -359,7 +593,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Visibility(
-                            visible: controller.dynamicDetails.id == null,
+                            // visible: controller.dynamicDetails.id == null,
                             child: ResponsiveRow(
                               runSpacing: 10,
                               spacing: 20,
@@ -407,41 +641,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ),
                                 ),
-                            
-                      if (controller.selectedFieldType == 'Children')
-                            ResponsiveColumn(
-                                  ResponsiveConstants().buttonBreakpoints,
-                                  child: Obx(() => DropdownButtonFormField<String>(
-                                    dropdownColor: Theme.of(context).colorScheme.secondary,
-                                    menuMaxHeight: 250,
-                                    focusColor: Theme.of(context).colorScheme.primary,
-                                      value: controller.selectedChildrenFieldType,
-                                      decoration: InputDecoration(enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10.0),
-                                        borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
-                                      ),
-                                        hintText: "Select Type",
-                                        border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10.0),
-                                            borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
-                                          ),
-                                      ),
-                                      items: controller.itemFieldTypes
-                                          .map((type) => DropdownMenuItem(
-                                                value: type,
-                                                child: Text(type),
-                                              ))
-                                          .toList(),
-                                      onChanged: (value) {
-                                        if (value != null) {
-                                          controller.selectedChildrenFieldType = value;
-                                          controller.update();
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ),
-              if (controller.selectedFieldType == 'Choice' || controller.selectedChildrenFieldType == 'Choice')
+              if (controller.selectedFieldType == 'Choice')
                               ResponsiveColumn(
                                 ResponsiveConstants().buttonBreakpoints,
                                 child: Row(
@@ -508,13 +708,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   onChanged: (value) {},
                                 ),
                               ),
-                                                    // if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType == 'Char' || controller.selectedChildrenFieldType == 'Text' ||
-                                                    // controller.selectedFieldType != 'Choice' || controller.selectedChildrenFieldType == 'Integer' || controller.selectedChildrenFieldType == 'DateTime' ||
-                                                    // controller.selectedFieldType != 'Date' || controller.selectedChildrenFieldType == 'Time' || controller.selectedChildrenFieldType == 'Duration' ||
-                                                    // controller.selectedFieldType != 'ManyToMany' || controller.selectedChildrenFieldType == 'ForeignKey' || controller.selectedChildrenFieldType == 'Boolean')
-                                                    // if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType == 'Char' || controller.selectedChildrenFieldType == 'Text' ||
-                                                    if (controller.selectedFieldType != 'Children')
-                            
+                              
+        if (controller.selectedFieldType != 'Children')
                                 ResponsiveColumn(
                                     ResponsiveConstants().buttonBreakpoints,
                                     child: Obx(() =>
@@ -527,7 +722,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             controller.updateRequired(value);
                                           }
                                         }))),
-            if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType == 'Char' || controller.selectedChildrenFieldType == 'Text')
+            if (controller.selectedFieldType != 'Children')
                                 ResponsiveColumn(
                                   ResponsiveConstants().buttonBreakpoints,
                                   child: Obx(
@@ -542,7 +737,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             },
                                           )),
                                 ),
-            if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType == 'Char' || controller.selectedChildrenFieldType == 'Text')
+            if (controller.selectedFieldType != 'Children')
                                 ResponsiveColumn(
                                   ResponsiveConstants().buttonBreakpoints,
                                   child: Obx(
@@ -557,7 +752,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             },
                                           )),
                                 ),
-                                                    if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType == 'Char' || controller.selectedChildrenFieldType == 'Text')
+                                                    if (controller.selectedFieldType != 'Children')
                                 ResponsiveColumn(
                                   ResponsiveConstants().buttonBreakpoints,
                                   child: Obx(
@@ -572,7 +767,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             },
                                           )),
                                 ),
-                                                    if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType == 'Char' || controller.selectedChildrenFieldType == 'Text')
+                                                    if (controller.selectedFieldType != 'Children')
                                 ResponsiveColumn(
                                   ResponsiveConstants().buttonBreakpoints,
                                   child: Obx(
@@ -587,7 +782,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             },
                                           )),
                                 ),
-                                                    if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType == 'Char' || controller.selectedChildrenFieldType == 'Text')
+                                                    if (controller.selectedFieldType != 'Children')
                             
                                 ResponsiveColumn(
                                   ResponsiveConstants().buttonBreakpoints,
@@ -603,7 +798,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             },
                                           )),
                                 ),
-                                                    if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType == 'Char' || controller.selectedChildrenFieldType == 'Text')
+                                                    if (controller.selectedFieldType != 'Children')
                             
                                 ResponsiveColumn(
                                   ResponsiveConstants().buttonBreakpoints,
@@ -679,8 +874,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 keyboardType: TextInputType.number,
                                               )
                                             ),
-                            if (controller.selectedFieldType == 'DateTime' || controller.selectedFieldType == 'Date' ||
-                                controller.selectedFieldType == 'Time')
+                            if (controller.selectedFieldType == 'DateTime' || controller.selectedFieldType == 'Date')
                                              ResponsiveColumn(
                                     ResponsiveConstants().buttonBreakpoints,
                                       child:   CommonComponents.defaultCheckBoxListTile(
@@ -734,44 +928,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 keyboardType: TextInputType.number,
                                               )
                                             ),
-                            
-                                    // if (controller.selectedFieldType == 'Children' && controller.itemFields.isNotEmpty)
-                                    // ResponsiveColumn(
-                                    //   ResponsiveConstants().buttonBreakpoints,
-                                    //   child: Container(
-                                    //     padding: EdgeInsets.all(8),
-                                    //     decoration: BoxDecoration(
-                                    //       border: Border.all(color: Colors.grey.shade300),
-                                    //       borderRadius: BorderRadius.circular(10),
-                                    //     ),
-                                    //     child: Column(
-                                    //       crossAxisAlignment: CrossAxisAlignment.start,
-                                    //       children: [
-                                    //         Text('Child Fields:'),
-                                    //         ...controller.itemFields.map((field) {
-                                    //           String fieldName = field.keys.first;
-                                    //           String fieldType = field[fieldName]['type'];
-                                    //           return ListTile(
-                                    //             dense: true,
-                                    //             title: Text('$fieldName ($fieldType)'),
-                                    //             trailing: IconButton(
-                                    //               icon: Icon(Icons.remove_circle_outline),
-                                    //               onPressed: () {
-                                    //                 controller.itemFields.remove(field);
-                                    //                 controller.update();
-                                    //               },
-                                    //             ),
-                                    //           );
-                                    //         }).toList(),
-                                    //       ],
-                                    //     ),
-                                    //   ),
-                                    // ),
                               ],
                             ),
                           ),
+                          // Visibility(
+                          //   visible: controller.isEditMode == true,
+                          //   child: Row(
+                          //     mainAxisAlignment: MainAxisAlignment.end,
+                          //     children: [
+                          //       ElevatedButton(
+                          //         onPressed: () {
+                          //           controller.updateField();
+                          //           controller.update();
+                          //         },
+                          //         child: Text('Save Changes'),
+                          //       ),
+                          //     ],
+                          //   )),
+
                           Visibility(
-                            visible:  controller.dynamicDetails.id == null ,
+                            visible: controller.dynamicDetails.id == null ,
                             child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.end,
                                                   children: [
@@ -813,7 +989,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 onPressed: () {
                                   print("Printing the Data ${jsonEncode(controller.formFields)}");
                                  controller.addField();
-                                  controller.update();
+                                  // controller.update();
                                 },
                                 height: 50,
                                 minWidth: 100,
@@ -861,6 +1037,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           SizedBox(height: 10.0),
 
                             buildFieldList(),
+
+                          // // SizedBox(height: 10.0),
+                          // // SizedBox(height: 10.0),
+
+                          //   buildSFDataFieldList(),
+                            
                             const SizedBox(height: 16),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -871,15 +1053,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: MaterialButton(
                                   elevation: 2,
                                    onPressed: () {
-                                    // if (formKey.currentState?.validate() ?? false) {
-                                    //   DynamicController.to.dynamicDetails.id != null 
-                                    //     ? controller.createDynamicData() : controller.updateModelName();
-                                    // }
                                     if (formKey.currentState?.validate() ?? false) {
                             if (controller.dynamicDetails.id != null) {
                               controller.updateModelName({
                                 // "app_label": controller.appLabel.text,
-                                "model_name": controller.modelName.text,
+                                // "model_name": controller.modelName.text,
                                 // "fields": jsonEncode(controller.formFields.fold<Map<String, dynamic>>(
                                 //   {},
                                 //   (map, element) => {...map, ...element},
