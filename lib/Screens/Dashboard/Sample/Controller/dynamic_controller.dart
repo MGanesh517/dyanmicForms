@@ -6,11 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:implementation_panel/Common/common_service.dart';
 import 'package:implementation_panel/Common/snackbar_widget.dart';
-import 'package:implementation_panel/Screens/Dashboard/Sample/Model/get_dynamic_data_model.dart';
-import 'package:implementation_panel/Screens/Dashboard/Sample/Model/view_by_id.dart';
+import 'package:implementation_panel/Screens/Dashboard/Sample/Model/get_dynamic_data_list_model.dart';
+import 'package:implementation_panel/Screens/Dashboard/Sample/Model/view_by_id_model.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Repo/dynamic_repo.dart';
 import 'package:implementation_panel/Screens/Dashboard/drawer_controller.dart';
 import 'package:implementation_panel/utils/loader_util.dart';
+
+import '../../../../routes/app_pages.dart';
 
 class DynamicController extends GetxController {
   static DynamicController get to => Get.find();
@@ -118,23 +120,44 @@ class DynamicController extends GetxController {
       );
       return;
     }
-
     final newFieldData = generateFieldData();
-    
     if (editingIndex >= 0) {
-      formFields[editingIndex] = newFieldData;
+      // Remove the old field first
+      formFields.removeAt(editingIndex);
+      // Add the updated field at the same position
+      formFields.insert(editingIndex, newFieldData);
       editingIndex = -1;
+      _isEditMode.value = false;
     } else {
       formFields.add(newFieldData);
     }
-    
     addFieldsDisposeController();
-    // showSnackBar(
-    //   title: 'Success',
-    //   message: 'Field ${editingIndex >= 0 ? 'updated' : 'added'} successfully',
-    //   icon: Icon(Icons.check, color: Colors.green),
-    // );
+    update();
   }
+
+  //  void addField() {
+  //   if (fieldNameController.text.isEmpty) {
+  //     showSnackBar(
+  //       title: 'Error',
+  //       message: 'Field Name is required',
+  //       icon: Icon(Icons.error, color: Colors.red),
+  //     );
+  //     return;
+  //   }
+  //   final newFieldData = generateFieldData();
+  //   if (editingIndex >= 0) {
+  //     // First, remove the old field
+  //     formFields.removeAt(editingIndex);
+  //     // Then insert the new field at the same position
+  //     formFields.insert(editingIndex, newFieldData);
+  //     editingIndex = -1;
+  //     _isEditMode.value = false;
+  //   } else {
+  //     formFields.add(newFieldData);
+  //   }
+  //   addFieldsDisposeController();
+  //   update();
+  // }
 
   void removeItemField(int index) {
     itemFields.removeAt(index);
@@ -151,16 +174,247 @@ class DynamicController extends GetxController {
       fieldData['choices'] = List<List<dynamic>>.from(choices);
     }
 
-    // if (selectedFieldType == 'Children' && itemFields.isNotEmpty) {
-    //   Map<String, dynamic> childrenFields = {};
-    //   for (var field in itemFields) {
-    //     childrenFields.addAll(field);
-    //   }
-    //   fieldData['fields'] = childrenFields;
-    // }
-
     return {fieldNameController.text: fieldData};
   }
+
+  // void editField(int index, Map<String, dynamic> field) {
+  //   Map<String, dynamic> fieldData = field;
+  //   String fieldName = '';
+  //   // Handle both direct attributes and field name + attributes structure
+  //   if (field.length == 1 && field.values.first is Map<String, dynamic>) {
+  //     fieldName = field.keys.first;
+  //     fieldData = field.values.first as Map<String, dynamic>;
+  //   }
+  //   // Set basic field values
+  //   fieldNameController.text = fieldName;
+  //   selectedFieldType = fieldData['type'] ?? 'Char';
+  //   // Set boolean flags
+  //   isRequired.value = fieldData['required'] ?? false;
+  //   isView.value = fieldData['show_in_view'] ?? false;
+  //   isReport.value = fieldData['show_in_report'] ?? false;
+  //   isEdit.value = fieldData['`show_in_edit`'] ?? false;
+  //   isFilter.value = fieldData['show_in_filter'] ?? false;
+  //   isList.value = fieldData['show_in_list'] ?? false;
+  //   isAdd.value = fieldData['show_in_add'] ?? false;
+  //   // Handle type-specific attributes
+  //   switch (selectedFieldType) {
+  //     case 'Char':
+  //     case 'Text':
+  //       maxLengthController.text = fieldData['max_length']?.toString() ?? '';
+  //       minLengthController.text = fieldData['min_length']?.toString() ?? '';
+  //       break;
+  //     case 'Choice':
+  //       choices.clear();
+  //       if (fieldData['choices'] != null) {
+  //         final choicesList = fieldData['choices'] as List;
+  //         choices.addAll(choicesList.map((choice) =>
+  //           choice is List ? choice : [choice, choice.toString()]
+  //         ).toList());
+  //         nextChoiceId.value = choices.isNotEmpty
+  //           ? (choices.map((c) => c[0] as int).reduce(max) + 1)
+  //           : 1;
+  //       }
+  //       break;
+  //     case 'Decimal':
+  //       maxDigitsController.text = fieldData['max_digits']?.toString() ?? '';
+  //       decimalPlacesController.text = fieldData['decimal_places']?.toString() ?? '';
+  //       break;
+  //     case 'DateTime':
+  //     case 'Date':
+  //       rangeFilter.value = fieldData['range_filter'] ?? false;
+  //       isReadOnly.value = fieldData['read_only'] ?? false;
+  //       break;
+  //     case 'Time':
+  //     case 'Duration':
+  //       isReadOnly.value = fieldData['read_only'] ?? false;
+  //       break;
+  //     case 'ManyToMany':
+  //       isMultipleFilter.value = fieldData['multiple_filter'] ?? false;
+  //       break;
+  //   }
+  //   // Set editing state
+  //   editingIndex = index;
+  //   _isEditMode.value = true;
+  //   update();
+  // }
+
+  void editField(int index, Map<String, dynamic> field) {
+    try {
+      // First clear any existing data
+      addFieldsDisposeController();
+      
+      // Initialize variables
+      Map<String, dynamic> fieldData;
+      String fieldName;
+
+      // Check if field is a single entry map with nested data
+      if (field.length == 1 && field.values.first is Map<String, dynamic>) {
+        fieldName = field.keys.first;
+        fieldData = field.values.first as Map<String, dynamic>;
+        debugPrint('Field name from keys: $fieldName'); // Debug log
+      } else {
+        // Handle case where field data might be structured differently
+        fieldName = field.keys.first;
+        fieldData = field;
+        debugPrint('Direct field data used'); // Debug log
+      }
+
+      // Verify field name is not empty
+      if (fieldName.isEmpty) {
+        debugPrint('Field name is empty, attempting to recover from data');
+        // Attempt to recover field name from data structure
+        fieldName = field.keys.firstWhere(
+          (key) => key.isNotEmpty,
+          orElse: () => 'Unnamed Field'
+        );
+      }
+
+      // Set field name
+      fieldNameController.text = fieldName;
+      debugPrint('Setting field name to: ${fieldNameController.text}'); // Debug log
+
+      // Set field type with verification
+      selectedFieldType = fieldData['type'] ?? 'Char';
+      debugPrint('Setting field type to: $selectedFieldType'); // Debug log
+      
+      isRequired.value = fieldData['required'] ?? false;
+      isView.value = fieldData['show_in_view'] ?? false;
+      isReport.value = fieldData['show_in_report'] ?? false;
+      isEdit.value = fieldData['show_in_edit'] ?? false;
+      isFilter.value = fieldData['show_in_filter'] ?? false;
+      isList.value = fieldData['show_in_list'] ?? false;
+      isAdd.value = fieldData['show_in_add'] ?? false;
+
+      switch (selectedFieldType) {
+        case 'Char':
+        case 'Text':
+          maxLengthController.text = fieldData['max_length']?.toString() ?? '';
+          minLengthController.text = fieldData['min_length']?.toString() ?? '';
+          break;
+
+        case 'Choice':
+          choices.clear();
+          if (fieldData['choices'] != null) {
+            final choicesList = fieldData['choices'] as List;
+            choices.addAll(choicesList.map((choice) {
+              if (choice is List) {
+                return choice;
+              } else {
+                return [choice, choice.toString()];
+              }
+            }).toList());
+            
+            // Set next choice ID
+            if (choices.isNotEmpty) {
+              try {
+                nextChoiceId.value = choices.map((c) => c[0] as int).reduce(max) + 1;
+              } catch (e) {
+                nextChoiceId.value = 1;
+                debugPrint('Error setting nextChoiceId: $e');
+              }
+            } else {
+              nextChoiceId.value = 1;
+            }
+          }
+          break;
+
+        case 'Decimal':
+          maxDigitsController.text = fieldData['max_digits']?.toString() ?? '';
+          decimalPlacesController.text = fieldData['decimal_places']?.toString() ?? '';
+          break;
+
+        case 'DateTime':
+        case 'Date':
+          rangeFilter.value = fieldData['range_filter'] ?? false;
+          isReadOnly.value = fieldData['read_only'] ?? false;
+          break;
+
+        case 'Time':
+        case 'Duration':
+          isReadOnly.value = fieldData['read_only'] ?? false;
+          break;
+
+        case 'ManyToMany':
+          isMultipleFilter.value = fieldData['multiple_filter'] ?? false;
+          break;
+      }
+
+      // Set editing state
+      editingIndex = index;
+      _isEditMode.value = true;
+      
+      // Verify field name is set before updating
+      if (fieldNameController.text.isEmpty) {
+        debugPrint('Warning: Field name is still empty after setting');
+      }
+      
+      update();
+      
+      // Final verification log
+      debugPrint('Edit field completed. Field name: ${fieldNameController.text}, Type: $selectedFieldType');
+      
+    } catch (e) {
+      debugPrint('Error in editField: $e');
+      showSnackBar(
+        title: 'Error',
+        message: 'Failed to edit field: ${e.toString()}',
+        icon: Icon(Icons.error, color: Colors.red),
+      );
+    }
+  }
+  
+
+//   void updateField() {
+//   if (editingIndex >= 0 && editingIndex < formFields.length) {
+//     try {
+//       // Generate new field data
+//       final newFieldData = generateFieldData();
+//       // Store the old field name for comparison
+//       final oldFieldName = formFields[editingIndex].keys.first;
+//       final newFieldName = fieldNameController.text;
+//       // Create a copy of the current formFields
+//       final updatedFormFields = List<Map<String, dynamic>>.from(formFields);
+//       // Remove the old field
+//       updatedFormFields.removeAt(editingIndex);
+//       // Insert the new field at the same index
+//       updatedFormFields.insert(editingIndex, newFieldData);
+//       // Update the formFields with the new list
+//       formFields.value = updatedFormFields;
+//       // Update the dynamic details if needed
+//       if (dynamicDetails.fields1 != null) {
+//         var updatedFields = Map<String, dynamic>.from(
+//           formFields.fold<Map<String, dynamic>>(
+//             {},
+//             (map, element) => {...map, ...element},
+//           ),
+//         );
+//         dynamicDetails = dynamicDetails.copyWith(fields1: updatedFields);
+//       }
+//       // Reset editing state
+//       editingIndex = -1;
+//       _isEditMode.value = false;
+//       // Clear form controls
+//       addFieldsDisposeController();
+//       // Show success message
+//       showSnackBar(
+//         title: 'Success',
+//         message: 'Field updated successfully',
+//         icon: Icon(Icons.check, color: Colors.green),
+//       );
+//       // Force UI update
+//       update();
+//       // Optionally refresh the data list if needed
+//       getDynamicList(isLoading: false);
+//     } catch (e) {
+//       debugPrint('Error updating field: $e');
+//       showSnackBar(
+//         title: 'Error',
+//         message: 'Failed to update field',
+//         icon: Icon(Icons.error, color: Colors.red),
+//       );
+//     }
+//   }
+// }
 
   Map<String, dynamic> getFieldOptions(String fieldType) {
   Map<String, dynamic> baseOptions = {
@@ -227,23 +481,25 @@ class DynamicController extends GetxController {
     case 'ManyToMany':
       return {
         ...baseOptions,
-        'to': 'auth.Group',
+        'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
         'multiple_filter': isMultipleFilter.value,
         'read_fields': ['name'],
         'filter_data': {},
-        'related_name': '${modelName.text.toLowerCase()}_${fieldNameController.text}',
+        'related_name': 'sample_show_multi',
       };
 
     case 'ForeignKey':
       return {
         ...baseOptions,
-        'to': 'auth.Group',
+        'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
         'read_fields': ['name'],
         'filter_data': {},
-        'related_name': '${modelName.text.toLowerCase()}_${fieldNameController.text}',
+        'related_name': 'sample_show',
         'import_fields': ['name'],
         'export_fields': ['name'],
       };
+
+     
 
     case 'Boolean':
       return {
@@ -251,118 +507,9 @@ class DynamicController extends GetxController {
         'default': false,
       };
     
-    case 'Children':
-      Map<String, dynamic> childrenFields = {};
-      for (var field in itemFields) {
-        childrenFields.addAll(field);
-      }
-      return {
-        ...baseOptions,
-        'fields': childrenFields,
-      };
-    
     default:
       return baseOptions;
   }
-}
-
-void addItemField() {
-  if (fieldNameController.text.isEmpty || selectedChildrenFieldType.isEmpty) {
-    showSnackBar(
-      title: 'Error',
-      message: 'Field Name and Field Type are required',
-      icon: Icon(Icons.error, color: Colors.red),
-    );
-    return;
-  }
-
-  final Map<String, dynamic> fieldData = {
-    'type': selectedChildrenFieldType,
-    'required': isRequired.value,
-    'show_in_view': isView.value,
-    'show_in_report': isReport.value,
-    'show_in_edit': isEdit.value,
-    'show_in_filter': isFilter.value,
-    'show_in_list': isList.value,
-    'show_in_add': isAdd.value,
-  };
-
-  // Add type-specific options
-  switch (selectedChildrenFieldType) {
-    case 'Char':
-      fieldData['max_length'] = int.tryParse(maxLengthController.text) ?? 100;
-      fieldData['min_length'] = int.tryParse(minLengthController.text) ?? 1;
-      break;
-
-    case 'Text':
-      fieldData['max_length'] = int.tryParse(maxLengthController.text) ?? 1000;
-      fieldData['min_length'] = int.tryParse(minLengthController.text) ?? 5;
-      break;
-
-    case 'Choice':
-      fieldData['choices'] = choices.map((choice) => [choice[0], choice[1]]).toList();
-      fieldData['default'] = choices.isNotEmpty ? choices[0][0] : 1;
-      break;
-
-    case 'Integer':
-      fieldData['default'] = 0;
-      break;
-
-    case 'Decimal':
-      fieldData['max_digits'] = int.tryParse(maxDigitsController.text) ?? 9;
-      fieldData['decimal_places'] = int.tryParse(decimalPlacesController.text) ?? 2;
-      fieldData['default'] = 0;
-      break;
-
-    case 'DateTime':
-    case 'Date':
-      fieldData['read_only'] = isReadOnly.value;
-      fieldData['range_filter'] = true;
-      break;
-
-    case 'Time':
-    case 'Duration':
-      fieldData['read_only'] = isReadOnly.value;
-      break;
-
-    case 'ManyToMany':
-      fieldData['to'] = 'auth.Group';
-      fieldData['multiple_filter'] = isMultipleFilter.value;
-      fieldData['read_fields'] = ['name'];
-      fieldData['filter_data'] = {};
-      // fieldData['related_name'] = '${modelName.text.toLowerCase()}_${fieldNameController.text}_items';
-      break;
-
-    case 'ForeignKey':
-      fieldData['to'] = 'auth.Group';
-      fieldData['read_fields'] = ['name'];
-      fieldData['filter_data'] = {};
-      // fieldData['related_name'] = '${modelName.text.toLowerCase()}_${fieldNameController.text}_items';
-      fieldData['import_fields'] = ['name'];
-      fieldData['export_fields'] = ['name'];
-      break;
-
-    case 'Boolean':
-      fieldData['default'] = false;
-      break;
-  }
-  final Map<String, dynamic> newItemField = {
-    fieldNameController.text: fieldData
-  };
-  debugPrint('Adding new item field: ${fieldNameController.text}');
-
-  itemFields.add(newItemField);
-  debugPrint('Current itemFields: $itemFields');
-  fieldNameController.clear();
-  addFieldsDisposeController();
-
-  showSnackBar(
-    title: 'Success',
-    message: 'Child field added successfully',
-    icon: Icon(Icons.check, color: Colors.green),
-  );
-
-  update();
 }
 
   void addChoice() {
@@ -380,58 +527,72 @@ void addItemField() {
     update();
   }
 
-  void editField(int index, Map<String, dynamic> field) {
-    final fieldName = field.keys.first;
-    final fieldData = field[fieldName] as Map<String, dynamic>;
+  // void editField(int index, Map<String, dynamic> field) {
+  //   final fieldName = field.keys.first;
+  //   final fieldData = field[fieldName] as Map<String, dynamic>;
     
-    fieldNameController.text = fieldName;
-    selectedFieldType = fieldData['type'];
-    isRequired.value = fieldData['required'] ?? false;
-    isMultipleFilter.value = fieldData['multiple_filter'] ?? false;
-    rangeFilter.value = fieldData['range_filter'] ?? false;
-    isReadOnly.value = fieldData['read_only'] ?? false;
-    isView.value = fieldData['show_in_view'] ?? false;
-    isReport.value = fieldData['show_in_report'] ?? false;
-    isEdit.value = fieldData['show_in_edit'] ?? false;
-    isFilter.value = fieldData['show_in_filter'] ?? false;
-    isList.value = fieldData['show_in_list'] ?? false;
-    isAdd.value = fieldData['show_in_add'] ?? false;
+  //   fieldNameController.text = fieldName;
+  //   selectedFieldType = fieldData['type'];
+  //   isRequired.value = fieldData['required'] ?? false;
+  //   isMultipleFilter.value = fieldData['multiple_filter'] ?? false;
+  //   rangeFilter.value = fieldData['range_filter'] ?? false;
+  //   isReadOnly.value = fieldData['read_only'] ?? false;
+  //   isView.value = fieldData['show_in_view'] ?? false;
+  //   isReport.value = fieldData['show_in_report'] ?? false;
+  //   isEdit.value = fieldData['show_in_edit'] ?? false;
+  //   isFilter.value = fieldData['show_in_filter'] ?? false;
+  //   isList.value = fieldData['show_in_list'] ?? false;
+  //   isAdd.value = fieldData['show_in_add'] ?? false;
 
-    // Clear existing choices and populate if it's a Choice field
-    choices.clear();
-    if (fieldData['type'] == 'Choice' && fieldData['choices'] != null) {
-      choices.addAll(List<List<dynamic>>.from(fieldData['choices']));
-      nextChoiceId.value = choices.isNotEmpty ?
-        (choices.map((c) => c[0] as int).reduce(max) + 1) : 1;
+  //   // Clear existing choices and populate if it's a Choice field
+  //   choices.clear();
+  //   if (fieldData['type'] == 'Choice' && fieldData['choices'] != null) {
+  //     choices.addAll(List<List<dynamic>>.from(fieldData['choices']));
+  //     nextChoiceId.value = choices.isNotEmpty ?
+  //       (choices.map((c) => c[0] as int).reduce(max) + 1) : 1;
+  //   }
+
+  //   // Handle type-specific fields
+  //   if (fieldData['type'] == 'Char' || fieldData['type'] == 'Text') {
+  //     maxLengthController.text = fieldData['max_length']?.toString() ?? '';
+  //     minLengthController.text = fieldData['min_length']?.toString() ?? '';
+  //   }
+
+  //   if (fieldData['type'] == 'Decimal') {
+  //     maxDigitsController.text = fieldData['max_digits']?.toString() ?? '';
+  //     decimalPlacesController.text = fieldData['decimal_places']?.toString() ?? '';
+  //   }
+
+  //   // If it's a Children field, populate itemFields
+  //   if (fieldData['type'] == 'Children' && fieldData['fields'] != null) {
+  //     itemFields.clear();
+  //     final fields = fieldData['fields'] as Map<String, dynamic>;
+  //     fields.forEach((key, value) {
+  //       itemFields.add({key: value});
+  //     });
+  //   }
+
+  //   editingIndex = index;
+  //   update();
+  // }
+
+  void deleteField(String fieldName) {
+    for (int i = 0; i < formFields.length; i++) {
+      var entry = formFields[i];
+      
+      // Check if the current map contains the field to be deleted
+      if (entry.containsKey(fieldName)) {
+        // Remove just that specific field from the map
+        entry.remove(fieldName);
+        
+        // If the map is now empty after removing the field, remove the entire map
+        if (entry.isEmpty) {
+          formFields.removeAt(i);
+        }
+        update();
+        return;
+      }
     }
-
-    // Handle type-specific fields
-    if (fieldData['type'] == 'Char' || fieldData['type'] == 'Text') {
-      maxLengthController.text = fieldData['max_length']?.toString() ?? '';
-      minLengthController.text = fieldData['min_length']?.toString() ?? '';
-    }
-
-    if (fieldData['type'] == 'Decimal') {
-      maxDigitsController.text = fieldData['max_digits']?.toString() ?? '';
-      decimalPlacesController.text = fieldData['decimal_places']?.toString() ?? '';
-    }
-
-    // If it's a Children field, populate itemFields
-    if (fieldData['type'] == 'Children' && fieldData['fields'] != null) {
-      itemFields.clear();
-      final fields = fieldData['fields'] as Map<String, dynamic>;
-      fields.forEach((key, value) {
-        itemFields.add({key: value});
-      });
-    }
-
-    editingIndex = index;
-    update();
-  }
-
-  void removeField(int index) {
-    formFields.removeAt(index);
-    update();
   }
 
   createDynamicData() async {
@@ -567,36 +728,62 @@ void addItemField() {
     });
   }
 
-  getDynamicList({bool isLoading = true}) async {
-    if (isRefresh) {
-      _dynamicList.value = <GetDynamicData>[];
-      currentPage = 1;
-    } else {
-      if (currentPage > totalPages) {
-        return false;
-      }
-    }
-    final filterParams = <String, dynamic>{
-      'page': currentPage,
-      'page_size': CommonService.instance.pageSize,
-    };
+  // getDynamicList({bool isLoading = true}) async {
+  //   if (isRefresh) {
+  //     _dynamicList.value = <GetDynamicData>[];
+  //     currentPage = 1;
+  //   } else {
+  //     if (currentPage > totalPages) {
+  //       return false;
+  //     }
+  //   }
+  //   final filterParams = <String, dynamic>{
+  //     'page': currentPage,
+  //     'page_size': CommonService.instance.pageSize,
+  //   };
+  //   print('filter params $filterParams');
+  //   try {
+  //     final data = await DynamicRepo().getDynamicList(filterParams);
+  //     if (data != null) {
+  //       dynamicListCount = data.count;
+  //       _dynamicList.value = [...dynamicList, ...data.results ?? []];
+  //       var seen = <String>{};
+  //       List<GetDynamicData> filtered = _dynamicList.where((field) => seen.add(field.id!.toString())).toList();
+  //       _dynamicList.value = filtered;
+  //       isRefresh = false;
+  //       // closeLoadingDialog();
+  //       totalPages = (dynamicListCount / CommonService.instance.pageSize).ceil();
+  //       currentPage++;
+  //       update();
+  //       return true;
+  //     } else {
+  //       closeLoadingDialog();
+  //       return false;
+  //     }
+  //   } catch (e) {
+  //     closeLoadingDialog();
+  //     debugPrint("users error: $e");
+  //     // return false;
+  //     rethrow;
+  //   }
+  // }
 
-    print('filter params $filterParams');
+  getDynamicList({bool isLoading = true}) async {
+    _dynamicList.value = <GetDynamicData>[];
+
+    final filterParams = <String, dynamic>{};
+
+    print('filter params getDynamicList :::::::  $filterParams');
 
     try {
       final data = await DynamicRepo().getDynamicList(filterParams);
 
       if (data != null) {
-        dynamicListCount = data.count;
-        _dynamicList.value = [...dynamicList, ...data.results ?? []];
+        _dynamicList.value = data.results ?? [];
         var seen = <String>{};
         List<GetDynamicData> filtered = _dynamicList.where((field) => seen.add(field.id!.toString())).toList();
         _dynamicList.value = filtered;
-        isRefresh = false;
 
-        // closeLoadingDialog();
-        totalPages = (dynamicListCount / CommonService.instance.pageSize).ceil();
-        currentPage++;
         update();
         return true;
       } else {
@@ -606,7 +793,6 @@ void addItemField() {
     } catch (e) {
       closeLoadingDialog();
       debugPrint("users error: $e");
-      // return false;
       rethrow;
     }
   }
@@ -622,11 +808,15 @@ void addItemField() {
       final data = await DynamicRepo().getDynamicDetails(id);
       if (data != null) {
         _dynamicDetails.value = data;
-        // print('dynamic  is ${dynamicDetails.}');
+        print("Print Fields ::::::::::::::${_dynamicDetails.value.fields1}");
+
+        if(_dynamicDetails.value.fields1!=null && _dynamicDetails.value.fields1.isNotEmpty){
+          formFields.value = [_dynamicDetails.value.fields1];
+        }
+
         update();
         closeLoadingDialog();
-        // navigation == true ? Get.toNamed('/dynamicViewById') : null;
-        navigation == true ? Get.toNamed('/dashboardView') : null;
+        navigation == true ? Get.toNamed(Routes.dashboardView) : null;
       } else {
         debugPrint("Api Error Response error:: ");
         closeLoadingDialog();
@@ -639,13 +829,6 @@ void addItemField() {
       rethrow;
     }
   }
-  //
-  // initEditState() {
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     _initializeFields();
-  //   });
-  // }
-
 
   initEditState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -654,6 +837,7 @@ void addItemField() {
         _initializeFields();
       } else {
         _isEditMode.value = false;
+        isRefresh = true;
         disposeController();
       }
       update();
@@ -671,6 +855,15 @@ void addItemField() {
       showLoadingDialog();
       submit = true;
       
+      updateData = {
+        "app_label": appLabel.text,
+        "model_name": modelName.text,
+        "fields": jsonEncode(formFields.fold<Map<String, dynamic>>(
+          {},
+          (map, element) => {...map, ...element},
+        ))
+      };
+      
       final response = await DynamicRepo().updateModelName(
         updateData,
         dynamicDetails.id,
@@ -684,9 +877,9 @@ void addItemField() {
         );
         isRefresh = true;
         await getDynamicList();
-        
         Get.back();
       }
+      
     } catch (e) {
       Get.snackbar(
         'Error',

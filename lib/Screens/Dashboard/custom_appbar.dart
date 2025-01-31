@@ -163,36 +163,7 @@ class _AdaptiveDrawerState extends State<AdaptiveDrawer> {
           MediaQuery.of(context).size.width <= 700
               ? Container(height: 70)
               : Container(height: 0),
-          // Obx(() => CommonCardForDrawer(
-          //       title: drawerController.isTextNotVisible
-          //           ? const Text('B2B Dashboard')
-          //           : const SizedBox.shrink(),
-          //       icon: Icon(Icons.radio_button_checked_rounded),
-          //       // endIcon: Icons.chevron_right,
-          //       subItems: [
-          //         DrawerSubItem(
-          //           title: 'Tabs Example',
-          //           icon: Icons.tab,
-          //           onTap: () => print('Tabs Example'),
-          //         ),
-          //         DrawerSubItem(
-          //           title: 'Scrollable Tabs',
-          //           icon: Icons.view_carousel,
-          //           onTap: () => print('Scrollable Tabs'),
-          //         ),
-          //       ],
-          //       isSelected: drawerController.selectedIndex == 0,
-          //       onTapNavigation: () => onItemTapped(0, '/homeScreen'),
-          //     )),
-          // Obx(() => CommonCardForDrawer(
-          //       title: drawerController.isTextNotVisible
-          //           ? const Text('Create Screen')
-          //           : const SizedBox.shrink(),
-          //       icon: const Icon(Icons.add_circle_outline_outlined),
-          //       isSelected: drawerController.selectedIndex == 0,
-          //       onTapNavigation: () => onItemTapped(0, '/dashboardView'),
-          //     )),
-
+              
           Obx(() => CommonCardForDrawer(
                 title: drawerController.isTextNotVisible
                     ? const Text('List Screen')
@@ -201,25 +172,6 @@ class _AdaptiveDrawerState extends State<AdaptiveDrawer> {
                 isSelected: drawerController.selectedIndex == 0,
                 onTapNavigation: () => onItemTapped(0, '/listScreen'),
               )),
-
-          // Obx(() => CommonCardForDrawer(
-          //       title: drawerController.isTextNotVisible
-          //           ? const Text('View By Id')
-          //           : const SizedBox.shrink(),
-          //       icon: const Icon(Icons.insert_drive_file),
-          //       isSelected: drawerController.selectedIndex == 2,
-          //       onTapNavigation: () => onItemTapped(2, '/dynamicViewById'),
-          //     )),
-
-          // Obx(() => CommonCardForDrawer(
-          //       title: drawerController.isTextNotVisible
-          //           ? const Text('Edit Screen')
-          //           : const SizedBox.shrink(),
-          //       icon: const Icon(Icons.insert_drive_file),
-          //       isSelected: drawerController.selectedIndex == 3,
-          //       onTapNavigation: () => onItemTapped(3, '/modelNameEditScreen'),
-          //     )),
-          
         ],
       ),
     );
