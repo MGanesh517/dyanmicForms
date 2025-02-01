@@ -24,229 +24,356 @@ class _HomeScreenState extends State<HomeScreen> {
   int index = 0;
 
   Widget buildFieldList() {
-    print("Fields :::::::${controller.formFields}");
-    print("Fields Length :::::::${controller.formFields.length}");
-    return  SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300,width: 1.0),
-          borderRadius: BorderRadius.circular(10),
-          color: Theme.of(context).colorScheme.secondary,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: DataTable(
-              showCheckboxColumn: true,
-              checkboxHorizontalMargin: 10.0,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              dataTextStyle: const TextStyle(fontWeight: FontWeight.w400),
-              headingRowColor: const WidgetStatePropertyAll(Color(0xfff7fafc)),
-              dataRowColor: WidgetStatePropertyAll(Color(0xffffffff)),
-              columns: <DataColumn>[
-                DataColumn(
-                  label: Text('S.No',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600, color: Colors.black)),
+    return Obx(() {
+      return SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.shade300, width: 1.0),
+            borderRadius: BorderRadius.circular(10),
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: DataTable(
+                showCheckboxColumn: true,
+                checkboxHorizontalMargin: 10.0,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
-                DataColumn(
-                  label: Text('Field Name',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600, color: Colors.black)),
-                ),
-                DataColumn(
-                  label: Text('Field Type',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                DataColumn(
-                  label: Text('Required',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                DataColumn(
-                  label: Text('Show View',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                DataColumn(
-                  label: Text('Show Report',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                DataColumn(
-                  label: Text('Show Edit',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                DataColumn(
-                  label: Text('Show Filter',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                DataColumn(
-                  label: Text('Show List',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                DataColumn(
-                  label: Text('Show Add',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                DataColumn(
-                  label: Text('Choices',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                DataColumn(
-                  label: Text('ForeignKey Val',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                DataColumn(
-                  label: Text('Min Length',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                DataColumn(
-                  label: Text('Max Length',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                DataColumn(
-                  label: Text('Read Only',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                DataColumn(
-                  label: Text('Max Digits',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                DataColumn(
-                  label: Text('Decimal Place',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                DataColumn(
-                  label: Text('Range Filter',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                DataColumn(
-                  label: Text('Default',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                DataColumn(
-                  label: Text('Multiple Filter',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                DataColumn(
-                  label: Text('Actions',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-              ],
-              rows: controller.formFields.length == 0 || controller.formFields.isEmpty ?
-              const [
-                DataRow(cells: [
-                  DataCell(SizedBox.shrink()),
-                  DataCell(SizedBox.shrink()),
-                  DataCell(SizedBox.shrink()),
-                  DataCell(SizedBox.shrink()),
-                  DataCell(SizedBox.shrink()),
-                  DataCell(SizedBox.shrink()),
-                  DataCell(SizedBox.shrink()),
-                  DataCell(SizedBox.shrink()),
-                  DataCell(SizedBox.shrink()),
-                  DataCell(SizedBox.shrink()),
-                  DataCell(SizedBox.shrink()),
-                  DataCell(Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children:  [Text('No Records Found')],
-                    ),
-                  )),
-                  DataCell(SizedBox.shrink()),
-                  DataCell(SizedBox.shrink()),
-                  DataCell(SizedBox.shrink()),
-                  DataCell(SizedBox.shrink()),
-                  DataCell(SizedBox.shrink()),
-                  DataCell(SizedBox.shrink()),
-                  DataCell(SizedBox.shrink()),
-                  DataCell(SizedBox.shrink()),
-                  DataCell(SizedBox.shrink()),
-                ])
-              ]
-              :controller.formFields.expand((entry) {
-                index=0;
-          return entry.entries.map((field) {
-          final fieldName = field.key;
-          // final index = field.key;
-          index++;
-          final attributes = field.value as Map<String, dynamic>;
+                dataTextStyle: const TextStyle(fontWeight: FontWeight.w400),
+                headingRowColor: const MaterialStatePropertyAll(Color(0xfff7fafc)),
+                dataRowColor: MaterialStatePropertyAll(Color(0xffffffff)),
+                columns: <DataColumn>[
+                  DataColumn(label: Text('S.No',  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('Field Name' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('Type' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('Required' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('Show in View' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('Show in Report' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('Show in Edit' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('Show in Filter' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('Show in List' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('Show in Add' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('Choices' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('To' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('Min Length' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('Max Length' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('Read Only' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('Max Digits' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('Decimal Places' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('Range Filter' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('Default' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('Multiple Filter' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                  DataColumn(label: Text('Actions' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
+                ],
+                rows: controller.formFields.isEmpty
+                    ? const []
+                    : controller.formFields.expand((entry) {
+                        index = 0;
+                        return entry.entries.map((field) {
+                          final fieldName = field.key;
+                          index++;
+                          final attributes = field.value as Map<String, dynamic>;
 
-          return DataRow(cells: [
-                  DataCell(Text('${controller.dynamicDetails.fields1 != null ? index : controller.formFields.indexOf(entry)+ 1}')),
-                  DataCell(Text(fieldName)),
-                  DataCell(Text(attributes['type'].toString())),
-                  DataCell(Text(attributes['required']?.toString() ?? "-")),
-                  DataCell(Text(attributes['show_in_view']?.toString() ?? "-")),
-                  DataCell(Text(attributes['show_in_report']?.toString() ?? "-")),
-                  DataCell(Text(attributes['show_in_edit']?.toString() ?? "-")),
-                  DataCell(Text(attributes['show_in_filter']?.toString() ?? "-")),
-                  DataCell(Text(attributes['show_in_list']?.toString() ?? "-")),
-                  DataCell(Text(attributes['show_in_add']?.toString() ?? "-")),
-                  DataCell(attributes['type'] == 'Choice' && attributes['choices'] != null
-                          ? Container(
-                            margin: EdgeInsets.all(5.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10.0),
-                              border: Border.all(color: Colors.grey.shade300)
-                            ),
-                            child: DropdownButton<String>(
-                              menuMaxHeight: 150,
-                              borderRadius: BorderRadius.circular(10.0),
-                              dropdownColor: Theme.of(context).colorScheme.secondary,
-                                value: null,
-                                items: (attributes['choices'] as List).map<DropdownMenuItem<String>>((choice) {
-                                  return DropdownMenuItem<String>(
-                                    value: choice[1].toString(),
-                                    child: Text(choice[1].toString()),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  print('Selected: $newValue');
-                                },
-                              ),
-                          )
-                          : Text("-"),
-                      ),
-                  DataCell(Text(attributes['to']?.toString() ?? "-")),
-                  DataCell(Text(attributes['min_length']?.toString() ?? "-")),
-                  DataCell(Text(attributes['max_length']?.toString() ?? "-")),
-                  DataCell(Text(attributes['read_only']?.toString() ?? "-")),
-                  DataCell(Text(attributes['max_digits']?.toString() ?? "-")),
-                  DataCell(Text(attributes['decimal_places']?.toString() ?? "-")),
-                  DataCell(Text(attributes['range_filter']?.toString() ?? "-")),
-                  DataCell(Text(attributes['default']?.toString() ?? "-")),
-                  DataCell(Text(attributes['multiple_filter']?.toString() ?? "-")),
-                  DataCell(Row(
-                    children: [
-                      // IconButton(
-                      //   icon: const Icon(Icons.edit),
-                      //   onPressed: () => controller.editField(index, attributes),
-                      // ),
-                      IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {
-                            print("Printing the Field Name value ::::: ${field}");
-                            controller.editField(index, field.value);},
-                        ),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => controller.deleteField(fieldName),
-                      ),
-                    ],
-                  )),
-          ]);
-          }).toList();
-          }).toList()
+                          return DataRow(cells: [
+                            DataCell(Text('${controller.dynamicDetails.fields1 != null ? index : controller.formFields.indexOf(entry) + 1}')),
+                            DataCell(Text(fieldName)),
+                            DataCell(Text(attributes['type'].toString())),
+                            DataCell(Text(attributes['required']?.toString() ?? "-")),
+                            DataCell(Text(attributes['show_in_view']?.toString() ?? "-")),
+                            DataCell(Text(attributes['show_in_report']?.toString() ?? "-")),
+                            DataCell(Text(attributes['show_in_edit']?.toString() ?? "-")),
+                            DataCell(Text(attributes['show_in_filter']?.toString() ?? "-")),
+                            DataCell(Text(attributes['show_in_list']?.toString() ?? "-")),
+                            DataCell(Text(attributes['show_in_add']?.toString() ?? "-")),
+                            DataCell(attributes['type'] == 'Choice' && attributes['choices'] != null
+                                                    ? Container(
+                                                      margin: EdgeInsets.all(5.0),
+                                                      decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10.0),
+                                                        border: Border.all(color: Colors.grey.shade300)
+                                                      ),
+                                                      child: DropdownButton<String>(
+                                                        menuMaxHeight: 150,
+                                                        borderRadius: BorderRadius.circular(10.0),
+                                                        dropdownColor: Theme.of(context).colorScheme.secondary,
+                                                          value: null,
+                                                          items: (attributes['choices'] as List).map<DropdownMenuItem<String>>((choice) {
+                                                            return DropdownMenuItem<String>(
+                                                              value: choice[1].toString(),
+                                                              child: Text(choice[1].toString()),
+                                                            );
+                                                          }).toList(),
+                                                          onChanged: (String? newValue) {
+                                                            print('Selected: $newValue');
+                                                          },
+                                                        ),
+                                                    )
+                                                    : Text("-"),
+                                                ),
+                            DataCell(Text(attributes['to']?.toString() ?? "-")),
+                            DataCell(Text(attributes['min_length']?.toString() ?? "-")),
+                            DataCell(Text(attributes['max_length']?.toString() ?? "-")),
+                            DataCell(Text(attributes['read_only']?.toString() ?? "-")),
+                            DataCell(Text(attributes['max_digits']?.toString() ?? "-")),
+                            DataCell(Text(attributes['decimal_places']?.toString() ?? "-")),
+                            DataCell(Text(attributes['range_filter']?.toString() ?? "-")),
+                            DataCell(Text(attributes['default']?.toString() ?? "-")),
+                            DataCell(Text(attributes['multiple_filter']?.toString() ?? "-")),
+                            DataCell(Row(
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.edit),
+                                  onPressed: () {
+                                    controller.editField(controller.formFields.indexOf(entry), entry);
+                                  },
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.delete),
+                                  onPressed: () {
+                                    controller.formFields.removeAt(controller.formFields.indexOf(entry));
+                                    controller.update();
+                                  },
+                                ),
+                              ],
+                            )),
+                          ]);
+                        }).toList();
+                      }).toList(),
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
+
+  // Widget buildFieldList() {
+  //   print("Fields :::::::${controller.formFields}");
+  //   print("Fields Length :::::::${controller.formFields.length}");
+  //   return  SingleChildScrollView(
+  //     scrollDirection: Axis.vertical,
+  //     child: Container(
+  //       decoration: BoxDecoration(
+  //         border: Border.all(color: Colors.grey.shade300,width: 1.0),
+  //         borderRadius: BorderRadius.circular(10),
+  //         color: Theme.of(context).colorScheme.secondary,
+  //       ),
+  //       child: Padding(
+  //         padding: const EdgeInsets.all(15.0),
+  //         child: SingleChildScrollView(
+  //           scrollDirection: Axis.horizontal,
+  //           physics: const AlwaysScrollableScrollPhysics(),
+  //           child: DataTable(
+  //             showCheckboxColumn: true,
+  //             checkboxHorizontalMargin: 10.0,
+  //             decoration: BoxDecoration(
+  //               borderRadius: BorderRadius.circular(10.0),
+  //             ),
+  //             dataTextStyle: const TextStyle(fontWeight: FontWeight.w400),
+  //             headingRowColor: const WidgetStatePropertyAll(Color(0xfff7fafc)),
+  //             dataRowColor: WidgetStatePropertyAll(Color(0xffffffff)),
+  //             columns: <DataColumn>[
+  //               DataColumn(
+  //                 label: Text('S.No',
+  //                     style: TextStyle(
+  //                         fontWeight: FontWeight.w600, color: Colors.black)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('Field Name',
+  //                     style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('Field Type',
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('Required',
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('Show View',
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('Show Report',
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('Show Edit',
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('Show Filter',
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('Show List',
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('Show Add',
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('Choices',
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('ForeignKey Val',
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('Min Length',
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('Max Length',
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('Read Only',
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('Max Digits',
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('Decimal Place',
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('Range Filter',
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('Default',
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('Multiple Filter',
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //               ),
+  //               DataColumn(
+  //                 label: Text('Actions',
+  //                     style: TextStyle(fontWeight: FontWeight.bold)),
+  //               ),
+  //             ],
+  //             rows: controller.formFields.length == 0 || controller.formFields.isEmpty ?
+  //             const [
+  //               DataRow(cells: [
+  //                 DataCell(SizedBox.shrink()),
+  //                 DataCell(SizedBox.shrink()),
+  //                 DataCell(SizedBox.shrink()),
+  //                 DataCell(SizedBox.shrink()),
+  //                 DataCell(SizedBox.shrink()),
+  //                 DataCell(SizedBox.shrink()),
+  //                 DataCell(SizedBox.shrink()),
+  //                 DataCell(SizedBox.shrink()),
+  //                 DataCell(SizedBox.shrink()),
+  //                 DataCell(SizedBox.shrink()),
+  //                 DataCell(SizedBox.shrink()),
+  //                 DataCell(Center(
+  //                   child: Column(
+  //                     mainAxisAlignment: MainAxisAlignment.center,
+  //                     children:  [Text('No Records Found')],
+  //                   ),
+  //                 )),
+  //                 DataCell(SizedBox.shrink()),
+  //                 DataCell(SizedBox.shrink()),
+  //                 DataCell(SizedBox.shrink()),
+  //                 DataCell(SizedBox.shrink()),
+  //                 DataCell(SizedBox.shrink()),
+  //                 DataCell(SizedBox.shrink()),
+  //                 DataCell(SizedBox.shrink()),
+  //                 DataCell(SizedBox.shrink()),
+  //                 DataCell(SizedBox.shrink()),
+  //               ])
+  //             ]
+  //             :controller.formFields.expand((entry) {
+  //               index=0;
+  //         return entry.entries.map((field) {
+  //         final fieldName = field.key;
+  //         // final index = field.key;
+  //         index++;
+  //         final attributes = field.value as Map<String, dynamic>;
+  //         return DataRow(cells: [
+  //                 DataCell(Text('${controller.dynamicDetails.fields1 != null ? index : controller.formFields.indexOf(entry)+ 1}')),
+  //                 DataCell(Text(fieldName)),
+  //                 DataCell(Text(attributes['type'].toString())),
+  //                 DataCell(Text(attributes['required']?.toString() ?? "-")),
+  //                 DataCell(Text(attributes['show_in_view']?.toString() ?? "-")),
+  //                 DataCell(Text(attributes['show_in_report']?.toString() ?? "-")),
+  //                 DataCell(Text(attributes['show_in_edit']?.toString() ?? "-")),
+  //                 DataCell(Text(attributes['show_in_filter']?.toString() ?? "-")),
+  //                 DataCell(Text(attributes['show_in_list']?.toString() ?? "-")),
+  //                 DataCell(Text(attributes['show_in_add']?.toString() ?? "-")),
+  //                 DataCell(attributes['type'] == 'Choice' && attributes['choices'] != null
+  //                         ? Container(
+  //                           margin: EdgeInsets.all(5.0),
+  //                           decoration: BoxDecoration(
+  //                             borderRadius: BorderRadius.circular(10.0),
+  //                             border: Border.all(color: Colors.grey.shade300)
+  //                           ),
+  //                           child: DropdownButton<String>(
+  //                             menuMaxHeight: 150,
+  //                             borderRadius: BorderRadius.circular(10.0),
+  //                             dropdownColor: Theme.of(context).colorScheme.secondary,
+  //                               value: null,
+  //                               items: (attributes['choices'] as List).map<DropdownMenuItem<String>>((choice) {
+  //                                 return DropdownMenuItem<String>(
+  //                                   value: choice[1].toString(),
+  //                                   child: Text(choice[1].toString()),
+  //                                 );
+  //                               }).toList(),
+  //                               onChanged: (String? newValue) {
+  //                                 print('Selected: $newValue');
+  //                               },
+  //                             ),
+  //                         )
+  //                         : Text("-"),
+  //                     ),
+  //                 DataCell(Text(attributes['to']?.toString() ?? "-")),
+  //                 DataCell(Text(attributes['min_length']?.toString() ?? "-")),
+  //                 DataCell(Text(attributes['max_length']?.toString() ?? "-")),
+  //                 DataCell(Text(attributes['read_only']?.toString() ?? "-")),
+  //                 DataCell(Text(attributes['max_digits']?.toString() ?? "-")),
+  //                 DataCell(Text(attributes['decimal_places']?.toString() ?? "-")),
+  //                 DataCell(Text(attributes['range_filter']?.toString() ?? "-")),
+  //                 DataCell(Text(attributes['default']?.toString() ?? "-")),
+  //                 DataCell(Text(attributes['multiple_filter']?.toString() ?? "-")),
+  //                 DataCell(Row(
+  //                   children: [
+  //                     // IconButton(
+  //                     //   icon: const Icon(Icons.edit),
+  //                     //   onPressed: () => controller.editField(index, attributes),
+  //                     // ),
+  //                     IconButton(
+  //                         icon: const Icon(Icons.edit),
+  //                         onPressed: () {
+  //                           print("Printing the Field Name value ::::: ${field}");
+  //                           controller.editField(index, field.value);},
+  //                       ),
+  //                     IconButton(
+  //                       icon: const Icon(Icons.delete),
+  //                       onPressed: () => controller.deleteField(fieldName),
+  //                     ),
+  //                   ],
+  //                 )),
+  //         ]);
+  //         }).toList();
+  //         }).toList()
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget buildSFDataFieldList() {
     print("Fields controller.formFields.isNotEmpty :::::::${controller.formFields.isNotEmpty}");
@@ -947,7 +1074,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           //   )),
 
                           Visibility(
-                            visible: controller.dynamicDetails.id == null ,
+                            // visible: controller.dynamicDetails.id != null ,
                             child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.end,
                                                   children: [
@@ -987,7 +1114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: MaterialButton(
                                 elevation: 2,
                                 onPressed: () {
-                                  print("Printing the Data ${jsonEncode(controller.formFields)}");
+                                  print("Printing the Data::::::: ${jsonEncode(controller.formFields)}");
                                  controller.addField();
                                   // controller.update();
                                 },
@@ -1024,6 +1151,70 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             // ),
                                                     ),
+//                             Container(
+//   color: Theme.of(context).colorScheme.secondary,
+//   child: MaterialButton(
+//     elevation: 2,
+//     onPressed: () {
+//       if (controller.editingIndex >= 0) {
+//         // Update existing field
+//         controller.formFields[controller.editingIndex] = {
+//           controller.fieldNameController.text: {
+//             "type": controller.selectedFieldType,
+//             "required": controller.isRequired.value,
+//             "show_in_view": controller.isView.value,
+//             "show_in_report": controller.isReport.value,
+//             "show_in_edit": controller.isEdit.value,
+//             "show_in_filter": controller.isFilter.value,
+//             "show_in_list": controller.isList.value,
+//             "show_in_add": controller.isAdd.value,
+//             "max_length": controller.maxLengthController.text.isNotEmpty
+//                 ? int.parse(controller.maxLengthController.text)
+//                 : null,
+//             "min_length": controller.minLengthController.text.isNotEmpty
+//                 ? int.parse(controller.minLengthController.text)
+//                 : null,
+//           }
+//         };
+//         controller.editingIndex = -1; // Reset editing index
+//       } else {
+//         // Add new field
+//         controller.addField();
+//       }
+
+//       print("Printing the Data ${jsonEncode(controller.formFields)}");
+//       controller.update();
+//     },
+//     height: 50,
+//     minWidth: 100,
+//     color: Theme.of(context).colorScheme.primary,
+//     shape: const RoundedRectangleBorder(
+//       borderRadius: BorderRadius.all(Radius.circular(6)),
+//     ),
+//     child: Center(
+//       child: Row(
+//         children: [
+//           Icon(
+//             controller.editingIndex >= 0
+//                 ? Icons.update
+//                 : Icons.add_circle_outline_outlined,
+//             color: Theme.of(context).colorScheme.secondary,
+//           ),
+//           SizedBox(width: 12),
+//           Text(
+//             controller.editingIndex >= 0 ? "Update Field" : "Add Field",
+//             style: TextStyle(
+//               color: Theme.of(context).colorScheme.secondary,
+//               fontSize: 15,
+//               fontWeight: FontWeight.w600,
+//             ),
+//           ),
+//         ],
+//       ),
+//     ),
+//   ),
+// )
+
                                                   ],
                                                 ),
                           ),

@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Model/get_dynamic_data_list_model.dart';
-import 'package:implementation_panel/Screens/Dashboard/Sample/Model/mini.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Model/view_by_id_model.dart';
 import 'package:implementation_panel/utils/http_utils.dart';
 
