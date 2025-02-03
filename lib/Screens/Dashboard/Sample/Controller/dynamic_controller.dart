@@ -924,7 +924,8 @@ void addField() {
           icon: Icon(Icons.check, color: Colors.green),
         );
         isRefresh = true;
-        await getDynamicList();
+        Get.toNamed(Routes.listScreen);
+        // await getDynamicList();
         Get.back();
       }
       
