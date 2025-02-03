@@ -102,7 +102,7 @@ class DynamicController extends GetxController {
     'ManyToMany',
     'ForeignKey',
     'Boolean',
-    // 'Children'
+    'Children'
   ];
 
   List<String> get itemFieldTypes => [
