@@ -8,37 +8,6 @@ GetDynamicViewById getDynamicViewByIdFromJson(String str) => GetDynamicViewById.
 
 String getDynamicViewByIdToJson(GetDynamicViewById data) => json.encode(data.toJson());
 
-// class GetDynamicViewById {
-//     int? id;
-//     String? appLabel;
-//     String? modelName;
-//     Fields? fields;
-//     dynamic fields1;
-
-//     GetDynamicViewById({
-//         this.id,
-//         this.appLabel,
-//         this.modelName,
-//         this.fields,
-//         this.fields1,
-//     });
-
-//     factory GetDynamicViewById.fromJson(Map<String, dynamic> json) => GetDynamicViewById(
-//     id: json["id"],
-//     appLabel: json["app_label"],
-//     modelName: json["model_name"],
-//     fields: json["fields"] == null ? null : Fields.fromJson(json["fields"]),
-//     fields1: json["fields"] is String ? jsonDecode(json["fields"]) : json["fields"],
-// );
-
-//     Map<String, dynamic> toJson() => {
-//         "id": id,
-//         "app_label": appLabel,
-//         "model_name": modelName,
-//         "fields": fields?.toJson(),
-//     };
-// }
-
 class GetDynamicViewById {
     int? id;
     String? appLabel;

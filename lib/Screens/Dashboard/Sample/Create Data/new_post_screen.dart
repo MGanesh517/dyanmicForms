@@ -45,8 +45,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 dataTextStyle: const TextStyle(fontWeight: FontWeight.w400),
-                headingRowColor: const MaterialStatePropertyAll(Color(0xfff7fafc)),
-                dataRowColor: MaterialStatePropertyAll(Color(0xffffffff)),
+                headingRowColor: const WidgetStatePropertyAll(Color(0xfff7fafc)),
+                dataRowColor: WidgetStatePropertyAll(Color(0xffffffff)),
                 columns: <DataColumn>[
                   DataColumn(label: Text('S.No',  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
                   DataColumn(label: Text('Field Name' ,  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black))),
@@ -135,8 +135,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 IconButton(
                                   icon: Icon(Icons.delete),
                                   onPressed: () {
-                                    controller.formFields.removeAt(controller.formFields.indexOf(entry));
-                                    controller.update();
+                                    // controller.formFields.removeAt(controller.formFields.indexOf(entry));
+                                    // controller.update();
+                                    controller.deleteField(fieldName);
                                   },
                                 ),
                               ],
