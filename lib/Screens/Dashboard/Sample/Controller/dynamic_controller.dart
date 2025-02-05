@@ -1,6 +1,5 @@
 
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -31,8 +30,6 @@ class DynamicController extends GetxController {
   int editingIndex = -1;
   var _isEditMode = false.obs;
 
-  // Field attributes
-  // var selectedFieldType = 'Char'.obs;
   var isRequired = false.obs;
   var isView = false.obs;
   var isReport = false.obs;
@@ -44,15 +41,18 @@ class DynamicController extends GetxController {
   var rangeFilter = false.obs;
   var isMultipleFilter = false.obs;
 
+  final RxBool _isDialogBoxOPen = false.obs;
+  bool get isDialogBoxOPen => _isDialogBoxOPen.value;
+  set isDialogBoxOPen(value) => _isDialogBoxOPen.value = value;
+
   // Choices for 'Choice' type fields
   var choices = <List<dynamic>>[].obs;
   var nextChoiceId = 1.obs;
 
-
   final RxBool isDefault = false.obs;
   final RxList<Map<String, dynamic>> formFields = <Map<String, dynamic>>[].obs;
   final RxList<Map<String, dynamic>> itemFields = <Map<String, dynamic>>[].obs;
-  
+
   final RxBool _isRefresh = false.obs;
   bool get isRefresh => _isRefresh.value;
   set isRefresh(value) => _isRefresh.value = value;
@@ -68,17 +68,19 @@ class DynamicController extends GetxController {
   final RxString _selectedChildrenFieldType = 'Char'.obs;
   String get selectedChildrenFieldType => _selectedChildrenFieldType.value;
   set selectedChildrenFieldType(value) => _selectedChildrenFieldType.value = value;
-  
+
   final RxInt _selectedChoice = 1.obs;
   int get selectedChoice => _selectedChoice.value;
   set selectedChoice(value) => _selectedChoice.value = value;
 
-  // final RxInt _editingIndex = (-1).obs;
-  // int get editingIndex => _editingIndex.value;
-  // set editingIndex(int value) => _editingIndex.value = value;
-
-  // final RxBool _isEditMode = false.obs;
-  // bool get isEditMode => _isEditMode.value;
+  initDialogBoxState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      isRefresh = true;
+      addFieldsDisposeController();
+      selectedChildrenFieldType == 'Char';
+      update();
+    });
+  }
 
   initPostDynamicDataState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -90,39 +92,21 @@ class DynamicController extends GetxController {
   }
 
   List<String> get fieldTypes => [
-    'Char',
-    'Text',
-    'Choice',
-    'Integer',
-    'DateTime',
-    'Date',
-    'Time',
-    'Duration',
-    'Decimal',
-    'ManyToMany',
-    'ForeignKey',
-    'Boolean',
-    'Children'
-  ];
+        'Char',
+        'Text',
+        'Choice',
+        'Integer',
+        'DateTime',
+        'Date',
+        'Time',
+        'Duration',
+        'Decimal',
+        'ManyToMany',
+        'ForeignKey',
+        'Boolean',
+        'Children'
+      ];
 
-  List<String> get itemFieldTypes => [
-    'Char',
-    'Text',
-    'Choice',
-    'Integer',
-    'DateTime',
-    'Date',
-    'Time',
-    'Duration',
-    'Decimal',
-    'ManyToMany',
-    'ForeignKey',
-    'Boolean',
-  ];
-
-
-
-  // Clears the form controllers
   void addFieldsDisposeController() {
     fieldNameController.clear();
     maxLengthController.clear();
@@ -144,421 +128,197 @@ class DynamicController extends GetxController {
     nextChoiceId.value = 1;
   }
 
-  // Editing functionality
-  // void editField(int index, Map<String, dynamic> field) {
-  //   try {
-  //     // Prevents unnecessary clearing of form data
-  //     if (_isEditMode.value == false || editingIndex != index) {
-  //       addFieldsDisposeController();
-  //     }
-
-  //     // Extract field name and data
-  //     String fieldName = field.keys.first;
-  //     Map<String, dynamic> fieldData = field[fieldName];
-
-  //     // Set field data into controllers and observable values
-  //     fieldNameController.text = fieldName;
-  //     selectedFieldType = fieldData['type'] ?? 'Char';
-
-  //     isRequired.value = fieldData['required'] ?? false;
-  //     isView.value = fieldData['show_in_view'] ?? false;
-  //     isReport.value = fieldData['show_in_report'] ?? false;
-  //     isEdit.value = fieldData['show_in_edit'] ?? false;
-  //     isFilter.value = fieldData['show_in_filter'] ?? false;
-  //     isList.value = fieldData['show_in_list'] ?? false;
-  //     isAdd.value = fieldData['show_in_add'] ?? false;
-
-  //     // Type-specific fields
-  //     switch (selectedFieldType) {
-  //       case 'Char':
-  //       case 'Text':
-  //         maxLengthController.text = fieldData['max_length']?.toString() ?? '';
-  //         minLengthController.text = fieldData['min_length']?.toString() ?? '';
-  //         break;
-  //       case 'Choice':
-  //         choices.clear();
-  //         if (fieldData['choices'] != null) {
-  //           final choicesList = fieldData['choices'] as List;
-  //           choices.addAll(choicesList.map((choice) {
-  //             return choice is List ? choice : [nextChoiceId.value++, choice];
-  //           }));
-  //         }
-  //         break;
-  //       case 'Decimal':
-  //         maxDigitsController.text = fieldData['max_digits']?.toString() ?? '';
-  //         decimalPlacesController.text = fieldData['decimal_places']?.toString() ?? '';
-  //         break;
-  //       case 'DateTime':
-  //       case 'Date':
-  //         rangeFilter.value = fieldData['range_filter'] ?? false;
-  //         isReadOnly.value = fieldData['read_only'] ?? false;
-  //         break;
-  //       case 'Time':
-  //       case 'Duration':
-  //         isReadOnly.value = fieldData['read_only'] ?? false;
-  //         break;
-  //       case 'ManyToMany':
-  //         isMultipleFilter.value = fieldData['multiple_filter'] ?? false;
-  //         break;
-  //     }
-
-  //     // Set editing state
-  //     editingIndex = index;
-  //     _isEditMode.value = true;
-  //     update();
-  //   } catch (e) {
-  //     debugPrint('Error editing field: $e');
-  //   }
-  // }
-
   void editField(int index, Map field) {
-  try {
-    // Clear controllers before setting new data
-    addFieldsDisposeController();
+    try {
+      addFieldsDisposeController();
 
-    // Ensure valid index
-    if (index < 0 || index >= formFields.length) {
-      debugPrint('Invalid index: $index');
-      return;
+      // Ensure valid index
+      if (index < 0 || index >= formFields.length) {
+        debugPrint('Invalid index: $index');
+        return;
+      }
+
+      // Extract field name and data
+      Map fieldData;
+      String fieldName;
+
+      if (field.length == 1 && field.values.first is Map) {
+        fieldName = field.keys.first;
+        fieldData = field.values.first as Map;
+      } else {
+        fieldName = field.keys.first;
+        fieldData = field;
+      }
+
+      if (fieldName.isEmpty) {
+        debugPrint('Field name is empty, recovering...');
+        fieldName = field.keys.firstWhere(
+          (key) => key.isNotEmpty,
+          orElse: () => 'Unnamed Field',
+        );
+      }
+
+      // Set form values
+      fieldNameController.text = fieldName;
+      selectedFieldType = fieldData['type'] ?? 'Char';
+
+      isRequired.value = fieldData['required'] ?? false;
+      isView.value = fieldData['show_in_view'] ?? false;
+      isReport.value = fieldData['show_in_report'] ?? false;
+      isEdit.value = fieldData['show_in_edit'] ?? false;
+      isFilter.value = fieldData['show_in_filter'] ?? false;
+      isList.value = fieldData['show_in_list'] ?? false;
+      isAdd.value = fieldData['show_in_add'] ?? false;
+
+      // Handle different field types
+      switch (selectedFieldType) {
+        case 'Char':
+        case 'Text':
+          maxLengthController.text = fieldData['max_length']?.toString() ?? '';
+          minLengthController.text = fieldData['min_length']?.toString() ?? '';
+          break;
+        case 'Choice':
+          choices.clear();
+          if (fieldData['choices'] != null) {
+            final choicesList = fieldData['choices'] as List;
+            choices.addAll(choicesList.map((choice) =>
+                choice is List ? choice : [choice, choice.toString()]));
+          }
+          nextChoiceId.value = choices.isNotEmpty
+              ? choices.map((c) => c[0] as int).reduce((a, b) => a > b ? a : b) + 1 : 1;
+          break;
+        case 'Decimal':
+          maxDigitsController.text = fieldData['max_digits']?.toString() ?? '';
+          decimalPlacesController.text =
+              fieldData['decimal_places']?.toString() ?? '';
+          break;
+        case 'DateTime':
+        case 'Date':
+          rangeFilter.value = fieldData['range_filter'] ?? false;
+          isReadOnly.value = fieldData['read_only'] ?? false;
+          break;
+        case 'Time':
+        case 'Duration':
+          isReadOnly.value = fieldData['read_only'] ?? false;
+          break;
+        case 'ManyToMany':
+          isMultipleFilter.value = fieldData['multiple_filter'] ?? false;
+          break;
+      }
+
+      // Store editing index
+      editingIndex = index;
+      _isEditMode.value = true;
+      update();
+
+      debugPrint('Editing field at index: $index');
+    } catch (e) {
+      debugPrint('Error editing field: $e');
     }
-
-    // Extract field name and data
-    Map fieldData;
-    String fieldName;
-
-    if (field.length == 1 && field.values.first is Map) {
-      fieldName = field.keys.first;
-      fieldData = field.values.first as Map;
-    } else {
-      fieldName = field.keys.first;
-      fieldData = field;
-    }
-
-    if (fieldName.isEmpty) {
-      debugPrint('Field name is empty, recovering...');
-      fieldName = field.keys.firstWhere(
-        (key) => key.isNotEmpty,
-        orElse: () => 'Unnamed Field',
-      );
-    }
-
-    // Set form values
-    fieldNameController.text = fieldName;
-    selectedFieldType = fieldData['type'] ?? 'Char';
-    
-    isRequired.value = fieldData['required'] ?? false;
-    isView.value = fieldData['show_in_view'] ?? false;
-    isReport.value = fieldData['show_in_report'] ?? false;
-    isEdit.value = fieldData['show_in_edit'] ?? false;
-    isFilter.value = fieldData['show_in_filter'] ?? false;
-    isList.value = fieldData['show_in_list'] ?? false;
-    isAdd.value = fieldData['show_in_add'] ?? false;
-
-    // Handle different field types
-    switch (selectedFieldType) {
-      case 'Char':
-      case 'Text':
-        maxLengthController.text = fieldData['max_length']?.toString() ?? '';
-        minLengthController.text = fieldData['min_length']?.toString() ?? '';
-        break;
-      case 'Choice':
-        choices.clear();
-        if (fieldData['choices'] != null) {
-          final choicesList = fieldData['choices'] as List;
-          choices.addAll(choicesList.map((choice) =>
-              choice is List ? choice : [choice, choice.toString()]));
-        }
-        nextChoiceId.value = choices.isNotEmpty
-            ? choices.map((c) => c[0] as int).reduce((a, b) => a > b ? a : b) + 1
-            : 1;
-        break;
-      case 'Decimal':
-        maxDigitsController.text = fieldData['max_digits']?.toString() ?? '';
-        decimalPlacesController.text = fieldData['decimal_places']?.toString() ?? '';
-        break;
-      case 'DateTime':
-      case 'Date':
-        rangeFilter.value = fieldData['range_filter'] ?? false;
-        isReadOnly.value = fieldData['read_only'] ?? false;
-        break;
-      case 'Time':
-      case 'Duration':
-        isReadOnly.value = fieldData['read_only'] ?? false;
-        break;
-      case 'ManyToMany':
-        isMultipleFilter.value = fieldData['multiple_filter'] ?? false;
-        break;
-    }
-
-    // Store editing index
-    editingIndex = index;
-    _isEditMode.value = true;
-    update();
-
-    debugPrint('Editing field at index: $index');
-  } catch (e) {
-    debugPrint('Error editing field: $e');
   }
-}
 
+////////////////////////////////////////////////////////////////////////////////
 
-//   void addField() {
-//   if (fieldNameController.text.isEmpty) {
-//     showSnackBar(
-//       title: 'Error',
-//       message: 'Field Name is required',
-//       icon: Icon(Icons.error, color: Colors.red),
-//     );
-//     return;
-//   }
-
-//   // Generate updated field data
-//   final newFieldData = {
-//     fieldNameController.text: {
-//       "type": selectedFieldType,
-//       "required": isRequired.value,
-//       "show_in_view": isView.value,
-//       "show_in_report": isReport.value,
-//       "show_in_edit": isEdit.value,
-//       "show_in_filter": isFilter.value,
-//       "show_in_list": isList.value,
-//       "show_in_add": isAdd.value,
-//       "max_length": maxLengthController.text.isNotEmpty
-//           ? int.tryParse(maxLengthController.text)
-//           : null,
-//       "min_length": minLengthController.text.isNotEmpty
-//           ? int.tryParse(minLengthController.text)
-//           : null,
-//       if (selectedFieldType == 'Choice') "choices": List.from(choices),
-//       if (selectedFieldType == 'Decimal') ...{
-//         "max_digits": maxDigitsController.text.isNotEmpty
-//             ? int.tryParse(maxDigitsController.text)
-//             : null,
-//         "decimal_places": decimalPlacesController.text.isNotEmpty
-//             ? int.tryParse(decimalPlacesController.text)
-//             : null,
-//       },
-//       if (selectedFieldType == 'Date' || selectedFieldType == 'DateTime')
-//         "range_filter": rangeFilter.value,
-//       if (selectedFieldType == 'Time' || selectedFieldType == 'Duration')
-//         "read_only": isReadOnly.value,
-//       if (selectedFieldType == 'ManyToMany')
-//         "multiple_filter": isMultipleFilter.value,
+//   Map<String, dynamic> generateFieldData() {
+//     final Map<String, dynamic> fieldData = {
+//       'type': selectedFieldType,
+//       ...getFieldOptions(selectedFieldType),
+//     };
+//     if (selectedFieldType == 'Choice' && choices.isNotEmpty) {
+//       fieldData['choices'] = List<List<dynamic>>.from(choices);
 //     }
-//   };
-
-//   if (editingIndex >= 0) {
-//     // Ensure we only update the specific field without modifying the entire list
-//     formFields[editingIndex] = newFieldData;
-//     editingIndex = -1;
-//     _isEditMode.value = false;
-//   } else {
-//     // Add new field
-//     formFields.add(newFieldData);
+//     return {fieldNameController.text: fieldData};
 //   }
-
-//   addFieldsDisposeController();
-//   update();
+//   Map<String, dynamic> getFieldOptions(String fieldType) {
+//   Map<String, dynamic> baseOptions = {
+//     'required': isRequired.value,
+//     'show_in_view': isView.value,
+//     'show_in_report': isReport.value,
+//     'show_in_edit': isEdit.value,
+//     'show_in_filter': isFilter.value,
+//     'show_in_list': isList.value,
+//     'show_in_add': isAdd.value,
+//   };
+//   switch (fieldType) {
+//     case 'Char':
+//     case 'Text':
+//       return {
+//         ...baseOptions,
+//         'max_length': int.tryParse(maxLengthController.text) ?? 100,
+//         'min_length': int.tryParse(minLengthController.text) ?? 1,
+//       };
+//     // case 'Text':
+//     //   return {
+//     //     ...baseOptions,
+//     //     'max_length': int.tryParse(maxLengthController.text) ?? 1000,
+//     //     'min_length': int.tryParse(minLengthController.text) ?? 5,
+//     //   };
+//     case 'Choice':
+//       return {
+//         ...baseOptions,
+//         'default': choices.isNotEmpty ? choices[0][0] : 1,
+//         'choices': choices.map((choice) => [choice[0], choice[1]]).toList(),
+//       };
+//     case 'Integer':
+//       return {
+//         ...baseOptions,
+//         'default': 0,
+//       };
+//     case 'Decimal':
+//       return {
+//         ...baseOptions,
+//         'max_digits': int.tryParse(maxDigitsController.text) ?? 9,
+//         'decimal_places': int.tryParse(decimalPlacesController.text) ?? 2,
+//         'default': 0,
+//       };
+//     case 'DateTime':
+//     case 'Date':
+//       return {
+//         ...baseOptions,
+//         'read_only': isReadOnly.value,
+//         'range_filter': rangeFilter.value,
+//       };
+//     case 'Time':
+//     case 'Duration':
+//       return {
+//         ...baseOptions,
+//         'read_only': isReadOnly.value,
+//       };
+//     case 'ManyToMany':
+//       return {
+//         ...baseOptions,
+//         'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
+//         'multiple_filter': isMultipleFilter.value,
+//         'read_fields': ['name'],
+//         'filter_data': {},
+//         'related_name': 'sample_show_multi',
+//       };
+//     case 'ForeignKey':
+//       return {
+//         ...baseOptions,
+//         'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
+//         'read_fields': ['name'],
+//         'filter_data': {},
+//         'related_name': 'sample_show',
+//         'import_fields': ['name'],
+//         'export_fields': ['name'],
+//       };
+//     case 'Children':
+//       return {
+//         "fields": jsonEncode(formFields.fold<Map<String, dynamic>>(
+//         {},
+//         (map, element) => {...map, ...element},
+//       ))
+//       };
+//     case 'Boolean':
+//       return {
+//         ...baseOptions,
+//         'default': false,
+//       };
+//     default:
+//       return baseOptions;
+//   }
 // }
-
-void addField() {
-  if (fieldNameController.text.isEmpty) {
-    showSnackBar(
-      title: 'Error',
-      message: 'Field Name is required',
-      icon: Icon(Icons.error, color: Colors.red),
-    );
-    return;
-  }
-
-  final newFieldData = {
-    fieldNameController.text: {
-      "type": selectedFieldType,
-      "required": isRequired.value,
-      "show_in_view": isView.value,
-      "show_in_report": isReport.value,
-      "show_in_edit": isEdit.value,
-      "show_in_filter": isFilter.value,
-      "show_in_list": isList.value,
-      "show_in_add": isAdd.value,
-
-      if (selectedFieldType == 'Char' || selectedFieldType == 'Text') ...{
-        "max_length": maxLengthController.text.isNotEmpty
-            ? int.tryParse(maxLengthController.text)
-            : 100,
-        "min_length": minLengthController.text.isNotEmpty
-            ? int.tryParse(minLengthController.text)
-            : 1,
-      },
-      
-      if (selectedFieldType == 'Choice') "choices": List.from(choices),
-      if (selectedFieldType == 'Decimal') ...{
-        "max_digits": maxDigitsController.text.isNotEmpty
-            ? int.tryParse(maxDigitsController.text)
-            : null,
-        "decimal_places": decimalPlacesController.text.isNotEmpty
-            ? int.tryParse(decimalPlacesController.text)
-            : null,
-      },
-
-      if (selectedFieldType == 'ManyToMany') ...{
-        'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
-        'multiple_filter': isMultipleFilter.value,
-        'read_fields': ['name'],
-        'filter_data': {},
-        'related_name': 'sample_show_multi',
-      },
-
-      if (selectedFieldType == 'ForeignKey') ...{
-        'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
-        'read_fields': ['name'],
-        'filter_data': {},
-        'related_name': 'sample_show',
-        'import_fields': ['name'],
-        'export_fields': ['name'],
-      },
-      if (selectedFieldType == 'Date' || selectedFieldType == 'DateTime') ...{
-        "range_filter": rangeFilter.value,
-        "read_only": isReadOnly.value,
-      },
-
-      if (selectedFieldType == 'Time' || selectedFieldType == 'Duration')
-        "read_only": isReadOnly.value,
-    }
-  };
-
-  if (editingIndex >= 0) {
-    // Update only the selected index instead of removing and re-adding
-    formFields[editingIndex] = newFieldData;
-    editingIndex = -1;
-    _isEditMode.value = false;
-  } else {
-    // Add new field
-    formFields.add(newFieldData);
-  }
-
-  addFieldsDisposeController();
-  update();
-
-  debugPrint("Updated Fields: ${jsonEncode(formFields)}");
-}
-
-
-
-  void removeItemField(int index) {
-    itemFields.removeAt(index);
-    update();
-  }
-
-  Map<String, dynamic> generateFieldData() {
-    final Map<String, dynamic> fieldData = {
-      'type': selectedFieldType,
-      ...getFieldOptions(selectedFieldType),
-    };
-
-    if (selectedFieldType == 'Choice' && choices.isNotEmpty) {
-      fieldData['choices'] = List<List<dynamic>>.from(choices);
-    }
-
-    return {fieldNameController.text: fieldData};
-  }
-
-  Map<String, dynamic> getFieldOptions(String fieldType) {
-  Map<String, dynamic> baseOptions = {
-    'required': isRequired.value,
-    'show_in_view': isView.value,
-    'show_in_report': isReport.value,
-    'show_in_edit': isEdit.value,
-    'show_in_filter': isFilter.value,
-    'show_in_list': isList.value,
-    'show_in_add': isAdd.value,
-  };
-
-  switch (fieldType) {
-    case 'Char':
-    case 'Text':
-      return {
-        ...baseOptions,
-        'max_length': int.tryParse(maxLengthController.text) ?? 100,
-        'min_length': int.tryParse(minLengthController.text) ?? 1,
-      };
-    
-    // case 'Text':
-    //   return {
-    //     ...baseOptions,
-    //     'max_length': int.tryParse(maxLengthController.text) ?? 1000,
-    //     'min_length': int.tryParse(minLengthController.text) ?? 5,
-    //   };
-    
-    case 'Choice':
-      return {
-        ...baseOptions,
-        'default': choices.isNotEmpty ? choices[0][0] : 1,
-        'choices': choices.map((choice) => [choice[0], choice[1]]).toList(),
-      };
-    
-    case 'Integer':
-      return {
-        ...baseOptions,
-        'default': 0,
-      };
-    
-    case 'Decimal':
-      return {
-        ...baseOptions,
-        'max_digits': int.tryParse(maxDigitsController.text) ?? 9,
-        'decimal_places': int.tryParse(decimalPlacesController.text) ?? 2,
-        'default': 0,
-      };
-    
-    case 'DateTime':
-    case 'Date':
-      return {
-        ...baseOptions,
-        'read_only': isReadOnly.value,
-        'range_filter': rangeFilter.value,
-      };
-      
-    case 'Time':
-    case 'Duration':
-      return {
-        ...baseOptions,
-        'read_only': isReadOnly.value,
-      };
-
-    case 'ManyToMany':
-      return {
-        ...baseOptions,
-        'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
-        'multiple_filter': isMultipleFilter.value,
-        'read_fields': ['name'],
-        'filter_data': {},
-        'related_name': 'sample_show_multi',
-      };
-
-    case 'ForeignKey':
-      return {
-        ...baseOptions,
-        'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
-        'read_fields': ['name'],
-        'filter_data': {},
-        'related_name': 'sample_show',
-        'import_fields': ['name'],
-        'export_fields': ['name'],
-      };
-
-     
-
-    case 'Boolean':
-      return {
-        ...baseOptions,
-        'default': false,
-      };
-    
-    default:
-      return baseOptions;
-  }
-}
 
   void addChoice() {
     if (choiceController.text.isNotEmpty) {
@@ -575,64 +335,13 @@ void addField() {
     update();
   }
 
-  // void editField(int index, Map<String, dynamic> field) {
-  //   final fieldName = field.keys.first;
-  //   final fieldData = field[fieldName] as Map<String, dynamic>;
-    
-  //   fieldNameController.text = fieldName;
-  //   selectedFieldType = fieldData['type'];
-  //   isRequired.value = fieldData['required'] ?? false;
-  //   isMultipleFilter.value = fieldData['multiple_filter'] ?? false;
-  //   rangeFilter.value = fieldData['range_filter'] ?? false;
-  //   isReadOnly.value = fieldData['read_only'] ?? false;
-  //   isView.value = fieldData['show_in_view'] ?? false;
-  //   isReport.value = fieldData['show_in_report'] ?? false;
-  //   isEdit.value = fieldData['show_in_edit'] ?? false;
-  //   isFilter.value = fieldData['show_in_filter'] ?? false;
-  //   isList.value = fieldData['show_in_list'] ?? false;
-  //   isAdd.value = fieldData['show_in_add'] ?? false;
-
-  //   // Clear existing choices and populate if it's a Choice field
-  //   choices.clear();
-  //   if (fieldData['type'] == 'Choice' && fieldData['choices'] != null) {
-  //     choices.addAll(List<List<dynamic>>.from(fieldData['choices']));
-  //     nextChoiceId.value = choices.isNotEmpty ?
-  //       (choices.map((c) => c[0] as int).reduce(max) + 1) : 1;
-  //   }
-
-  //   // Handle type-specific fields
-  //   if (fieldData['type'] == 'Char' || fieldData['type'] == 'Text') {
-  //     maxLengthController.text = fieldData['max_length']?.toString() ?? '';
-  //     minLengthController.text = fieldData['min_length']?.toString() ?? '';
-  //   }
-
-  //   if (fieldData['type'] == 'Decimal') {
-  //     maxDigitsController.text = fieldData['max_digits']?.toString() ?? '';
-  //     decimalPlacesController.text = fieldData['decimal_places']?.toString() ?? '';
-  //   }
-
-  //   // If it's a Children field, populate itemFields
-  //   if (fieldData['type'] == 'Children' && fieldData['fields'] != null) {
-  //     itemFields.clear();
-  //     final fields = fieldData['fields'] as Map<String, dynamic>;
-  //     fields.forEach((key, value) {
-  //       itemFields.add({key: value});
-  //     });
-  //   }
-
-  //   editingIndex = index;
-  //   update();
-  // }
-
   void deleteField(String fieldName) {
     for (int i = 0; i < formFields.length; i++) {
       var entry = formFields[i];
-      
       // Check if the current map contains the field to be deleted
       if (entry.containsKey(fieldName)) {
         // Remove just that specific field from the map
         entry.remove(fieldName);
-        
         // If the map is now empty after removing the field, remove the entire map
         if (entry.isEmpty) {
           formFields.removeAt(i);
@@ -640,54 +349,6 @@ void addField() {
         update();
         return;
       }
-    }
-  }
-
-  createDynamicData() async {
-      if (appLabel.text.isEmpty || modelName.text.isEmpty || formFields.isEmpty) {
-        showSnackBar(
-          title: 'Error',
-          message: 'App Label, Model Name, and at least one Field are required',
-          icon: Icon(Icons.error, color: Colors.red),
-        );
-        return;
-      }
-    submit = true;
-    var postData = {
-      "app_label": appLabel.text,
-      "model_name": modelName.text,
-      "fields": jsonEncode(formFields.fold<Map<String, dynamic>>(
-        {},
-        (map, element) => {...map, ...element},
-      ))
-    };
-
-    debugPrint('sending json data to:::::: ${json.encode(postData)}');
-
-    try {
-      var data = await DynamicRepo().createDynamicData(postData);
-      closeLoadingDialog();
-
-      if (data != null) {
-        Get.back();
-        submit = false;
-        showSnackBar(
-          title: 'Success',
-          message: 'Data Submitted Successfully.',
-          icon: Icon(Icons.check, color: Colors.green),
-        );
-        disposeController();
-        isRefresh = true;
-      }
-    } catch (e) {
-      submit = false;
-      debugPrint("Api Error Response: $e");
-      closeLoadingDialog();
-      showSnackBar(
-        title: 'Error',
-        message: 'Failed to submit data',
-        icon: Icon(Icons.error, color: Colors.red),
-      );
     }
   }
 
@@ -712,32 +373,6 @@ void addField() {
     itemFields.clear();
     addFieldsDisposeController();
   }
-
-  // void addFieldsDisposeController() {
-  //   dynamicDetails = GetDynamicViewById();
-  //   editingIndex = -1;
-  //   fieldNameController.clear();
-  //   maxLengthController.clear();
-  //   minLengthController.clear();
-  //   maxDigitsController.clear();
-  //   decimalPlacesController.clear();
-  //   choiceController.clear();
-  //   choices.clear();
-  //   nextChoiceId.value = 1;
-    
-  //   isRequired.value = false;
-  //   isMultipleFilter.value = false;
-  //   rangeFilter.value = false;
-  //   isReadOnly.value = false;
-  //   isAdd.value = false;
-  //   isList.value = false;
-  //   isFilter.value = false;
-  //   isEdit.value = false;
-  //   isReport.value = false;
-  //   isView.value = false;
-  //   selectedFieldType = 'Char';
-  //   selectedChildrenFieldType = 'Char';
-  // }
 
   @override
   void onClose() {
@@ -776,45 +411,7 @@ void addField() {
     });
   }
 
-  // getDynamicList({bool isLoading = true}) async {
-  //   if (isRefresh) {
-  //     _dynamicList.value = <GetDynamicData>[];
-  //     currentPage = 1;
-  //   } else {
-  //     if (currentPage > totalPages) {
-  //       return false;
-  //     }
-  //   }
-  //   final filterParams = <String, dynamic>{
-  //     'page': currentPage,
-  //     'page_size': CommonService.instance.pageSize,
-  //   };
-  //   print('filter params $filterParams');
-  //   try {
-  //     final data = await DynamicRepo().getDynamicList(filterParams);
-  //     if (data != null) {
-  //       dynamicListCount = data.count;
-  //       _dynamicList.value = [...dynamicList, ...data.results ?? []];
-  //       var seen = <String>{};
-  //       List<GetDynamicData> filtered = _dynamicList.where((field) => seen.add(field.id!.toString())).toList();
-  //       _dynamicList.value = filtered;
-  //       isRefresh = false;
-  //       // closeLoadingDialog();
-  //       totalPages = (dynamicListCount / CommonService.instance.pageSize).ceil();
-  //       currentPage++;
-  //       update();
-  //       return true;
-  //     } else {
-  //       closeLoadingDialog();
-  //       return false;
-  //     }
-  //   } catch (e) {
-  //     closeLoadingDialog();
-  //     debugPrint("users error: $e");
-  //     // return false;
-  //     rethrow;
-  //   }
-  // }
+  
 
   getDynamicList({bool isLoading = true}) async {
     _dynamicList.value = <GetDynamicData>[];
@@ -829,7 +426,8 @@ void addField() {
       if (data != null) {
         _dynamicList.value = data.results ?? [];
         var seen = <String>{};
-        List<GetDynamicData> filtered = _dynamicList.where((field) => seen.add(field.id!.toString())).toList();
+        List<GetDynamicData> filtered = _dynamicList
+            .where((field) => seen.add(field.id!.toString())).toList();
         _dynamicList.value = filtered;
 
         update();
@@ -845,7 +443,6 @@ void addField() {
     }
   }
 
-
   final _dynamicDetails = GetDynamicViewById().obs;
   GetDynamicViewById get dynamicDetails => _dynamicDetails.value;
   set dynamicDetails(value) => _dynamicDetails.value = value;
@@ -858,7 +455,8 @@ void addField() {
         _dynamicDetails.value = data;
         print("Print Fields ::::::::::::::${_dynamicDetails.value.fields1}");
 
-        if(_dynamicDetails.value.fields1!=null && _dynamicDetails.value.fields1.isNotEmpty){
+        if (_dynamicDetails.value.fields1 != null &&
+            _dynamicDetails.value.fields1.isNotEmpty) {
           formFields.value = [_dynamicDetails.value.fields1];
         }
 
@@ -902,7 +500,7 @@ void addField() {
     try {
       showLoadingDialog();
       submit = true;
-      
+
       updateData = {
         "app_label": appLabel.text,
         "model_name": modelName.text,
@@ -911,12 +509,12 @@ void addField() {
           (map, element) => {...map, ...element},
         ))
       };
-      
+
       final response = await DynamicRepo().updateModelName(
         updateData,
         dynamicDetails.id,
       );
-      
+
       if (response != null) {
         showSnackBar(
           title: 'Success',
@@ -928,7 +526,6 @@ void addField() {
         // await getDynamicList();
         Get.back();
       }
-      
     } catch (e) {
       Get.snackbar(
         'Error',
@@ -941,5 +538,261 @@ void addField() {
       submit = false;
       closeLoadingDialog();
     }
+  }
+
+  createDynamicData() async {
+    if (appLabel.text.isEmpty || modelName.text.isEmpty || formFields.isEmpty) {
+      showSnackBar(
+        title: 'Error',
+        message: 'App Label, Model Name, and at least one Field are required',
+        icon: Icon(Icons.error, color: Colors.red),
+      );
+      return;
+    }
+
+    submit = true;
+
+    // Combine all form fields
+    Map<String, dynamic> combinedFields = {};
+    for (var field in formFields) {
+      combinedFields.addAll(field);
+    }
+////////////////////////////////////////////////////////////////////////////////
+    String fieldName = fieldNameController.text.trim();
+    if (fieldName.isEmpty) {
+      showSnackBar(
+        title: 'Error',
+        message: 'App Label, Model Name, and at least one Field are required',
+        icon: Icon(Icons.error, color: Colors.red),
+      );
+      // fieldName = "children";
+    }
+////////////////////////////////////////////////////////////////////////////////
+    combinedFields[fieldName] = {
+      "type": "Children",
+      "fields": itemFields.fold<Map<String, dynamic>>(
+        {},
+        (map, element) => {...map, ...element},
+      )
+    };
+
+    var postData = {
+      "app_label": appLabel.text,
+      "model_name": modelName.text,
+      "fields": jsonEncode(combinedFields),
+    };
+
+    debugPrint('\n=== Sending Data to API ===');
+    debugPrint('Final Payload: ${json.encode(postData)}');
+    debugPrint('==========================\n');
+
+    try {
+      var data = await DynamicRepo().createDynamicData(postData);
+      closeLoadingDialog();
+
+      if (data != null) {
+        Get.back();
+        submit = false;
+        showSnackBar(
+          title: 'Success',
+          message: 'Data Submitted Successfully.',
+          icon: Icon(Icons.check, color: Colors.green),
+        );
+        disposeController();
+        isRefresh = true;
+        await getDynamicList();
+        Get.toNamed(Routes.listScreen);
+      }
+    } catch (e) {
+      submit = false;
+      debugPrint("API Error Response: $e");
+      closeLoadingDialog();
+      showSnackBar(
+        title: 'Error',
+        message: 'Failed to submit data',
+        icon: Icon(Icons.error, color: Colors.red),
+      );
+    }
+  }
+
+  void addChildField() {
+    if (fieldNameController.text.isEmpty) {
+      showSnackBar(
+        title: 'Error',
+        message: 'Field Name is required',
+        icon: Icon(Icons.error, color: Colors.red),
+      );
+      return;
+    }
+
+    final newChildFieldData = {
+      fieldNameController.text: {
+        "type": selectedChildrenFieldType,
+        "required": isRequired.value,
+        "show_in_view": isView.value,
+        "show_in_report": isReport.value,
+        "show_in_edit": isEdit.value,
+        "show_in_filter": isFilter.value,
+        "show_in_list": isList.value,
+        "show_in_add": isAdd.value,
+        if (selectedChildrenFieldType == 'Char' ||
+            selectedChildrenFieldType == 'Text') ...{
+          "max_length": maxLengthController.text.isNotEmpty
+              ? int.tryParse(maxLengthController.text)
+              : 100,
+          "min_length": minLengthController.text.isNotEmpty
+              ? int.tryParse(minLengthController.text)
+              : 1,
+        },
+        if (selectedChildrenFieldType == 'Choice')
+          "choices": List.from(choices),
+        if (selectedChildrenFieldType == 'Decimal') ...{
+          "max_digits": maxDigitsController.text.isNotEmpty
+              ? int.tryParse(maxDigitsController.text)
+              : null,
+          "decimal_places": decimalPlacesController.text.isNotEmpty
+              ? int.tryParse(decimalPlacesController.text)
+              : null,
+        },
+        if (selectedChildrenFieldType == 'ManyToMany') ...{
+          'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
+          'multiple_filter': isMultipleFilter.value,
+          'read_fields': ['name'],
+          'filter_data': {},
+          'related_name': 'sample_show_items_multi',
+        },
+        if (selectedChildrenFieldType == 'ForeignKey') ...{
+          'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
+          'read_fields': ['name'],
+          'filter_data': {},
+          'related_name': 'sample_show_items',
+          'import_fields': ['name'],
+          'export_fields': ['name'],
+        },
+        if (selectedChildrenFieldType == 'Date' ||
+            selectedChildrenFieldType == 'DateTime') ...{
+          "range_filter": rangeFilter.value,
+          "read_only": isReadOnly.value,
+        },
+        if (selectedChildrenFieldType == 'Time' ||
+            selectedChildrenFieldType == 'Duration')
+          "read_only": isReadOnly.value,
+      }
+    };
+
+    itemFields.add(newChildFieldData);
+    addFieldsDisposeController();
+    update();
+  }
+
+  void addField() {
+    if (fieldNameController.text.isEmpty) {
+      showSnackBar(
+        title: 'Error',
+        message: 'Field Name is required',
+        icon: Icon(Icons.error, color: Colors.red),
+      );
+      return;
+    }
+
+    Map<String, dynamic> fieldContent = {
+      "type": selectedFieldType,
+      "required": isRequired.value,
+      "show_in_view": isView.value,
+      "show_in_report": isReport.value,
+      "show_in_edit": isEdit.value,
+      "show_in_filter": isFilter.value,
+      "show_in_list": isList.value,
+      "show_in_add": isAdd.value,
+    };
+
+    // Add type-specific fields
+    if (selectedFieldType == 'Char' || selectedFieldType == 'Text') {
+      fieldContent.addAll({
+        "max_length": maxLengthController.text.isNotEmpty
+            ? int.tryParse(maxLengthController.text)
+            : 100,
+        "min_length": minLengthController.text.isNotEmpty
+            ? int.tryParse(minLengthController.text)
+            : 1,
+      });
+    } else if (selectedFieldType == 'Choice') {
+      fieldContent["choices"] = List.from(choices);
+    } else if (selectedFieldType == 'Decimal') {
+      fieldContent.addAll({
+        "max_digits": maxDigitsController.text.isNotEmpty
+            ? int.tryParse(maxDigitsController.text)
+            : null,
+        "decimal_places": decimalPlacesController.text.isNotEmpty
+            ? int.tryParse(decimalPlacesController.text)
+            : null,
+      });
+    } else if (selectedFieldType == 'ManyToMany') {
+      fieldContent.addAll({
+        'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
+        'multiple_filter': isMultipleFilter.value,
+        'read_fields': ['name'],
+        'filter_data': {},
+        'related_name': 'sample_show_multi',
+      });
+    } else if (selectedFieldType == 'ForeignKey') {
+      fieldContent.addAll({
+        'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
+        'read_fields': ['name'],
+        'filter_data': {},
+        'related_name': 'sample_show',
+        'import_fields': ['name'],
+        'export_fields': ['name'],
+      });
+    } else if (selectedFieldType == 'Date' || selectedFieldType == 'DateTime') {
+      fieldContent.addAll({
+        "range_filter": rangeFilter.value,
+        "read_only": isReadOnly.value,
+      });
+    } else if (selectedFieldType == 'Time' || selectedFieldType == 'Duration') {
+      fieldContent["read_only"] = isReadOnly.value;
+    } else if (selectedFieldType == 'Children') {
+      fieldContent.addAll({
+        "type": "Children",
+        "fields": jsonEncode(itemFields.fold<Map<String, dynamic>>(
+          {},
+          (map, element) => {...map, ...element},
+        ))
+      });
+    }
+
+    final newFieldData = {fieldNameController.text: fieldContent};
+
+    if (editingIndex >= 0) {
+      formFields[editingIndex] = newFieldData;
+      editingIndex = -1;
+      _isEditMode.value = false;
+    } else {
+      formFields.add(newFieldData);
+    }
+
+    // Print both formFields and itemFields data
+    debugPrint('\n=== Current Form State ===');
+    debugPrint('FormFields:');
+    debugPrint(json.encode(formFields));
+
+    if (itemFields.isNotEmpty) {
+      debugPrint('\nItemFields:');
+      debugPrint(json.encode(itemFields));
+    }
+
+    debugPrint('\nCombined Fields:');
+    Map<String, dynamic> combinedFields = {};
+    for (var field in formFields) {
+      combinedFields.addAll(field);
+    }
+    if (itemFields.isNotEmpty) {
+      combinedFields['Children'] = itemFields;
+    }
+    debugPrint(json.encode(combinedFields));
+    debugPrint('========================\n');
+
+    addFieldsDisposeController();
+    update();
   }
 }

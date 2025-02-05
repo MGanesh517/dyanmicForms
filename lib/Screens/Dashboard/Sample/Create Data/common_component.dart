@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:implementation_panel/BreakPoints/breakpoints.dart';
 import 'package:implementation_panel/Common/Common%20Components/common_components.dart';
@@ -6,6 +7,8 @@ import 'package:implementation_panel/Screens/Dashboard/Sample/Controller/dynamic
 import 'package:responsive_toolkit/responsive_grid.dart';
 
 class FieldManagementComponent extends StatelessWidget {
+  final bool isInDialog;
+
   final String fieldNameText;
   final String fieldNameLabeText;
   final TextEditingController fieldNameController;
@@ -97,6 +100,8 @@ class FieldManagementComponent extends StatelessWidget {
 
    FieldManagementComponent({
     super.key,
+    this.isInDialog = false,
+
     required this.fieldNameText,
     required this.fieldNameController,
     required this.fieldNameLabeText,
@@ -248,7 +253,8 @@ class FieldManagementComponent extends StatelessWidget {
                       onChanged: typeOnChanged,
                     ),
                 ),
-                if (controller.selectedFieldType == 'Choice')
+      if (shouldShowAdditionalFields()) ...[
+                if (controller.selectedFieldType == 'Choice' || controller.selectedChildrenFieldType == 'Choice')
                   ResponsiveColumn(
                     ResponsiveConstants().buttonBreakpoints,
                     child: Row(
@@ -296,13 +302,13 @@ class FieldManagementComponent extends StatelessWidget {
                       onChanged: addedChoiceOnChanged,
                     ),
                   ),
-                if (controller.selectedFieldType != 'Children')
+                if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType != 'Children')
                   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
                       child: CommonComponents.defaultCheckBoxListTile(
                               context,
                               value: requiredValue,
                               title: requiredCheckBoxName, onChanged: requiredOnChanged)),
-                if (controller.selectedFieldType != 'Children')
+                if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType != 'Children')
                   ResponsiveColumn(
                     ResponsiveConstants().buttonBreakpoints,
                     child: CommonComponents.defaultCheckBoxListTile(
@@ -312,7 +318,7 @@ class FieldManagementComponent extends StatelessWidget {
                           onChanged: showViewOnChanged,
                         ),
                   ),
-                if (controller.selectedFieldType != 'Children')
+                if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType != 'Children')
                   ResponsiveColumn(
                     ResponsiveConstants().buttonBreakpoints,
                     child: CommonComponents.defaultCheckBoxListTile(
@@ -322,7 +328,7 @@ class FieldManagementComponent extends StatelessWidget {
                           onChanged: showReportOnChanged,
                         ),
                   ),
-                if (controller.selectedFieldType != 'Children')
+                if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType != 'Children')
                   ResponsiveColumn(
                     ResponsiveConstants().buttonBreakpoints,
                     child: CommonComponents.defaultCheckBoxListTile(
@@ -332,7 +338,7 @@ class FieldManagementComponent extends StatelessWidget {
                           onChanged: showEditOnChanged,
                         ),
                   ),
-                if (controller.selectedFieldType != 'Children')
+                if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType != 'Children')
                   ResponsiveColumn(
                     ResponsiveConstants().buttonBreakpoints,
                     child:  CommonComponents.defaultCheckBoxListTile(
@@ -342,7 +348,7 @@ class FieldManagementComponent extends StatelessWidget {
                           onChanged: showFilterOnChanged,
                         ),
                   ),
-                if (controller.selectedFieldType != 'Children')
+                if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType != 'Children')
                   ResponsiveColumn(
                     ResponsiveConstants().buttonBreakpoints,
                     child:  CommonComponents.defaultCheckBoxListTile(
@@ -352,7 +358,7 @@ class FieldManagementComponent extends StatelessWidget {
                           onChanged: showListOnChanged,
                         ),
                   ),
-                if (controller.selectedFieldType != 'Children')
+                if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType != 'Children')
                   ResponsiveColumn(
                     ResponsiveConstants().buttonBreakpoints,
                     child: CommonComponents.defaultCheckBoxListTile(
@@ -362,7 +368,7 @@ class FieldManagementComponent extends StatelessWidget {
                           onChanged: showAddOnChanged,
                         ),
                   ),
-                if (controller.selectedFieldType == 'ManyToMany')
+                if (controller.selectedFieldType == 'ManyToMany' || controller.selectedChildrenFieldType == 'ManyToMany')
                   ResponsiveColumn(
                     ResponsiveConstants().buttonBreakpoints,
                     child: CommonComponents.defaultCheckBoxListTile(
@@ -372,7 +378,7 @@ class FieldManagementComponent extends StatelessWidget {
                           onChanged: showMultipleFilterOnChanged,
                         ),
                   ),
-                if (controller.selectedFieldType == ' ')
+                if (controller.selectedFieldType == 'Boolean' || controller.selectedChildrenFieldType == 'Boolean')
                   ResponsiveColumn(
                     ResponsiveConstants().buttonBreakpoints,
                     child:  CommonComponents.defaultCheckBoxListTile(
@@ -382,8 +388,8 @@ class FieldManagementComponent extends StatelessWidget {
                           onChanged: defaultOnChanged,
                         ),
                   ),
-                if (controller.selectedFieldType == 'Char' ||
-                    controller.selectedFieldType == 'Text')
+               if (controller.selectedFieldType == 'Char' || controller.selectedFieldType == 'Text' ||
+                  controller.selectedChildrenFieldType == 'Char' || controller.selectedChildrenFieldType == 'Type')
                   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
                       child: CommonComponents.defaultTextFormField(
                         context,
@@ -394,9 +400,11 @@ class FieldManagementComponent extends StatelessWidget {
                           border: OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
                       )),
                 if (controller.selectedFieldType == 'Char' ||
-                    controller.selectedFieldType == 'Text')
+                    controller.selectedFieldType == 'Text' || controller.selectedChildrenFieldType == 'Char' ||
+                    controller.selectedChildrenFieldType == 'Text')
                   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
                       child: CommonComponents.defaultTextFormField(
                         context,
@@ -407,9 +415,11 @@ class FieldManagementComponent extends StatelessWidget {
                           border: OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
                       )),
                 if (controller.selectedFieldType == 'DateTime' ||
-                    controller.selectedFieldType == 'Date')
+                    controller.selectedFieldType == 'Date' || controller.selectedChildrenFieldType == 'DateTime' ||
+                    controller.selectedChildrenFieldType == 'Date')
                   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
                       child: CommonComponents.defaultCheckBoxListTile(context,
                           value: rangeFilterValue,
@@ -417,12 +427,15 @@ class FieldManagementComponent extends StatelessWidget {
                 if (controller.selectedFieldType == 'DateTime' ||
                     controller.selectedFieldType == 'Date' ||
                     controller.selectedFieldType == 'Time' ||
-                    controller.selectedFieldType == 'Duration')
+                    controller.selectedFieldType == 'Duration'     ||   controller.selectedChildrenFieldType == 'DateTime' ||
+                                                                        controller.selectedChildrenFieldType == 'Date' ||
+                                                                        controller.selectedChildrenFieldType == 'Time' ||
+                                                                        controller.selectedChildrenFieldType == 'Duration')
                   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
                       child: CommonComponents.defaultCheckBoxListTile(context,
                           value: readOnlyValue,
                           title: readOnlyCheckBoxName, onChanged: readOnlyOnChanged)),
-                if (controller.selectedFieldType == 'Decimal')
+                if (controller.selectedFieldType == 'Decimal' || controller.selectedChildrenFieldType == 'Decimal')
                   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
                       child: CommonComponents.defaultTextFormField(
                         context,
@@ -433,8 +446,9 @@ class FieldManagementComponent extends StatelessWidget {
                           border: OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
                       )),
-                if (controller.selectedFieldType == 'Decimal')
+                if (controller.selectedFieldType == 'Decimal' || controller.selectedChildrenFieldType == 'Decimal')
                   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
                       child: CommonComponents.defaultTextFormField(
                         context,
@@ -445,16 +459,14 @@ class FieldManagementComponent extends StatelessWidget {
                           border: OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
                       )),
 
                 
-              ],
+              ]]
             ),
           ),
-
-          
-
-
+SizedBox(height: 12),
           Visibility(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -528,130 +540,167 @@ class FieldManagementComponent extends StatelessWidget {
               ],
             ),
           ),
+          
         ],
       ),
     );
   }
+
+  bool shouldShowAdditionalFields() {
+    if (isInDialog) {
+      // In dialog, show all fields regardless of type
+      return true;
+    } else {
+      // In main form, hide fields if type is Children
+      return controller.selectedFieldType != 'Children';
+    }
+  }
 }
 
 
-class CommonFormField extends StatelessWidget {
-  final String labelText;
-  final String hintText;
-  final TextEditingController controller;
-  final bool? isRequired;
-  final bool? isReadOnly;
-  final TextInputType? keyboardType;
-  final String? Function(String?)? validator;
-  final Function(String)? onChanged;
-  final Widget? suffix;
-  final Widget? prefix;
-  final int? maxLines;
-  final int? minLines;
-  final int? maxLength;
 
-  const CommonFormField({
+class DynamicFieldDataTable extends StatelessWidget {
+  final List<Map<String, dynamic>> formFields;
+  final void Function(int index, Map<String, dynamic> field) onEdit;
+  final void Function(String fieldName) onDelete;
+
+  const DynamicFieldDataTable({
     super.key,
-    required this.labelText,
-    required this.hintText,
-    required this.controller,
-    this.isRequired = false,
-    this.isReadOnly = false,
-    this.keyboardType,
-    this.validator,
-    this.onChanged,
-    this.suffix,
-    this.prefix,
-    this.maxLines = 1,
-    this.minLines,
-    this.maxLength,
+    required this.formFields,
+    required this.onEdit,
+    required this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: labelText,
-          hintText: hintText,
-          suffixIcon: suffix,
-          prefixIcon: prefix,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide(
-              color: Colors.grey.shade300,
-              width: 1.5,
-            ),
+    return Obx(() {
+      return SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.shade300, width: 1.0),
+            borderRadius: BorderRadius.circular(10),
+            color: Theme.of(context).colorScheme.secondary,
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide(
-              color: Colors.grey.shade300,
-              width: 1.5,
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: DataTable(
+                showCheckboxColumn: true,
+                checkboxHorizontalMargin: 10.0,
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0)),
+                dataTextStyle: const TextStyle(fontWeight: FontWeight.w400),
+                headingRowColor: const WidgetStatePropertyAll(Color(0xfff7fafc)),
+                dataRowColor: const WidgetStatePropertyAll(Color(0xffffffff)),
+                columns: _buildColumns(),
+                rows: _buildRows(context),
+              ),
             ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide(
-              color: Theme.of(context).primaryColor,
-              width: 1.5,
-            ),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: const BorderSide(
-              color: Colors.red,
-              width: 1.5,
-            ),
-          ),
-          labelStyle: TextStyle(
-            color: Colors.grey.shade700,
           ),
         ),
-        keyboardType: keyboardType,
-        readOnly: isReadOnly!,
-        maxLines: maxLines,
-        minLines: minLines,
-        maxLength: maxLength,
-        validator: (value) {
-          if (isRequired! && (value == null || value.isEmpty)) {
-            return '$labelText is required';
-          }
-          if (validator != null) {
-            return validator!(value);
-          }
-          return null;
-        },
-        onChanged: onChanged,
-      ),
-    );
+      );
+    });
   }
-}
 
-// Optional: Checkbox component that matches the style
-class CommonCheckbox extends StatelessWidget {
-  final String title;
-  final bool value;
-  final Function(bool?) onChanged;
+  /// Creates column headers dynamically
+  List<DataColumn> _buildColumns() {
+    final columnTitles = [
+      'S.No', 'Field Name', 'Type', 'Required', 'Show in View', 'Show in Report',
+      'Show in Edit', 'Show in Filter', 'Show in List', 'Show in Add', 'Choices',
+      'To', 'Min Length', 'Max Length', 'Read Only', 'Max Digits', 'Decimal Places',
+      'Range Filter', 'Default', 'Multiple Filter', 'Actions'
+    ];
 
-  const CommonCheckbox({
-    Key? key,
-    required this.title,
-    required this.value,
-    required this.onChanged,
-  }) : super(key: key);
+    return columnTitles
+        .map((title) => DataColumn(
+              label: Text(
+                title,
+                style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.black),
+              ),
+            ))
+        .toList();
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return CheckboxListTile(
-      title: Text(title),
-      value: value,
-      onChanged: onChanged,
-      contentPadding: EdgeInsets.zero,
-      controlAffinity: ListTileControlAffinity.leading,
-      activeColor: Theme.of(context).primaryColor,
+  /// Creates rows dynamically based on formFields
+  List<DataRow> _buildRows(BuildContext context) {
+    if (formFields.isEmpty) return [];
+
+    return formFields.asMap().entries.map((entry) {
+      final index = entry.key + 1;
+      final fieldData = entry.value;
+      final fieldName = fieldData.keys.first;
+      final attributes = fieldData[fieldName] as Map<String, dynamic>;
+
+      return DataRow(cells: [
+        DataCell(Text(index.toString())),
+        DataCell(Text(fieldName)),
+        DataCell(Text(attributes['type'].toString())),
+        DataCell(Text(attributes['required']?.toString() ?? "-")),
+        DataCell(Text(attributes['show_in_view']?.toString() ?? "-")),
+        DataCell(Text(attributes['show_in_report']?.toString() ?? "-")),
+        DataCell(Text(attributes['show_in_edit']?.toString() ?? "-")),
+        DataCell(Text(attributes['show_in_filter']?.toString() ?? "-")),
+        DataCell(Text(attributes['show_in_list']?.toString() ?? "-")),
+        DataCell(Text(attributes['show_in_add']?.toString() ?? "-")),
+        DataCell(_buildChoiceDropdown(attributes, context)),
+        DataCell(Text(attributes['to']?.toString() ?? "-")),
+        DataCell(Text(attributes['min_length']?.toString() ?? "-")),
+        DataCell(Text(attributes['max_length']?.toString() ?? "-")),
+        DataCell(Text(attributes['read_only']?.toString() ?? "-")),
+        DataCell(Text(attributes['max_digits']?.toString() ?? "-")),
+        DataCell(Text(attributes['decimal_places']?.toString() ?? "-")),
+        DataCell(Text(attributes['range_filter']?.toString() ?? "-")),
+        DataCell(Text(attributes['default']?.toString() ?? "-")),
+        DataCell(Text(attributes['multiple_filter']?.toString() ?? "-")),
+        DataCell(_buildActionButtons(fieldName, index)),
+      ]);
+    }).toList();
+  }
+
+  /// Builds dropdown for 'Choice' type fields
+  Widget _buildChoiceDropdown(Map<String, dynamic> attributes, BuildContext context) {
+    if (attributes['type'] == 'Choice' && attributes['choices'] != null) {
+      return Container(
+        margin: const EdgeInsets.all(5.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: DropdownButton<String>(
+          menuMaxHeight: 150,
+          borderRadius: BorderRadius.circular(10.0),
+          dropdownColor: Theme.of(context).colorScheme.secondary,
+          value: null,
+          items: (attributes['choices'] as List).map<DropdownMenuItem<String>>((choice) {
+            return DropdownMenuItem<String>(
+              value: choice[1].toString(),
+              child: Text(choice[1].toString()),
+            );
+          }).toList(),
+          onChanged: (String? newValue) {
+            print('Selected: $newValue');
+          },
+        ),
+      );
+    }
+    return const Text("-");
+  }
+
+  /// Builds action buttons (Edit/Delete)
+  Widget _buildActionButtons(String fieldName, int index) {
+    return Row(
+      children: [
+        IconButton(
+          icon: const Icon(Icons.edit),
+          onPressed: () => onEdit(index, formFields[index]),
+        ),
+        IconButton(
+          icon: const Icon(Icons.delete),
+          onPressed: () => onDelete(fieldName),
+        ),
+      ],
     );
   }
 }
