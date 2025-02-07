@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:implementation_panel/Screens/Dashboard/Sample/Model/ModelName_validator_list_model.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Model/get_dynamic_data_list_model.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Model/view_by_id_model.dart';
 import 'package:implementation_panel/utils/http_utils.dart';
@@ -83,28 +84,20 @@ class DynamicRepo {
     return null;
   }
 
-  // Future<List<MiniCommonModel>> loadList() async {
-  //   List<MiniCommonModel> result = [];
-  //   try {
-  //     var response = await HttpUtils.getInstance().get(
-  //         "/dynamicdjango/mini/{app_name}/{model_name}/{field_name}/");
+  Future<DynamicModelsNameList?> getModelNameList(filterParams) async {
+    try {
+      var response = await HttpUtils.getInstance().get("/dynamicdjango/models/List/", queryParameters: filterParams);
 
-  //     if (response.statusCode == 200) {
-  //       debugPrint("Response Data:  ${response.data}");
-  //       var data = response.data['results'];
-  //       data.forEach((item) {
-  //         result.add(MiniCommonModel.fromJson(item));
-  //       });
-  //       return result;
-  //     } else {
-  //       return result;
-  //     }
-  //   } on DioException catch (e) {
-  //     debugPrint(e.message);
-  //     throw Exception(e.message);
-  //   } on SocketException catch (_) {
-  //     debugPrint('not connected');
-  //   }
-  //   return result;
-  // }
+      if (response.statusCode == 200) {
+        return DynamicModelsNameList.fromJson(response.data as Map<String, dynamic>);
+      }
+    } on DioException catch (e) {
+      debugPrint(e.message);
+      throw Exception(e.message);
+    } on SocketException catch (_) {
+      debugPrint('not connected');
+    }
+    return null;
+  }
+
 }

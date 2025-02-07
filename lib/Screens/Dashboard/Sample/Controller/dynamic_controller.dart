@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:implementation_panel/Common/common_service.dart';
 import 'package:implementation_panel/Common/snackbar_widget.dart';
+import 'package:implementation_panel/Screens/Dashboard/Sample/Model/ModelName_validator_list_model.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Model/get_dynamic_data_list_model.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Model/view_by_id_model.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Repo/dynamic_repo.dart';
@@ -29,6 +30,8 @@ class DynamicController extends GetxController {
 
   int editingIndex = -1;
   var _isEditMode = false.obs;
+  // final isModelNameValid = true.obs;
+  // final validationMessage = ''.obs;
 
   var isRequired = false.obs;
   var isView = false.obs;
@@ -72,6 +75,58 @@ class DynamicController extends GetxController {
   final RxInt _selectedChoice = 1.obs;
   int get selectedChoice => _selectedChoice.value;
   set selectedChoice(value) => _selectedChoice.value = value;
+
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   modelName.addListener(validateModelNameRealTime);
+  // }
+  // void validateModelNameRealTime() {
+  //   final text = modelName.text;
+  //   _performValidation(text);
+  // }
+  // void _performValidation(String text) {
+  //   // Reset validation state
+  //   isModelNameValid.value = true;
+  //   validationMessage.value = '';
+  //   // Empty check
+  //   if (text.isEmpty) {
+  //     isModelNameValid.value = false;
+  //     validationMessage.value = 'Please enter a model name';
+  //     return;
+  //   }
+  //   // Check for special characters and spaces
+  //   final RegExp validCharacters = RegExp(r'^[a-zA-Z0-9_]+$');
+  //   if (!validCharacters.hasMatch(text)) {
+  //     isModelNameValid.value = false;
+  //     validationMessage.value = 'Only letters, numbers and underscore allowed';
+  //     _showValidationMessage('Invalid characters used');
+  //     return;
+  //   }
+  //   // Check for existing model names
+  //   final isExists = _dynamicModelNameList
+  //       .any((model) => model.modelName?.toLowerCase() == text.toLowerCase());
+  //   if (isExists) {
+  //     isModelNameValid.value = false;
+  //     validationMessage.value = 'Model name already exists';
+  //     _showValidationMessage('This model name is already in use');
+  //     return;
+  //   }
+  //   // If all validations pass
+  //   isModelNameValid.value = true;
+  //   validationMessage.value = 'Valid model name';
+  // }
+  // void _showValidationMessage(String message) {
+  //   Get.snackbar(
+  //     'Validation',
+  //     message,
+  //     backgroundColor: Colors.orange.withOpacity(0.1),
+  //     duration: const Duration(seconds: 2),
+  //     snackPosition: SnackPosition.BOTTOM,
+  //     margin: const EdgeInsets.all(8),
+  //   );
+  // }
+
 
   initDialogBoxState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -219,107 +274,6 @@ class DynamicController extends GetxController {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-//   Map<String, dynamic> generateFieldData() {
-//     final Map<String, dynamic> fieldData = {
-//       'type': selectedFieldType,
-//       ...getFieldOptions(selectedFieldType),
-//     };
-//     if (selectedFieldType == 'Choice' && choices.isNotEmpty) {
-//       fieldData['choices'] = List<List<dynamic>>.from(choices);
-//     }
-//     return {fieldNameController.text: fieldData};
-//   }
-//   Map<String, dynamic> getFieldOptions(String fieldType) {
-//   Map<String, dynamic> baseOptions = {
-//     'required': isRequired.value,
-//     'show_in_view': isView.value,
-//     'show_in_report': isReport.value,
-//     'show_in_edit': isEdit.value,
-//     'show_in_filter': isFilter.value,
-//     'show_in_list': isList.value,
-//     'show_in_add': isAdd.value,
-//   };
-//   switch (fieldType) {
-//     case 'Char':
-//     case 'Text':
-//       return {
-//         ...baseOptions,
-//         'max_length': int.tryParse(maxLengthController.text) ?? 100,
-//         'min_length': int.tryParse(minLengthController.text) ?? 1,
-//       };
-//     // case 'Text':
-//     //   return {
-//     //     ...baseOptions,
-//     //     'max_length': int.tryParse(maxLengthController.text) ?? 1000,
-//     //     'min_length': int.tryParse(minLengthController.text) ?? 5,
-//     //   };
-//     case 'Choice':
-//       return {
-//         ...baseOptions,
-//         'default': choices.isNotEmpty ? choices[0][0] : 1,
-//         'choices': choices.map((choice) => [choice[0], choice[1]]).toList(),
-//       };
-//     case 'Integer':
-//       return {
-//         ...baseOptions,
-//         'default': 0,
-//       };
-//     case 'Decimal':
-//       return {
-//         ...baseOptions,
-//         'max_digits': int.tryParse(maxDigitsController.text) ?? 9,
-//         'decimal_places': int.tryParse(decimalPlacesController.text) ?? 2,
-//         'default': 0,
-//       };
-//     case 'DateTime':
-//     case 'Date':
-//       return {
-//         ...baseOptions,
-//         'read_only': isReadOnly.value,
-//         'range_filter': rangeFilter.value,
-//       };
-//     case 'Time':
-//     case 'Duration':
-//       return {
-//         ...baseOptions,
-//         'read_only': isReadOnly.value,
-//       };
-//     case 'ManyToMany':
-//       return {
-//         ...baseOptions,
-//         'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
-//         'multiple_filter': isMultipleFilter.value,
-//         'read_fields': ['name'],
-//         'filter_data': {},
-//         'related_name': 'sample_show_multi',
-//       };
-//     case 'ForeignKey':
-//       return {
-//         ...baseOptions,
-//         'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
-//         'read_fields': ['name'],
-//         'filter_data': {},
-//         'related_name': 'sample_show',
-//         'import_fields': ['name'],
-//         'export_fields': ['name'],
-//       };
-//     case 'Children':
-//       return {
-//         "fields": jsonEncode(formFields.fold<Map<String, dynamic>>(
-//         {},
-//         (map, element) => {...map, ...element},
-//       ))
-//       };
-//     case 'Boolean':
-//       return {
-//         ...baseOptions,
-//         'default': false,
-//       };
-//     default:
-//       return baseOptions;
-//   }
-// }
-
   void addChoice() {
     if (choiceController.text.isNotEmpty) {
       final int id = nextChoiceId.value;
@@ -377,13 +331,14 @@ class DynamicController extends GetxController {
   @override
   void onClose() {
     appLabel.dispose();
-    modelName.dispose();
     fieldNameController.dispose();
     maxLengthController.dispose();
     minLengthController.dispose();
     maxDigitsController.dispose();
     decimalPlacesController.dispose();
     choiceController.dispose();
+    // modelName.removeListener(validateModelNameRealTime);
+    modelName.dispose();
     super.onClose();
   }
 
@@ -483,6 +438,7 @@ class DynamicController extends GetxController {
         _initializeFields();
       } else {
         _isEditMode.value = false;
+        // await getModelNameList(isLoading: true);
         isRefresh = true;
         disposeController();
       }
@@ -639,7 +595,7 @@ class DynamicController extends GetxController {
             selectedChildrenFieldType == 'Text') ...{
           "max_length": maxLengthController.text.isNotEmpty
               ? int.tryParse(maxLengthController.text)
-              : 100,
+              : null,
           "min_length": minLengthController.text.isNotEmpty
               ? int.tryParse(minLengthController.text)
               : 1,
@@ -686,14 +642,6 @@ class DynamicController extends GetxController {
   }
 
   void addField() {
-    if (fieldNameController.text.isEmpty) {
-      showSnackBar(
-        title: 'Error',
-        message: 'Field Name is required',
-        icon: Icon(Icons.error, color: Colors.red),
-      );
-      return;
-    }
 
     Map<String, dynamic> fieldContent = {
       "type": selectedFieldType,
@@ -711,13 +659,25 @@ class DynamicController extends GetxController {
       fieldContent.addAll({
         "max_length": maxLengthController.text.isNotEmpty
             ? int.tryParse(maxLengthController.text)
-            : 100,
+            : null,
         "min_length": minLengthController.text.isNotEmpty
             ? int.tryParse(minLengthController.text)
             : 1,
       });
     } else if (selectedFieldType == 'Choice') {
-      fieldContent["choices"] = List.from(choices);
+      fieldContent.addAll({
+        'default': choices.isNotEmpty ? choices[0][0] : 1,
+        'choices': choices.map((choice) => [choice[0], choice[1]]).toList(),
+      });
+      
+    } else if (selectedFieldType == 'Integer') {
+      fieldContent.addAll({
+        'default': 0,
+      });
+    }  else if (selectedFieldType == 'Boolean') {
+      fieldContent.addAll({
+        'default': false,
+      });
     } else if (selectedFieldType == 'Decimal') {
       fieldContent.addAll({
         "max_digits": maxDigitsController.text.isNotEmpty
@@ -726,6 +686,7 @@ class DynamicController extends GetxController {
         "decimal_places": decimalPlacesController.text.isNotEmpty
             ? int.tryParse(decimalPlacesController.text)
             : null,
+        'default': 0,
       });
     } else if (selectedFieldType == 'ManyToMany') {
       fieldContent.addAll({
@@ -795,4 +756,263 @@ class DynamicController extends GetxController {
     addFieldsDisposeController();
     update();
   }
+
+
+  final RxInt _modelNameCurrentPage = 1.obs;
+  int get modelNameCurrentPage => _modelNameCurrentPage.value;
+  set modelNameCurrentPage(int value) => _modelNameCurrentPage.value = value;
+
+  final RxInt _modelNameTotalPages = 1.obs;
+  int get modelNameTotalPages => _modelNameTotalPages.value;
+  set modelNameTotalPages(int value) => _modelNameTotalPages.value = value;
+
+  final RxBool _modelNameIsRefresh = false.obs;
+  bool get modelNameIsRefresh => _modelNameIsRefresh.value;
+  set modelNameIsRefresh(bool value) => _modelNameIsRefresh.value = value;
+
+  final RxInt _modelNameListCount = 0.obs;
+  int get modelNameListCount => _modelNameListCount.value;
+  set modelNameListCount(int value) => _modelNameListCount.value = value;
+
+  final RxBool _isModelNameLoading = true.obs;
+  bool get isModelNameLoading => _isModelNameLoading.value;
+  set isModelNameLoading(bool value) => _isModelNameLoading.value = value;
+
+  final RxList<DynamicModelsNameData> _modelNameList = <DynamicModelsNameData>[].obs;
+  List<DynamicModelsNameData> get modelNameList => _modelNameList;
+  
+  DynamicModelsNameData? selectedModelName;
+
+  Future<void> getModelNameList({bool isLoading = true}) async {
+    if (modelNameIsRefresh) {
+      _modelNameList.value = <DynamicModelsNameData>[];
+      modelNameCurrentPage = 1;
+      showLoadingDialog();
+    } else {
+      if (modelNameCurrentPage > modelNameTotalPages) {
+        return;
+      }
+    }
+
+    final filterParams = <String, dynamic>{};
+
+    try {
+      final data = await DynamicRepo().getModelNameList(filterParams);
+
+      if (data != null && data.models != null) {
+        _modelNameList.value = [...modelNameList, ...data.models!];
+
+        // Remove duplicates based on modelName
+        var seen = <String>{};
+        _modelNameList.value = _modelNameList
+            .where((field) => field.modelName != null && seen.add(field.modelName!))
+            .toList();
+
+        modelNameIsRefresh = false;
+        closeLoadingDialog();
+
+        modelNameTotalPages = (modelNameListCount / CommonService.instance.pageSize).ceil();
+        modelNameCurrentPage++;
+      } else {
+        closeLoadingDialog();
+      }
+    } catch (e) {
+      closeLoadingDialog();
+      debugPrint("Error fetching model names: $e");
+    }
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//   Map<String, dynamic> generateFieldData() {
+//     final Map<String, dynamic> fieldData = {
+//       'type': selectedFieldType,
+//       ...getFieldOptions(selectedFieldType),
+//     };
+//     if (selectedFieldType == 'Choice' && choices.isNotEmpty) {
+//       fieldData['choices'] = List<List<dynamic>>.from(choices);
+//     }
+//     return {fieldNameController.text: fieldData};
+//   }
+//   Map<String, dynamic> getFieldOptions(String fieldType) {
+//   Map<String, dynamic> baseOptions = {
+//     'required': isRequired.value,
+//     'show_in_view': isView.value,
+//     'show_in_report': isReport.value,
+//     'show_in_edit': isEdit.value,
+//     'show_in_filter': isFilter.value,
+//     'show_in_list': isList.value,
+//     'show_in_add': isAdd.value,
+//   };
+//   switch (fieldType) {
+//     case 'Char':
+//     case 'Text':
+//       return {
+//         ...baseOptions,
+//         'max_length': int.tryParse(maxLengthController.text) ?? 100,
+//         'min_length': int.tryParse(minLengthController.text) ?? 1,
+//       };
+//     // case 'Text':
+//     //   return {
+//     //     ...baseOptions,
+//     //     'max_length': int.tryParse(maxLengthController.text) ?? 1000,
+//     //     'min_length': int.tryParse(minLengthController.text) ?? 5,
+//     //   };
+//     case 'Choice':
+//       return {
+//         ...baseOptions,
+//         'default': choices.isNotEmpty ? choices[0][0] : 1,
+//         'choices': choices.map((choice) => [choice[0], choice[1]]).toList(),
+//       };
+//     case 'Integer':
+//       return {
+//         ...baseOptions,
+//         'default': 0,
+//       };
+//     case 'Decimal':
+//       return {
+//         ...baseOptions,
+//         'max_digits': int.tryParse(maxDigitsController.text) ?? 9,
+//         'decimal_places': int.tryParse(decimalPlacesController.text) ?? 2,
+//         'default': 0,
+//       };
+//     case 'DateTime':
+//     case 'Date':
+//       return {
+//         ...baseOptions,
+//         'read_only': isReadOnly.value,
+//         'range_filter': rangeFilter.value,
+//       };
+//     case 'Time':
+//     case 'Duration':
+//       return {
+//         ...baseOptions,
+//         'read_only': isReadOnly.value,
+//       };
+//     case 'ManyToMany':
+//       return {
+//         ...baseOptions,
+//         'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
+//         'multiple_filter': isMultipleFilter.value,
+//         'read_fields': ['name'],
+//         'filter_data': {},
+//         'related_name': 'sample_show_multi',
+//       };
+//     case 'ForeignKey':
+//       return {
+//         ...baseOptions,
+//         'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
+//         'read_fields': ['name'],
+//         'filter_data': {},
+//         'related_name': 'sample_show',
+//         'import_fields': ['name'],
+//         'export_fields': ['name'],
+//       };
+//     case 'Children':
+//       return {
+//         "fields": jsonEncode(formFields.fold<Map<String, dynamic>>(
+//         {},
+//         (map, element) => {...map, ...element},
+//       ))
+//       };
+//     case 'Boolean':
+//       return {
+//         ...baseOptions,
+//         'default': false,
+//       };
+//     default:
+//       return baseOptions;
+//   }
+// }
+
+
+
+
+//   final _dynamicModelNameList = <DynamicModelsNameData>[].obs;
+//   List<DynamicModelsNameData> get dynamicModelNameList => _dynamicModelNameList;
+//   set dynamicModelNameList(value) => _dynamicModelNameList;
+//   final RxInt _dynamicModelNameListCount = 0.obs;
+//   get dynamicModelNameListCount => _dynamicModelNameListCount.value;
+//   set dynamicModelNameListCount(value) => _dynamicModelNameListCount.value = value;
+// Future<bool> getDynamicModelNameList({bool isLoading = true}) async {
+//     try {
+//       if (isLoading) {
+//         showLoadingDialog();
+//       }
+//       final filterParams = <String, dynamic>{};
+//       final data = await DynamicRepo().getModelNameList(filterParams);
+//       if (data is List<DynamicModelsNameData>) {
+//         _dynamicModelNameList.value = data as List<DynamicModelsNameData>; 
+//         // Remove duplicates based on model name
+//         var seen = <String>{};
+//         _dynamicModelNameList.value = _dynamicModelNameList
+//             .where((model) => seen.add(model.modelName?.toLowerCase() ?? ''))
+//             .toList();
+//         if (isLoading) {
+//           closeLoadingDialog();
+//         }
+//         return true;
+//       } else {
+//         if (isLoading) {
+//           closeLoadingDialog();
+//         }
+//         return false;
+//       }
+//     } catch (e) {
+//       if (isLoading) {
+//         closeLoadingDialog();
+//       }
+//       debugPrint("Error fetching dynamic model list: $e");
+//       rethrow;
+//     }
+//   }
+
+
+
+  // getDynamicModelNameList({bool isLoading = true}) async {
+  //   _dynamicModelNameList.value = <DynamicModelsNameData>[];
+  //   final filterParams = <String, dynamic>{};
+  //   print('filter params getDynamicList :::::::  $filterParams');
+  //   try {
+  //     final data = await DynamicRepo().getModelNameList(filterParams);
+  //     if (data != null) {
+  //       _dynamicModelNameList.value = data ?? [];
+  //       var seen = <String>{};
+  //       List<DynamicModelsNameData> filtered = _dynamicModelNameList
+  //           .where((field) => seen.add(field.toString())).toList();
+  //       _dynamicModelNameList.value = filtered;
+  //       // dynamicModelNameListCount = value.count;
+  //       // _dynamicModelNameList.value = [...dynamicModelNameList, ...value.results ?? []];
+  //       // var seen = <String>{};
+  //       // List<DynamicModelsNameData> filtered = _dynamicModelNameList.where((field) => seen.add(field.id.toString())).toList();
+  //       // _dynamicModelNameList.value = filtered;
+  //       // isRefresh = false;
+  //       // currentPage++;
+  //       // totalPages = (dynamicModelNameListCount / commonService.pageSize).ceil();
+  //       update();
+  //       return true;
+  //     } else {
+  //       closeLoadingDialog();
+  //       return false;
+  //     }
+  //   } catch (e) {
+  //     closeLoadingDialog();
+  //     debugPrint("users error: $e");
+  //     rethrow;
+  //   }
+  // }

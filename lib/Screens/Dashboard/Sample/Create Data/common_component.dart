@@ -1,9 +1,11 @@
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:implementation_panel/BreakPoints/breakpoints.dart';
 import 'package:implementation_panel/Common/Common%20Components/common_components.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Controller/dynamic_controller.dart';
+import 'package:implementation_panel/Screens/Dashboard/Sample/Model/ModelName_validator_list_model.dart';
 import 'package:responsive_toolkit/responsive_grid.dart';
 
 class FieldManagementComponent extends StatelessWidget {
@@ -12,6 +14,7 @@ class FieldManagementComponent extends StatelessWidget {
   final String fieldNameText;
   final String fieldNameLabeText;
   final TextEditingController fieldNameController;
+  final String? Function(String?)? fieldNameValidation;
 
   final String typeHintText;
   final String? typeValue;
@@ -26,6 +29,17 @@ class FieldManagementComponent extends StatelessWidget {
   final Function(String?) addedChoiceOnChanged;
   final String? Function(String?)? addedChoiceValidator;
   final VoidCallback? addedChoiceOnTap;
+
+  final String modelNameMastersText;
+  final String? modelNameMastersValue;
+  final Future<List<DynamicModelsNameData>> Function(String, LoadProps?)? modelNameMastersItems;
+  final Function(String?) modelNameMastersOnChanged;
+  final String? Function(String?)? modelNameMastersValidator;
+  final VoidCallback? modelNameMastersOnTap;
+  final dynamic modelNameMastersItemBuilder;
+  final dynamic modelNameMastersCompareFN;
+  final dynamic modelNameMastersItemAsString;
+
 
   final String choiceText;
   final String choiceLabeText;
@@ -70,10 +84,12 @@ class FieldManagementComponent extends StatelessWidget {
   final String maxLengthText;
   final String maxLengthLabeText;
   final TextEditingController maxLengthController;
+  final String? Function(String?)? maxLengthValidation;
 
   final String minLengthText;
   final String minLengthLabeText;
   final TextEditingController minLengthController;
+  final String? Function(String?)? minLengthValidation;
 
   final String rangeFilterCheckBoxName;
   final bool rangeFilterValue;
@@ -86,10 +102,12 @@ class FieldManagementComponent extends StatelessWidget {
   final String maxDigitsText;
   final String maxDigitsLabeText;
   final TextEditingController maxDigitsController;
+  final String? Function(String?)? maxDigitsValidation;
 
   final String decimalText;
   final String decimalLabeText;
   final TextEditingController decimalController;
+  final String? Function(String?)? decimalValidation;
 
   final String clearButtonText;
   final VoidCallback clearButtonOnTap;
@@ -105,6 +123,7 @@ class FieldManagementComponent extends StatelessWidget {
     required this.fieldNameText,
     required this.fieldNameController,
     required this.fieldNameLabeText,
+    required this.fieldNameValidation,
 
     required this.typeHintText,
     this.typeValue,
@@ -119,6 +138,16 @@ class FieldManagementComponent extends StatelessWidget {
     required this.addedChoiceOnChanged,
     this.addedChoiceValidator,
     this.addedChoiceOnTap,
+
+    required this.modelNameMastersText,
+    this.modelNameMastersValue,
+    required this.modelNameMastersItems,
+    required this.modelNameMastersOnChanged,
+    this.modelNameMastersValidator,
+    this.modelNameMastersOnTap,
+    this.modelNameMastersItemBuilder,
+    this.modelNameMastersCompareFN,
+    this.modelNameMastersItemAsString,
 
     required this.choiceText,
     required this.choiceLabeText,
@@ -163,10 +192,12 @@ class FieldManagementComponent extends StatelessWidget {
     required this.maxLengthText,
     required this.maxLengthLabeText,
     required this.maxLengthController,
+    this.maxLengthValidation,
     
     required this.minLengthText,
     required this.minLengthLabeText,
     required this.minLengthController,
+    this.minLengthValidation,
     
     required this.rangeFilterCheckBoxName,
     required this.rangeFilterValue,
@@ -179,10 +210,12 @@ class FieldManagementComponent extends StatelessWidget {
     required this.maxDigitsText,
     required this.maxDigitsLabeText,
     required this.maxDigitsController,
+    this.maxDigitsValidation,
     
     required this.decimalText,
     required this.decimalLabeText,
     required this.decimalController,
+    this.decimalValidation,
     
     required this.clearButtonText,
     required this.clearButtonOnTap,
@@ -223,6 +256,7 @@ class FieldManagementComponent extends StatelessWidget {
                     context,
                     controller: fieldNameController,
                     hintText: fieldNameText,
+                    validator: fieldNameValidation,
                     decoration: InputDecoration(
                       labelText: fieldNameLabeText,
                       border: OutlineInputBorder(),
@@ -263,6 +297,7 @@ class FieldManagementComponent extends StatelessWidget {
                           child: CommonComponents.defaultTextFormField(
                             context,
                             controller: choiceController,
+                            validator: addedChoiceValidator,
                             hintText: choiceText,
                             decoration: InputDecoration(
                               labelText: choiceLabeText,
@@ -302,6 +337,28 @@ class FieldManagementComponent extends StatelessWidget {
                       onChanged: addedChoiceOnChanged,
                     ),
                   ),
+
+                  if (controller.selectedFieldType == 'ForeignKey' || controller.selectedFieldType == 'ManyToMany')
+                    ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
+                      child: CommonComponents.defaultDropdownSearch<DynamicModelsNameData>(
+  context,
+  hintText: modelNameMastersText ?? 'Select a Model',
+  showBottomSheet: false,
+  items: (filter, infiniteScrollProps) async {
+    if (modelNameMastersItems == null) {
+      debugPrint("modelNameMastersItems is null");
+      return [];
+    }
+    return await modelNameMastersItems!(filter, infiniteScrollProps);
+  },
+  itemBuilder: modelNameMastersItemBuilder,
+  compareFn: modelNameMastersCompareFN,
+  itemAsString: modelNameMastersCompareFN,
+  onChanged: modelNameMastersOnChanged,
+),
+                  ),
+     
+  
                 if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType != 'Children')
                   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
                       child: CommonComponents.defaultCheckBoxListTile(
@@ -328,7 +385,7 @@ class FieldManagementComponent extends StatelessWidget {
                           onChanged: showReportOnChanged,
                         ),
                   ),
-                if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType != 'Children')
+                if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType != 'Children' )
                   ResponsiveColumn(
                     ResponsiveConstants().buttonBreakpoints,
                     child: CommonComponents.defaultCheckBoxListTile(
@@ -348,7 +405,7 @@ class FieldManagementComponent extends StatelessWidget {
                           onChanged: showFilterOnChanged,
                         ),
                   ),
-                if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType != 'Children')
+                if (controller.selectedFieldType != 'Children'  || controller.selectedChildrenFieldType != 'Children')
                   ResponsiveColumn(
                     ResponsiveConstants().buttonBreakpoints,
                     child:  CommonComponents.defaultCheckBoxListTile(
@@ -358,7 +415,7 @@ class FieldManagementComponent extends StatelessWidget {
                           onChanged: showListOnChanged,
                         ),
                   ),
-                if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType != 'Children')
+                if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType != 'Children' )
                   ResponsiveColumn(
                     ResponsiveConstants().buttonBreakpoints,
                     child: CommonComponents.defaultCheckBoxListTile(
@@ -368,7 +425,7 @@ class FieldManagementComponent extends StatelessWidget {
                           onChanged: showAddOnChanged,
                         ),
                   ),
-                if (controller.selectedFieldType == 'ManyToMany' || controller.selectedChildrenFieldType == 'ManyToMany')
+                if (controller.selectedFieldType == 'ManyToMany' || controller.selectedChildrenFieldType == 'ManyToMany' )
                   ResponsiveColumn(
                     ResponsiveConstants().buttonBreakpoints,
                     child: CommonComponents.defaultCheckBoxListTile(
@@ -388,13 +445,13 @@ class FieldManagementComponent extends StatelessWidget {
                           onChanged: defaultOnChanged,
                         ),
                   ),
-               if (controller.selectedFieldType == 'Char' || controller.selectedFieldType == 'Text' ||
-                  controller.selectedChildrenFieldType == 'Char' || controller.selectedChildrenFieldType == 'Type')
+               if (controller.selectedFieldType == 'Char' || controller.selectedFieldType == 'Text' || controller.selectedChildrenFieldType == 'Char' || controller.selectedChildrenFieldType == 'Text' )
                   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
                       child: CommonComponents.defaultTextFormField(
                         context,
                         controller: maxLengthController,
                         hintText: maxLengthText,
+                        validator: maxLengthValidation,
                         decoration:  InputDecoration(
                           labelText: maxLengthLabeText,
                           border: OutlineInputBorder(),
@@ -402,14 +459,14 @@ class FieldManagementComponent extends StatelessWidget {
                         keyboardType: TextInputType.number,
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
                       )),
-                if (controller.selectedFieldType == 'Char' ||
-                    controller.selectedFieldType == 'Text' || controller.selectedChildrenFieldType == 'Char' ||
-                    controller.selectedChildrenFieldType == 'Text')
+                      
+                if (controller.selectedFieldType == 'Char' || controller.selectedFieldType == 'Text' || controller.selectedChildrenFieldType == 'Char' || controller.selectedChildrenFieldType == 'Text' )
                   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
                       child: CommonComponents.defaultTextFormField(
                         context,
                         controller: minLengthController,
                         hintText: minLengthText,
+                        validator: minLengthValidation,
                         decoration: InputDecoration(
                           labelText: minLengthLabeText,
                           border: OutlineInputBorder(),
@@ -417,30 +474,24 @@ class FieldManagementComponent extends StatelessWidget {
                         keyboardType: TextInputType.number,
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
                       )),
-                if (controller.selectedFieldType == 'DateTime' ||
-                    controller.selectedFieldType == 'Date' || controller.selectedChildrenFieldType == 'DateTime' ||
-                    controller.selectedChildrenFieldType == 'Date')
+                if (controller.selectedFieldType == 'DateTime' || controller.selectedFieldType == 'Date' || controller.selectedChildrenFieldType == 'DateTime' || controller.selectedChildrenFieldType == 'Date' )
                   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
                       child: CommonComponents.defaultCheckBoxListTile(context,
                           value: rangeFilterValue,
                           title: rangeFilterCheckBoxName, onChanged: rangeFilterOnChanged)),
-                if (controller.selectedFieldType == 'DateTime' ||
-                    controller.selectedFieldType == 'Date' ||
-                    controller.selectedFieldType == 'Time' ||
-                    controller.selectedFieldType == 'Duration'     ||   controller.selectedChildrenFieldType == 'DateTime' ||
-                                                                        controller.selectedChildrenFieldType == 'Date' ||
-                                                                        controller.selectedChildrenFieldType == 'Time' ||
-                                                                        controller.selectedChildrenFieldType == 'Duration')
+                if (controller.selectedFieldType == 'DateTime' || controller.selectedFieldType == 'Date' || controller.selectedFieldType == 'Time' || controller.selectedFieldType == 'Duration' || 
+                    controller.selectedChildrenFieldType == 'DateTime' || controller.selectedChildrenFieldType == 'Date' || controller.selectedChildrenFieldType == 'Time' || controller.selectedChildrenFieldType == 'Duration'  )
                   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
                       child: CommonComponents.defaultCheckBoxListTile(context,
                           value: readOnlyValue,
                           title: readOnlyCheckBoxName, onChanged: readOnlyOnChanged)),
-                if (controller.selectedFieldType == 'Decimal' || controller.selectedChildrenFieldType == 'Decimal')
+                if (controller.selectedFieldType == 'Decimal' || controller.selectedChildrenFieldType == 'Decimal' )
                   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
                       child: CommonComponents.defaultTextFormField(
                         context,
                         controller: maxDigitsController,
                         hintText: maxDigitsText,
+                        validator: maxDigitsValidation,
                         decoration: InputDecoration(
                           labelText: maxDigitsLabeText,
                           border: OutlineInputBorder(),
@@ -448,12 +499,13 @@ class FieldManagementComponent extends StatelessWidget {
                         keyboardType: TextInputType.number,
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
                       )),
-                if (controller.selectedFieldType == 'Decimal' || controller.selectedChildrenFieldType == 'Decimal')
+                if (controller.selectedFieldType == 'Decimal'  || controller.selectedChildrenFieldType == 'Decimal')
                   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
                       child: CommonComponents.defaultTextFormField(
                         context,
                         controller: decimalController,
                         hintText: decimalText,
+                        validator: decimalValidation,
                         decoration: InputDecoration(
                           labelText: decimalLabeText,
                           border: OutlineInputBorder(),
