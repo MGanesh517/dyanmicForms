@@ -59,6 +59,16 @@ class ResponsiveConstants {
     xxl: const ResponsiveColumnConfig(span: 3)
   );
 
+  final smallBreakpoints = Breakpoints(
+    xs: const ResponsiveColumnConfig(span: 12),
+    // sm: const ResponsiveColumnConfig(span: 10),
+    // md: const ResponsiveColumnConfig(span: 8),
+    // lg: const ResponsiveColumnConfig(span: 6),
+    // xl: const ResponsiveColumnConfig(span: 4),
+    xxl: const ResponsiveColumnConfig(span: 1)
+  );
+
+
   // var desktopWidth = 992;
   // var tabWidth = 768;
 }

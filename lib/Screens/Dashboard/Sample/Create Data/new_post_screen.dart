@@ -5,14 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:implementation_panel/BreakPoints/breakpoints.dart';
 import 'package:implementation_panel/Common/Common%20Components/common_components.dart';
-import 'package:implementation_panel/Common/common_service.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Controller/dynamic_controller.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Create%20Data/common_component.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Model/ModelName_validator_list_model.dart';
-import 'package:implementation_panel/Screens/Dashboard/Sample/Model/get_dynamic_data_list_model.dart';
-import 'package:implementation_panel/Screens/Dashboard/Sample/Repo/dynamic_repo.dart';
 import 'package:implementation_panel/Screens/Dashboard/custom_appbar.dart';
-import 'package:implementation_panel/utils/loader_util.dart';
 import 'package:responsive_toolkit/responsive_grid.dart';
 import 'package:toastification/toastification.dart';
 
@@ -371,81 +367,91 @@ Widget buildChildFieldList() {
                               textInputAction: TextInputAction.next,
                             ),
                           ),
+                          // ResponsiveColumn(
+                          //   ResponsiveConstants().textFormField,
+                          //   child: CommonComponents.defaultTextFormField(
+                          //                                 context,
+                          //                                 title: 'Model Name',
+                          //                                 hintText: 'Enter Model Name',
+                          //                                 controller: controller.modelName,
+                          //                                 onChange: (val) {
+                          //                                   controller.validateModelName();
+                          //                                 },
+                          //                                 validator: (String? val) {
+                          //                                   if (val?.isEmpty ?? true) {
+                          //                                     return 'Please enter a valid Model Name';
+                          //                                   }
+                          //                                   return null;
+                          //                                 },
+                          //                                 keyboardType: TextInputType.text,
+                          //                                 textInputAction: TextInputAction.next,
+                          //                                 // suffixIcon: controller.isModelNameValid.value
+                          //                                 //     ? const Icon(Icons.check_circle, color: Colors.green)
+                          //                                 //     : controller.modelNameError.value.isNotEmpty
+                          //                                 //         ? const Icon(Icons.error, color: Colors.red)
+                          //                                 //         : const SizedBox.shrink()
+                          //                                 // onTap: () => ,
+                          //                                 suffixIcon: Obx(() {
+                          //                                   if (controller.isModelNameValid.value) {
+                          //                                     return const Icon(Icons.check_circle, color: Colors.green);
+                          //                                   } else if (controller.modelNameError.value.isNotEmpty) {
+                          //                                     return const Icon(Icons.error, color: Colors.red);
+                          //                                   } else {
+                          //                                     return const SizedBox.shrink();
+                          //                                   }
+                          //                                 }),
+                          //                               ),
+                          // ),
                           ResponsiveColumn(
-                            ResponsiveConstants().textFormField,
-                            child: CommonComponents.defaultTextFormField(
-                              context,
-                              title: 'Model Name',
-                              hintText: 'Enter Model Name',
-                              controller: controller.modelName,
-                              validator: (String? val) {
-                                if (val?.isEmpty ?? true) {
-                                  return 'Please enter a valid Model Name';
-                                }
-                                return null;
-                              },
-                              keyboardType: TextInputType.text,
-                              textInputAction: TextInputAction.next,
-                            ),
-                          ),
-//                           ResponsiveColumn(
-//   ResponsiveConstants().textFormField,
-//   child: CommonComponents.defaultTextFormField(
-//     context,
-//     title: 'Model Name',
-//     hintText: 'Enter Model Name',
-//     controller: controller.modelName,
-//     onChange: (value) {
-//       bool exists = controller.dynamicModelNameList
-//           .any((model) => model.modelName?.toLowerCase() == value.toLowerCase()); 
-//       if (exists) {
-//         // Show error snackbar for duplicate name
-//         Get.snackbar(
-//           'Validation Error',
-//           'Model name already exists',
-//           backgroundColor: Colors.red.withOpacity(0.1),
-//           colorText: Colors.red,
-//           duration: const Duration(seconds: 2),
-//           snackPosition: SnackPosition.BOTTOM,
-//         );
-//       }
-//     },
-//     validator: (String? val) {
-//       if (val == null || val.isEmpty) {
-//         return 'Please enter a valid Model Name';
-//       }
-//       // Check for special characters and spaces
-//       if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(val)) {
-//         return 'Only letters, numbers and underscore allowed';
-//       }
-//       // Check for existing model name
-//       bool exists = controller.dynamicModelNameList
-//           .any((model) => model.modelName?.toLowerCase() == val.toLowerCase());
-//       if (exists) {
-//         return 'Model name already exists';
-//       }
-//       return null;
-//     },
-//     suffixIcon: Builder(
-//       builder: (context) {
-//         String currentValue = controller.modelName.text;
-//         if (currentValue.isEmpty) {
-//           return const SizedBox.shrink();
-//         }
-//         bool exists = controller.dynamicModelNameList
-//             .any((model) => model.modelName?.toLowerCase() == currentValue.toLowerCase());
-//         bool hasInvalidChars = !RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(currentValue);
-//         // Show red error icon if invalid or exists, green check if valid
-//         return Icon(
-//           exists || hasInvalidChars ? Icons.error : Icons.check_circle,
-//           color: exists || hasInvalidChars ? Colors.red : Colors.green,
-//         );
-//       },
-//     ),
-//     keyboardType: TextInputType.text,
-//     textInputAction: TextInputAction.next,
-//   ),
-// )
+  ResponsiveConstants().textFormField,
+  child: Obx(() => CommonComponents.defaultTextFormField(
+  context,
+  title: 'Model Name',
+  hintText: 'Enter Model Name',
+controller: controller.modelName,
+              onChange: controller.onTextChanged,
+              // decoration: InputDecoration(
+              //   hintText: "Enter Model Name",
+              //   errorText: controller.modelNameError.value.isNotEmpty
+              //       ? controller.modelNameError.value
+              //       : null,
+              //   suffixIcon: Obx(() {
+              //     debugPrint("🎭 UI Updated: Valid = ${controller.isModelNameValid.value}, Error = ${controller.modelNameError.value}");
+              //     return controller.isModelNameValid.value
+              //         ? Icon(Icons.check_circle, color: Colors.green)
+              //         : controller.modelNameError.value.isNotEmpty
+              //             ? Icon(Icons.error, color: Colors.red)
+              //             : SizedBox.shrink();
+              //   }),
+              // ),
+              decoration: InputDecoration(
+                hintText: "Enter Model Name",
+                errorText: controller.modelNameError.value.isNotEmpty
+                    ? controller.modelNameError.value
+                    : null,
+                suffixIcon: Obx(() {
+                  debugPrint("🎭 UI Updated: Valid = ${controller.isModelNameValid.value}, Error = ${controller.modelNameError.value}");
+                  return controller.isModelNameValid.value
+                      ? Icon(Icons.check_circle, color: Colors.green)
+                      : controller.modelNameError.value.isNotEmpty
+                          ? Icon(Icons.error, color: Colors.red)
+                          : SizedBox.shrink();
+                }),
+              ),
+  // validator: (String? val) {
+  //   if (val?.isEmpty ?? true) {
+  //     return 'Please enter a valid Model Name';
+  //   }
+  //   return null;
+  // },
+  // keyboardType: TextInputType.text,
+  // textInputAction: TextInputAction.next,
+  // suffixIcon: Obx(() => controller.isModelNameValid.value
+  //     ? const Icon(Icons.check_circle, color: Colors.green)
+  //     : controller.modelNameError.value.isNotEmpty
+  //         ? const Icon(Icons.error, color: Colors.red)
+  //         : const SizedBox.shrink()),
+)))
                         ],
                       ),
                     ),
@@ -458,294 +464,324 @@ Widget buildChildFieldList() {
                       children: [
                         Form(
                           key: fieldKey,
-                          child: Obx(() =>  FieldManagementComponent(
-                          
-                            isInDialog: false,
-                            
-                                                fieldNameText: "Enter Field Name",
-                                                fieldNameController: controller.fieldNameController,
-                                                fieldNameLabeText: "Field Name",
-                                                fieldNameValidation: (value) {
-                                                        if (value == null || value.isEmpty) {
-                                                          return 'Please enter Field Name';
-                                                        }
-                                                        return null;
-                                                      },
-                                            
-                                            
-                                                typeHintText: "Select Type",
-                                                typeValue: controller.selectedFieldType,
-                                                typeOnChanged: (value) {
-                                                                if (value != null) {
-                                                                  controller.selectedFieldType = value;
-                                                                  controller.update();
-                                                                }
-                                                              },
-                                                typeItems: controller.fieldTypes
-                                                                  .map((type) => DropdownMenuItem(
-                                                                        value: type,
-                                                                        child: Text(type),
-                                                                      ))
-                                                                  .toList(),
-
-
-                                                choiceOnTap: () {
-                                                              print('asdasas ${jsonEncode(controller.choices)}');
-                                                              controller.addChoice();
-                                                              // controller.update();
-                                                            },
-
-                                                
-modelNameMastersText: "To",
-modelNameMastersItemBuilder:  (context, DynamicModelsNameData? item, isSelected) {
-                        return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 8),
-                          decoration: !isSelected
-                              ? null
-                              : BoxDecoration(
-                                  border: Border.all(color: Theme.of(context).primaryColor),
-                                  borderRadius: BorderRadius.circular(5),
-                                  color: Colors.white,
-                                ),
-                          child: ListTile(
-                            selected: isSelected,
-                            title: Text(item?.modelName! ?? ''),
-                          ),
-                        );
-                      },
-modelNameMastersItems: (filter, infiniteScrollProps) async {
-                        controller.isRefresh = true;
-                        await controller.getModelNameList();
-                        return controller.modelNameList;
-                      },
-modelNameMastersOnChanged: (String? data) {},
-modelNameMastersCompareFN: (DynamicModelsNameData i, DynamicModelsNameData? s) => i.modelName == s?.modelName,
-modelNameMastersItemAsString: (DynamicModelsNameData item) => item.modelName ?? '===',
-
-                                                                
-                                                addedChoiceHintText: "Added Choice",
-                                                // addedChoiceValue: controller.choices.isNotEmpty ? controller.choices[0][1] : null,
-                                                addedChoiceOnChanged: (value) {},
-                                                addedChoiceItems: controller.choices
-                                                              .map<DropdownMenuItem<String>>((choice) {
-                                                            return DropdownMenuItem<String>(
-                                                              value: choice[1],
-                                                              child: Row(
-                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                children: [
-                                                                  Text(choice[1], overflow: TextOverflow.ellipsis),
-                                                                  IconButton(
-                                                                    icon:
-                                                                        const Icon(Icons.delete, color: Colors.red),
-                                                                    onPressed: () {
-                                                                      controller.removeChoice(choice);
-                                                                      controller.update();
-                                                                    },
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            );
-                                                          }).toList(),
-                                                          addedChoiceValidator: (value) {
-                                                        if (controller.choices.isEmpty) {
-                                                          return 'Please enter atleast One choice';
-                                                        }
-                                                        return null;
-                                                      },
+                          child:   Obx(() => FieldManagementComponent(
+                                                    
+                                                      isInDialog: false,
+                                                      
+                                                                          fieldNameText: "Enter Field Name",
+                                                                          fieldNameController: controller.fieldNameController,
+                                                                          fieldNameLabeText: "Field Name",
+                                                                          fieldNameValidation: (value) {
+                                                                                  if (value == null || value.isEmpty) {
+                                                                                    return 'Please enter Field Name';
+                                                                                  }
+                                                                                  return null;
+                                                                                },
+                                                                      
+                                                                      
+                                                                          typeHintText: "Select Type",
+                                                                          typeValue: controller.selectedFieldType,
+                                                                          typeOnChanged: (value) {
+                                                                                          if (value != null) {
+                                                                                            controller.selectedFieldType = value;
+                                                                                            controller.update();
+                                                                                          }
+                                                                                        },
+                                                                          typeItems: controller.fieldTypes
+                                                                                            .map((type) => DropdownMenuItem(
+                                                                                                  value: type,
+                                                                                                  child: Text(type),
+                                                                                                ))
+                                                                                            .toList(),
                           
                           
-                                            
-                                                choiceText: "Enter Choice",
-                                                choiceController: controller.choiceController,
-                                                choiceLabeText: "Add Choice",
-                                            
-                                                requiredCheckBoxName: "Required",
-                                                requiredValue: controller.isRequired.value,
-                                                requiredOnChanged: (bool? value) {
-                                                                  if (value != null) {
-                                                                    controller.updateRequired(value);
-                                                                  }
-                                                                },
-                                            
-                                                showViewCheckBoxName: "Show View",
-                                                showViewValue: controller.isView.value,
-                                                showViewOnChanged: (bool? value) {
-                                                                      if (value != null) {
-                                                                        controller.updateViewOnly(value);
+                                                                          choiceOnTap: () {
+                                                                                        print('asdasas ${jsonEncode(controller.choices)}');
+                                                                                        controller.addChoice();
+                                                                                        // controller.update();
+                                                                                      },
+                          
+                                                                          
+                          // modelNameMastersText: "To",
+                          // modelNameMastersItemBuilder:  (context, DynamicModelsNameData? item, isSelected) {
+                          //                         return Container(
+                          //                           margin: const EdgeInsets.symmetric(horizontal: 8),
+                          //                           decoration: !isSelected
+                          //                               ? null
+                          //                               : BoxDecoration(
+                          //                                   border: Border.all(color: Theme.of(context).primaryColor),
+                          //                                   borderRadius: BorderRadius.circular(5),
+                          //                                   color: Colors.white,
+                          //                                 ),
+                          //                           child: ListTile(
+                          //                             selected: isSelected,
+                          //                             title: Text(item?.modelName! ?? ''),
+                          //                           ),
+                          //                         );
+                          //                       },
+                          // modelNameMastersItems: (filter, infiniteScrollProps) async {
+                          //                         controller.isRefresh = true;
+                          //                         await controller.getModelNameList();
+                          //                         return controller.modelNameList;
+                          //                       },
+                          // modelNameMastersOnChanged: (String? data) {},
+                          // modelNameMastersCompareFN: (DynamicModelsNameData i, DynamicModelsNameData? s) => i.modelName == s?.modelName,
+                          // modelNameMastersItemAsString: (DynamicModelsNameData item) => item.modelName ?? '===',
+                          // modelNameMastersValue: ,
+                          
+                          modelNameMastersText: "To",
+                          modelNameMastersItemBuilder: (context, DynamicModelsNameData? item, isSelected) {
+                            return Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 8),
+                              decoration: (isSelected ?? false)
+                                  ? BoxDecoration(
+                                      border: Border.all(color: Theme.of(context).primaryColor),
+                                      borderRadius: BorderRadius.circular(5),
+                                      color: Colors.white,
+                                    )
+                                  : null,
+                              child: ListTile(
+                                selected: isSelected ?? false,
+                                title: Text(item?.modelName ?? 'N/A'),
+                              ),
+                            );
+                          },
+                          modelNameMastersItems: (String filter, LoadProps? loadProps) async {
+                                                  await controller.getModelNameList();
+                                                  return controller.modelNameList;
+                                                },
+                          modelNameMastersOnChanged: (DynamicModelsNameData? data) {
+                                                  // controller.selec = data;
+                                                  controller.update();
+                                                },
+                          modelNameMastersCompareFN: (i, DynamicModelsNameData? s) => i.name == s?.modelName,
+                          modelNameMastersItemAsString: (DynamicModelsNameData u) => u.modelName!,
+                          
+                          
+                                                                                          
+                                                                          addedChoiceHintText: "Added Choice",
+                                                                          // addedChoiceValue: controller.choices.isNotEmpty ? controller.choices[0][1] : null,
+                                                                          addedChoiceOnChanged: (value) {},
+                                                                          addedChoiceItems: controller.choices
+                                                                                        .map<DropdownMenuItem<String>>((choice) {
+                                                                                      return DropdownMenuItem<String>(
+                                                                                        value: choice[1],
+                                                                                        child: Row(
+                                                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                          children: [
+                                                                                            Text(choice[1], overflow: TextOverflow.ellipsis),
+                                                                                            IconButton(
+                                                                                              icon:
+                                                                                                  const Icon(Icons.delete, color: Colors.red),
+                                                                                              onPressed: () {
+                                                                                                controller.removeChoice(choice);
+                                                                                                controller.update();
+                                                                                              },
+                                                                                            ),
+                                                                                          ],
+                                                                                        ),
+                                                                                      );
+                                                                                    }).toList(),
+                                                                                    addedChoiceValidator: (value) {
+                                                                                  if (controller.choices.isEmpty) {
+                                                                                    return 'Please enter atleast One choice';
+                                                                                  }
+                                                                                  return null;
+                                                                                },
+                                                    
+                                                    
+                                                                      
+                                                                          choiceText: "Enter Choice",
+                                                                          choiceController: controller.choiceController,
+                                                                          choiceLabeText: "Add Choice",
+                                                                      
+                                                                          requiredCheckBoxName: "Required",
+                                                                          requiredValue: controller.isRequired.value,
+                                                                          requiredOnChanged: (bool? value) {
+                                                                                            if (value != null) {
+                                                                                              controller.updateRequired(value);
+                                                                                            }
+                                                                                          },
+                                                                      
+                                                                          showViewCheckBoxName: "Show View",
+                                                                          showViewValue: controller.isView.value,
+                                                                          showViewOnChanged: (bool? value) {
+                                                                                                if (value != null) {
+                                                                                                  controller.updateViewOnly(value);
+                                                                                                }
+                                                                                              },
+                                                                          
+                                                                          showEditCheckBoxName: "Show Edit",
+                                                                          showEditValue: controller.isEdit.value,
+                                                                          showEditOnChanged: (bool? value) {
+                                                                                                if (value != null) {
+                                                                                                  controller.updateEditOnly(value);
+                                                                                                }
+                                                                                              },
+                                                                      
+                                                                          showReportCheckBoxName: "Show Report",
+                                                                          showReportValue: controller.isReport.value,
+                                                                          showReportOnChanged: (bool? value) {
+                                                                                                if (value != null) {
+                                                                                                  controller.updateReportOnly(value);
+                                                                                                }
+                                                                                              },
+                                                                      
+                                                                          showAddCheckBoxName: "Show Add",
+                                                                          showAddValue: controller.isAdd.value,
+                                                                          showAddOnChanged: (bool? value) {
+                                                                                                if (value != null) {
+                                                                                                  controller.updateAddOnly(value);
+                                                                                                }
+                                                                                              },
+                                                              
+                                                                          showListCheckBoxName: "Show List",
+                                                                          showListValue: controller.isList.value,
+                                                                          showListOnChanged: (bool? value) {
+                                                                                                if (value != null) {
+                                                                                                  controller.updateListOnly(value);
+                                                                                                }
+                                                                                              },
+                                                                      
+                                                                          showFilterCheckBoxName: "Show Filter",
+                                                                          showFilterValue: controller.isFilter.value,
+                                                                          showFilterOnChanged: (bool? value) {
+                                                                                                if (value != null) {
+                                                                                                  controller.updateFilterOnly(value);
+                                                                                                }
+                                                                                              },
+                                                                      
+                                                                          showMultipleFilterCheckBoxName: "Multiple Filter",
+                                                                          showMultipleFilterValue: controller.isMultipleFilter.value,
+                                                                          showMultipleFilterOnChanged: (bool? value) {
+                                                                                                if (value != null) {
+                                                                                                  controller.updateMultipleFilter(value);
+                                                                                                }
+                                                                                              },
+                                                    
+                                                                          rangeFilterCheckBoxName: "Range Filter",
+                                                                          rangeFilterValue: controller.rangeFilter.value,
+                                                                          rangeFilterOnChanged: (bool? value) {
+                                                                                                if (value != null) {
+                                                                                                  controller.updateRangeFilter(value);
+                                                                                                }
+                                                                                              },
+                                                    
+                                                                          readOnlyCheckBoxName: "Read Only",
+                                                                          readOnlyValue: controller.isReadOnly.value,
+                                                                          readOnlyOnChanged: (bool? value) {
+                                                                                                if (value != null) {
+                                                                                                  controller.updateReadOnly(value);
+                                                                                                }
+                                                                                              },
+                                                                      
+                                                                          defaultCheckBoxName: "Default",
+                                                                          defaultValue: controller.isDefault.value,
+                                                                          defaultOnChanged: (bool? value) {
+                                                                                                if (value != null) {
+                                                                                                  controller.updateDefault(value);
+                                                                                                }
+                                                                                              },
+                                                                                              
+                                                                          maxLengthText: "Enter Max Length",
+                                                                          maxLengthController: controller.maxLengthController,
+                                                                          maxLengthLabeText: "Max Length",
+                                                                          // maxLengthValidation: (value) {
+                                                                          //         if (value == null || value.isEmpty) {
+                                                                          //           // return 'Please enter Max Length';
+                                                                          //           toastification.show(
+                                                                          //           context: context,
+                                                                          //           title: Text('Please enter Max Length', style: TextStyle(fontWeight: FontWeight.w500)),
+                                                                          //           type: ToastificationType.warning,
+                                                                          //           closeButtonShowType: CloseButtonShowType.always,
+                                                                          //           showIcon: true,
+                                                                          //           style: ToastificationStyle.minimal,
+                                                                          //           progressBarTheme: ProgressIndicatorThemeData(linearMinHeight: 1),
+                                                                          //           autoCloseDuration: const Duration(seconds: 5),
+                                                                          //         );
+                                                                          //         }
+                                                                          //         return null;
+                                                                          //       },
+                                                                          maxLengthValidation: (value) {
+                                                                      if (value == null || value.trim().isEmpty) {
+                                                                        return 'Please enter Max Length';
                                                                       }
-                                                                    },
-                                                
-                                                showEditCheckBoxName: "Show Edit",
-                                                showEditValue: controller.isEdit.value,
-                                                showEditOnChanged: (bool? value) {
-                                                                      if (value != null) {
-                                                                        controller.updateEditOnly(value);
+                                                    
+                                                                      if (int.tryParse(value) == null) {
+                                                                        return 'Max Length must be a number';
                                                                       }
+                                                    
+                                                                      return null;
                                                                     },
-                                            
-                                                showReportCheckBoxName: "Show Report",
-                                                showReportValue: controller.isReport.value,
-                                                showReportOnChanged: (bool? value) {
-                                                                      if (value != null) {
-                                                                        controller.updateReportOnly(value);
-                                                                      }
-                                                                    },
-                                            
-                                                showAddCheckBoxName: "Show Add",
-                                                showAddValue: controller.isAdd.value,
-                                                showAddOnChanged: (bool? value) {
-                                                                      if (value != null) {
-                                                                        controller.updateAddOnly(value);
-                                                                      }
-                                                                    },
-                                    
-                                                showListCheckBoxName: "Show List",
-                                                showListValue: controller.isList.value,
-                                                showListOnChanged: (bool? value) {
-                                                                      if (value != null) {
-                                                                        controller.updateListOnly(value);
-                                                                      }
-                                                                    },
-                                            
-                                                showFilterCheckBoxName: "Show Filter",
-                                                showFilterValue: controller.isFilter.value,
-                                                showFilterOnChanged: (bool? value) {
-                                                                      if (value != null) {
-                                                                        controller.updateFilterOnly(value);
-                                                                      }
-                                                                    },
-                                            
-                                                showMultipleFilterCheckBoxName: "Multiple Filter",
-                                                showMultipleFilterValue: controller.isMultipleFilter.value,
-                                                showMultipleFilterOnChanged: (bool? value) {
-                                                                      if (value != null) {
-                                                                        controller.updateMultipleFilter(value);
-                                                                      }
-                                                                    },
-                          
-                                                rangeFilterCheckBoxName: "Range Filter",
-                                                rangeFilterValue: controller.rangeFilter.value,
-                                                rangeFilterOnChanged: (bool? value) {
-                                                                      if (value != null) {
-                                                                        controller.updateRangeFilter(value);
-                                                                      }
-                                                                    },
-                          
-                                                readOnlyCheckBoxName: "Read Only",
-                                                readOnlyValue: controller.isReadOnly.value,
-                                                readOnlyOnChanged: (bool? value) {
-                                                                      if (value != null) {
-                                                                        controller.updateReadOnly(value);
-                                                                      }
-                                                                    },
-                                            
-                                                defaultCheckBoxName: "Default",
-                                                defaultValue: controller.isDefault.value,
-                                                defaultOnChanged: (bool? value) {
-                                                                      if (value != null) {
-                                                                        controller.updateDefault(value);
-                                                                      }
-                                                                    },
-                                                                    
-                                                maxLengthText: "Enter Max Length",
-                                                maxLengthController: controller.maxLengthController,
-                                                maxLengthLabeText: "Max Length",
-                                                // maxLengthValidation: (value) {
-                                                //         if (value == null || value.isEmpty) {
-                                                //           // return 'Please enter Max Length';
-                                                //           toastification.show(
-                                                //           context: context,
-                                                //           title: Text('Please enter Max Length', style: TextStyle(fontWeight: FontWeight.w500)),
-                                                //           type: ToastificationType.warning,
-                                                //           closeButtonShowType: CloseButtonShowType.always,
-                                                //           showIcon: true,
-                                                //           style: ToastificationStyle.minimal,
-                                                //           progressBarTheme: ProgressIndicatorThemeData(linearMinHeight: 1),
-                                                //           autoCloseDuration: const Duration(seconds: 5),
-                                                //         );
-                                                //         }
-                                                //         return null;
-                                                //       },
-                                                maxLengthValidation: (value) {
-                                            if (value == null || value.trim().isEmpty) {
-                                              return 'Please enter Max Length';
-                                            }
-                          
-                                            if (int.tryParse(value) == null) {
-                                              return 'Max Length must be a number';
-                                            }
-                          
-                                            return null;
-                                          },
-                          
-                          
-                                                minLengthText: "Enter Min Length",
-                                                minLengthController: controller.minLengthController,
-                                                minLengthLabeText: "Min Length",
-                                                // minLengthValidation: (value) {
-                                                //         if (value == null || value.isEmpty) {
-                                                //           return 'Please enter Min Length';
-                                                //         }
-                                                //         return null;
-                                                //       },
-                          
-                                                maxDigitsText: "Enter Max Digits",
-                                                maxDigitsController: controller.maxDigitsController,
-                                                maxDigitsLabeText: "Max Digits",
-                                                maxDigitsValidation: (value) {
-                                                        if (value == null || value.isEmpty) {
-                                                          return 'Please enter Max Digits';
-                                                        }
-                                                        return null;
-                                                      },
-                          
-                                                decimalText: "Enter Decimal Place",
-                                                decimalController: controller.decimalPlacesController,
-                                                decimalLabeText: "Decimal Place",
-                                                decimalValidation: (value) {
-                                                        if (value == null || value.isEmpty) {
-                                                          return 'Please enter Decimal Place';
-                                                        }
-                                                        return null;
-                                                      },
-                                                
-                          
-                                                clearButtonText: "Clear",
-                                                clearButtonOnTap: () {
-                                                        print("Printing the formfiedls Data ${jsonEncode(controller.formFields)}");
-                                                        controller.addFieldsDisposeController();
-                                                        controller.update();
-                                                      },
-                          
-                                                submitButtonText: controller.editingIndex >= 0
-                                                                      ? "Update Field"
-                                                                      : "Add Field",
-                                                submitButtonOnTap: () {
-                                                  print("Printing the form fields Data::::::: ${jsonEncode(controller.formFields)}");
-                                                  if(fieldKey.currentState?.validate() ?? false){
-                          
-                                                //   if (controller.fieldNameController.text.trim().isEmpty) {
-                                                //     toastification.show(
-                                                //           context: context,
-                                                //           title: Text('Field Name Is Required', style: TextStyle(fontWeight: FontWeight.w500)),
-                                                //           type: ToastificationType.warning,
-                                                //           closeButtonShowType: CloseButtonShowType.always,
-                                                //           showIcon: true,
-                                                //           style: ToastificationStyle.minimal,
-                                                //           progressBarTheme: ProgressIndicatorThemeData(linearMinHeight: 1),
-                                                //           autoCloseDuration: const Duration(seconds: 5),
-                                                //         );
-                                                //   return;
-                                                // }
-                                                    controller.addField();
-                                                    controller.update();
-                          
-                                                  }
-                          
-                                                  },
-                                              
-                                                ),
-                        )),
+                                                    
+                                                    
+                                                                          minLengthText: "Enter Min Length",
+                                                                          minLengthController: controller.minLengthController,
+                                                                          minLengthLabeText: "Min Length",
+                                                                          // minLengthValidation: (value) {
+                                                                          //         if (value == null || value.isEmpty) {
+                                                                          //           return 'Please enter Min Length';
+                                                                          //         }
+                                                                          //         return null;
+                                                                          //       },
+                                                    
+                                                                          maxDigitsText: "Enter Max Digits",
+                                                                          maxDigitsController: controller.maxDigitsController,
+                                                                          maxDigitsLabeText: "Max Digits",
+                                                                          maxDigitsValidation: (value) {
+                                                                                  if (value == null || value.isEmpty) {
+                                                                                    return 'Please enter Max Digits';
+                                                                                  }
+                                                                                  return null;
+                                                                                },
+                                                    
+                                                                          decimalText: "Enter Decimal Place",
+                                                                          decimalController: controller.decimalPlacesController,
+                                                                          decimalLabeText: "Decimal Place",
+                                                                          decimalValidation: (value) {
+                                                                                  if (value == null || value.isEmpty) {
+                                                                                    return 'Please enter Decimal Place';
+                                                                                  }
+                                                                                  return null;
+                                                                                },
+                                                                          
+                                                    
+                                                                          clearButtonText: "Clear",
+                                                                          clearButtonOnTap: () {
+                                                                                  print("Printing the formfiedls Data ${jsonEncode(controller.formFields)}");
+                                                                                  controller.addFieldsDisposeController();
+                                                                                  controller.update();
+                                                                                },
+                                                    
+                                                                          submitButtonText: controller.editingIndex >= 0
+                                                                                                ? "Update Field"
+                                                                                                : "Add Field",
+                                                                          submitButtonOnTap: () {
+                                                                            print("Printing the form fields Data::::::: ${jsonEncode(controller.formFields)}");
+                                                                            if(fieldKey.currentState?.validate() ?? false){
+                                                    
+                                                                          //   if (controller.fieldNameController.text.trim().isEmpty) {
+                                                                          //     toastification.show(
+                                                                          //           context: context,
+                                                                          //           title: Text('Field Name Is Required', style: TextStyle(fontWeight: FontWeight.w500)),
+                                                                          //           type: ToastificationType.warning,
+                                                                          //           closeButtonShowType: CloseButtonShowType.always,
+                                                                          //           showIcon: true,
+                                                                          //           style: ToastificationStyle.minimal,
+                                                                          //           progressBarTheme: ProgressIndicatorThemeData(linearMinHeight: 1),
+                                                                          //           autoCloseDuration: const Duration(seconds: 5),
+                                                                          //         );
+                                                                          //   return;
+                                                                          // }
+                                                                              controller.addField();
+                                                                              controller.update();
+                                                    
+                                                                            }
+                                                    
+                                                                            },
+                                                                        
+                                                                          )),
+                        ),
 
 
       
@@ -954,28 +990,32 @@ if(controller.selectedFieldType == "Children")
 
                                                                                                                                                       
 modelNameMastersText: "To",
-modelNameMastersItemBuilder:  (context, DynamicModelsNameData? item, isSelected) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: !isSelected
-          ? null
-          : BoxDecoration(
-              border: Border.all(color: Theme.of(context).primaryColor),
-              borderRadius: BorderRadius.circular(5),
-              color: Colors.white,
-            ),
-      child: ListTile(
-        selected: isSelected,
-        title: Text(item?.modelName ?? ''), // Display the `modelName`
-      ),
-    );
-  },
-modelNameMastersItems: (filter, infiniteScrollProps) async {
-    controller.isRefresh = true;
-    await controller.getModelNameList();
-    return controller.modelNameList;
-  },
-modelNameMastersOnChanged: (String? data) {},
+modelNameMastersItemBuilder: (context, DynamicModelsNameData? item, isSelected) {
+  return Container(
+    margin: const EdgeInsets.symmetric(horizontal: 8),
+    decoration: (isSelected ?? false)
+        ? BoxDecoration(
+            border: Border.all(color: Theme.of(context).primaryColor),
+            borderRadius: BorderRadius.circular(5),
+            color: Colors.white,
+          )
+        : null,
+    child: ListTile(
+      selected: isSelected ?? false,
+      title: Text(item?.modelName ?? 'N/A'),
+    ),
+  );
+},
+modelNameMastersItems: (String filter, LoadProps? loadProps) async {
+                        await controller.getModelNameList();
+                        return controller.modelNameList;
+                      },
+modelNameMastersOnChanged: (DynamicModelsNameData? data) {
+                        // controller.selec = data;
+                        controller.update();
+                      },
+modelNameMastersCompareFN: (i, DynamicModelsNameData? s) => i.name == s?.modelName,
+modelNameMastersItemAsString: (DynamicModelsNameData u) => u.modelName!,
                                                                                     
                                                                                                                                                                                             
                                                                                                                                                                                             
@@ -1572,6 +1612,35 @@ modelNameMastersOnChanged: (String? data) {},
                                   mainAxisAlignment: MainAxisAlignment.start,
                                    children: [
                                     buildFieldList(),
+
+
+                                    CommonComponents.defaultDropdownSearch(
+                      context,
+                      title: 'Single Select',
+                      items: (String filter, LoadProps? loadProps) async {
+                        await controller.getModelNameList();
+                        return controller.modelNameList;
+                      },
+                      // selectedItem: ,
+                      // onChanged: (value) {
+                      //   setState(() {
+                      //     selectedSingleItem = value;
+                      //   });
+                      // },
+                      hintText: 'Select a fruit',
+                      compareFn: (i, DynamicModelsNameData? s) => i.name == s?.modelName,
+                      itemAsString: (DynamicModelsNameData u) => u.modelName!,
+                      onChanged: (DynamicModelsNameData? data) {
+                        // controller.selec = data;
+                        controller.update();
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select a fruit';
+                        }
+                        return null;
+                      },
+                    ),
 
 
 //  CommonComponents.defaultDropdownSearch<DynamicModelsNameData>(

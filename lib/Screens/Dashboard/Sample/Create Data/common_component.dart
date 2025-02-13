@@ -33,7 +33,7 @@ class FieldManagementComponent extends StatelessWidget {
   final String modelNameMastersText;
   final String? modelNameMastersValue;
   final Future<List<DynamicModelsNameData>> Function(String, LoadProps?)? modelNameMastersItems;
-  final Function(String?) modelNameMastersOnChanged;
+  final Function(DynamicModelsNameData?) modelNameMastersOnChanged;
   final String? Function(String?)? modelNameMastersValidator;
   final VoidCallback? modelNameMastersOnTap;
   final dynamic modelNameMastersItemBuilder;
@@ -340,9 +340,9 @@ class FieldManagementComponent extends StatelessWidget {
 
                   if (controller.selectedFieldType == 'ForeignKey' || controller.selectedFieldType == 'ManyToMany')
                     ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
-                      child: CommonComponents.defaultDropdownSearch<DynamicModelsNameData>(
+                      child: CommonComponents.defaultDropdownSearch(
   context,
-  hintText: modelNameMastersText ?? 'Select a Model',
+  hintText: modelNameMastersText,
   showBottomSheet: false,
   items: (filter, infiniteScrollProps) async {
     if (modelNameMastersItems == null) {
