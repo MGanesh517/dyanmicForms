@@ -64,26 +64,25 @@ class AdvancedFiltersScreen extends StatelessWidget {
                   //           .toList(),
                   //     )),
                   child: FilterNodeWidget(
-                                  node: controller.filters,
-                                  parent: null,
-                                  controller: controller,
-                                ),
+                    node: controller.filters,
+                    parent: null,
+                    controller: controller,
+                  ),
                 ),
               ),
               SizedBox(height: 12),
               Row(
                 children: [
-                  CommonButton(
-                    onPressed: () => controller.addFilterNode(node),
-                    icon: Icons.add,
-                    text: 'Add Condition',
-                  ),
-                  SizedBox(width: 12),
+                  // CommonButton(
+                  //   onPressed: () => controller.addFilterNode(node),
+                  //   icon: Icons.add,
+                  //   text: 'Add Condition',
+                  // ),
+                  // SizedBox(width: 12),
                   CommonButton(
                     onPressed: () {
-                      // final query =
-                      //     controller.generateQuery(controller.filters);
-                      print(jsonEncode(controller.filters));
+                      controller.generateQuery(controller.filters);
+                  print(jsonEncode(controller.filters));
                     },
                     icon: Icons.check,
                     text: 'Submit',
@@ -96,12 +95,6 @@ class AdvancedFiltersScreen extends StatelessWidget {
       ),
     );
   }
-
-  // void printQuery() {
-  //   final controller = Get.find<AdvancedFilterController>();
-  //   final query = generateQuery(controller.filters);
-  //   debugPrint(jsonEncode(query));
-  // }
 }
 
 class FilterNodeWidget extends StatelessWidget {
@@ -113,7 +106,7 @@ class FilterNodeWidget extends StatelessWidget {
   const FilterNodeWidget({
     super.key,
     required this.node,
-    required this.parent,
+    this.parent,
     required this.controller,
     this.depth = 0,
   });
@@ -143,7 +136,6 @@ class FilterNodeWidget extends StatelessWidget {
                     if (parent != null)
                       Container(
                         margin: EdgeInsets.only(top: 27.0),
-                        // alignment: Alignment.center,
                         width: 30,
                         height: 2,
                         color: Theme.of(context).colorScheme.primary,
@@ -157,8 +149,7 @@ class FilterNodeWidget extends StatelessWidget {
                             const SizedBox(height: 8),
                             buildConditions(context),
                             // if (controller.isLogicalOperator(node.operator.value)) ...[
-                              const SizedBox(height: 8),
-                          
+                            if (node.operator.value == 'AND' || node.operator.value == 'OR')
                               buildAddButtons(context),
                             // ],
                           ],
@@ -186,77 +177,96 @@ class FilterNodeWidget extends StatelessWidget {
   Widget buildOperatorRow(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: Colors.grey[300]!),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // DropdownButton<String>(
-                //   dropdownColor: Theme.of(context).colorScheme.secondary,
-                //   value: node.operator.value,
-                //   underline: const SizedBox(),
-                //   items: controller.operatorTypes
-                //       .map((op) => DropdownMenuItem(
-                //             value: op,
-                //             child: Text(op),
-                //           ))
-                //       .toList(),
-                //   onChanged: (val) => node.operator.value = val!,
-                // ),
-                Container(
-                  height: 40,
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: DropdownButton<String>(
-                      dropdownColor: Theme.of(context).colorScheme.secondary,
-                      value: node.operator.value,
-                      underline: const SizedBox(),
-                      items: controller.operatorTypes
-                          .map((op) => DropdownMenuItem(
-                                value: op,
-                                child: Text(
-                                  op,
-                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                                ),
-                              ))
-                          .toList(),
-                      onChanged: (val) => node.operator.value = val!,
-                      iconSize: 20,
-                      // isExpanded: true,
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          if (controller.isLogicalOperator(node.operator.value))
-            IconButton(
-              icon: Icon(
-                node.isExpanded.value ? Icons.expand_less : Icons.expand_more,
-                size: 20,
+      child: Obx(() => Row(
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 0.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Colors.grey[300]!),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      height: 40,
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: DropdownButton<String>(
+                          hint: Text("Select"),
+                          dropdownColor:
+                              Theme.of(context).colorScheme.secondary,
+                          underline: const SizedBox(),
+                          value: node.operator.value == ""
+                              ? null
+                              : node.operator.value,
+
+                          items: controller.operatorTypes
+                              .map((op) => DropdownMenuItem(
+                                    value: op,
+                                    child: Text(
+                                      op,
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ))
+                              .toList(),
+                          onChanged: (val) {
+                            node.operator.value = val!;
+                            if (controller.isLogicalOperator(node.operator.value)) {
+                              node.children.value = [FilterNode()];
+                            // } else if (node.operator.value == 'NAG') {
+                            //   node.child = FilterNode();
+                            } else {
+                              node.children.value = [];
+                            }
+                          },
+                          iconSize: 20,
+                          // isExpanded: true,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
-              onPressed: () => node.isExpanded.toggle(),
-            ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline, size: 20),
-            onPressed: () => controller.removeFilterNode(node, parent),
-            color: Colors.red[400],
-          ),
-        ],
-      ),
+              const SizedBox(width: 8),
+              if (controller.isLogicalOperator(node.operator.value))
+                IconButton(
+                  icon: Icon(
+                    node.isExpanded.value
+                        ? Icons.expand_less
+                        : Icons.expand_more,
+                    size: 20,
+                  ),
+                  onPressed: () => node.isExpanded.toggle(),
+                ),
+
+              const SizedBox(width: 12),
+
+/// TextFields Key and Value Position
+              if (!controller.isConditionFieldsOperator(node.operator.value)) ...[
+                Flexible(child: buildConditionFields(context)),
+                const SizedBox(width: 12),
+              ],
+
+              Visibility(
+                visible: parent != null,
+                child: IconButton(
+                  icon: const Icon(Icons.delete_outline, size: 20),
+                  onPressed: () => controller.removeFilterNode(node, parent),
+                  color: Colors.red[400],
+                ),
+              ),
+            ],
+          )),
     );
   }
 
   Widget buildConditions(BuildContext context) {
-    if (controller.isLogicalOperator(node.operator.value)) {
+    if (controller.isConditionFieldsOperator(node.operator.value)) {
       return Column(
         children: [
           ...node.children.map((child) => Padding(
@@ -270,8 +280,15 @@ class FilterNodeWidget extends StatelessWidget {
               )),
         ],
       );
+//     } else if (node.operator.value == "NAG") {
+//  return FilterNodeWidget(
+//                   node: node,
+//                   // parent: node,
+//                   controller: controller,
+//                   depth: depth + 1,
+//                 );
     } else {
-      return buildConditionFields(context);
+      return SizedBox.shrink();
     }
   }
 
@@ -284,7 +301,7 @@ class FilterNodeWidget extends StatelessWidget {
         columns: [
           ResponsiveColumn(
             ResponsiveConstants().buttonBreakpoints,
-            child: CommonComponents.defaultTextFormField(
+            child: CommonComponents.defaultTextFieldFixedHeight(
               context,
               hintText: 'Enter Key',
               onChange: (val) => node.key.value = val,
@@ -297,8 +314,8 @@ class FilterNodeWidget extends StatelessWidget {
               child: Text(
                 controller.getOperatorSymbol(node.operator.value),
                 style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 34,
+                  // fontWeight: FontWeight.w,
                   color: Colors.grey[700],
                 ),
               ),
@@ -306,7 +323,7 @@ class FilterNodeWidget extends StatelessWidget {
           ),
           ResponsiveColumn(
             ResponsiveConstants().buttonBreakpoints,
-            child: CommonComponents.defaultTextFormField(
+            child: CommonComponents.defaultTextFieldFixedHeight(
               context,
               hintText: 'Enter Value',
               onChange: (val) => node.value.value = val,
@@ -327,7 +344,10 @@ class FilterNodeWidget extends StatelessWidget {
             border: Border.all(color: Colors.grey.shade300)),
         child: TextButton.icon(
           icon: const Icon(Icons.add, size: 18),
-          label: const Text('Add Field', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),),
+          label: const Text(
+            'Add Field',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          ),
           onPressed: () => controller.addFilterNode(node),
           style: TextButton.styleFrom(
             foregroundColor: Colors.grey[700],
