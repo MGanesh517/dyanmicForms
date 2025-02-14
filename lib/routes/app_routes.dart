@@ -8,5 +8,8 @@ class Routes {
   static const loginPage = '/loginPage';
   static const dashboardView = '/dashboardView';
   static const listScreen = '/listScreen';
-  // static const dynamicViewById = '/dynamicViewById';
+
+
+
+  static const advanceFilterScreen = '/advanceFilterScreen';
 }

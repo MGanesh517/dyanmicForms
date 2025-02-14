@@ -30,8 +30,6 @@ class DynamicController extends GetxController {
 
   int editingIndex = -1;
   var _isEditMode = false.obs;
-  // final isModelNameValid = true.obs;
-  // final validationMessage = ''.obs;
 
   var isRequired = false.obs;
   var isView = false.obs;
@@ -48,7 +46,6 @@ class DynamicController extends GetxController {
   bool get isDialogBoxOPen => _isDialogBoxOPen.value;
   set isDialogBoxOPen(value) => _isDialogBoxOPen.value = value;
 
-  // Choices for 'Choice' type fields
   var choices = <List<dynamic>>[].obs;
   var nextChoiceId = 1.obs;
 
@@ -76,56 +73,67 @@ class DynamicController extends GetxController {
   int get selectedChoice => _selectedChoice.value;
   set selectedChoice(value) => _selectedChoice.value = value;
 
-  // @override
-  // void onInit() {
-  //   super.onInit();
-  //   modelName.addListener(validateModelNameRealTime);
-  // }
-  // void validateModelNameRealTime() {
-  //   final text = modelName.text;
-  //   _performValidation(text);
-  // }
-  // void _performValidation(String text) {
-  //   // Reset validation state
-  //   isModelNameValid.value = true;
-  //   validationMessage.value = '';
-  //   // Empty check
-  //   if (text.isEmpty) {
-  //     isModelNameValid.value = false;
-  //     validationMessage.value = 'Please enter a model name';
-  //     return;
+
+  
+  // RxString modelNameError = "".obs;
+  // RxBool isModelNameValid = false.obs;
+  // RxBool debounceText = true.obs;
+
+  // void validateModelName(String val) {
+  //   if (val.isNotEmpty) {
+  //     debugPrint("🖊️ User entered: $val");
+
+  //     debounce(RxString(val), (modelNameValue) async {
+  //       debugPrint("⏳ Validating Model Name: $modelNameValue");
+        
+  //       var validation = await DynamicRepo().getModelNameValidation({"model_name": modelNameValue});
+
+  //       if (validation != null && validation.status == "error") {
+  //         debugPrint("🚫 Validation Failed: ${validation.message}");
+  //         modelNameError.value = validation.message ?? 'Invalid Model Name';
+  //         isModelNameValid.value = false;
+  //       } else {
+  //         debugPrint("✅ Model Name is valid");
+  //         modelNameError.value = '';
+  //         isModelNameValid.value = true;
+  //       }
+  //     }, time: const Duration(milliseconds: 500)); // Debouncing for API call optimization
   //   }
-  //   // Check for special characters and spaces
-  //   final RegExp validCharacters = RegExp(r'^[a-zA-Z0-9_]+$');
-  //   if (!validCharacters.hasMatch(text)) {
-  //     isModelNameValid.value = false;
-  //     validationMessage.value = 'Only letters, numbers and underscore allowed';
-  //     _showValidationMessage('Invalid characters used');
-  //     return;
-  //   }
-  //   // Check for existing model names
-  //   final isExists = _dynamicModelNameList
-  //       .any((model) => model.modelName?.toLowerCase() == text.toLowerCase());
-  //   if (isExists) {
-  //     isModelNameValid.value = false;
-  //     validationMessage.value = 'Model name already exists';
-  //     _showValidationMessage('This model name is already in use');
-  //     return;
-  //   }
-  //   // If all validations pass
-  //   isModelNameValid.value = true;
-  //   validationMessage.value = 'Valid model name';
   // }
-  // void _showValidationMessage(String message) {
-  //   Get.snackbar(
-  //     'Validation',
-  //     message,
-  //     backgroundColor: Colors.orange.withOpacity(0.1),
-  //     duration: const Duration(seconds: 2),
-  //     snackPosition: SnackPosition.BOTTOM,
-  //     margin: const EdgeInsets.all(8),
-  //   );
-  // }
+
+    RxString modelNameError = "".obs;
+  RxBool isModelNameValid = false.obs;
+  RxString _debouncedText = "".obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    
+    // Debounce input and validate when typing stops
+    debounce(_debouncedText, (value) async {
+      if (value.isNotEmpty) {
+        debugPrint("⏳ Validating Model Name: $value");
+
+        var validation = await DynamicRepo().getModelNameValidation({"model_name": value});
+
+        if (validation != null && validation.status == "error") {
+          debugPrint("🚫 Validation Failed: ${validation.message}");
+          modelNameError.value = validation.message ?? 'Invalid Model Name';
+          isModelNameValid.value = false;
+        } else {
+          debugPrint("✅ Model Name is valid");
+          modelNameError.value = '';
+          isModelNameValid.value = true;
+        }
+      }
+    }, time: const Duration(milliseconds: 800)); // Wait 800ms before validating
+  }
+
+  void onTextChanged(String value) {
+    debugPrint("🖊️ User entered: $value");
+    _debouncedText.value = value; // Assign value to trigger debounce
+  }
+
 
 
   initDialogBoxState() {
@@ -362,6 +370,7 @@ class DynamicController extends GetxController {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       isRefresh = true;
       getDynamicList();
+// getModelNameList();
       update();
     });
   }
@@ -439,6 +448,7 @@ class DynamicController extends GetxController {
       } else {
         _isEditMode.value = false;
         // await getModelNameList(isLoading: true);
+        getModelNameList();
         isRefresh = true;
         disposeController();
       }

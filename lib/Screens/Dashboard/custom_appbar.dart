@@ -172,6 +172,15 @@ class _AdaptiveDrawerState extends State<AdaptiveDrawer> {
                 isSelected: drawerController.selectedIndex == 0,
                 onTapNavigation: () => onItemTapped(0, '/listScreen'),
               )),
+
+          Obx(() => CommonCardForDrawer(
+                title: drawerController.isTextNotVisible
+                    ? const Text('Advance Filters')
+                    : const SizedBox.shrink(),
+                icon: const Icon(Icons.sort_by_alpha_sharp),
+                isSelected: drawerController.selectedIndex == 1,
+                onTapNavigation: () => onItemTapped(1, '/advanceFilterScreen'),
+              )),
         ],
       ),
     );

@@ -282,7 +282,7 @@ class CommonComponents {
   static CheckboxListTile defaultCheckBoxListTile(
     BuildContext context, {
     required bool value,
-    required String title,
+    String? title,
     required ValueChanged<bool?> onChanged,
     Color? activeColor,
     Color? checkColor,
@@ -294,7 +294,7 @@ class CommonComponents {
     return CheckboxListTile(
       value: value,
       title: Text(
-        title,
+        title!,
         style: titleStyle ??
             TextStyle(
               // color: titleColor ?? Theme.of(context).colorScheme.primary,

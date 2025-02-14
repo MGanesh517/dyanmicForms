@@ -3,7 +3,7 @@
 import 'package:get/get.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Create%20Data/list_screen.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Create%20Data/new_post_screen.dart';
-import 'package:implementation_panel/Screens/Dashboard/Sample/Create%20Data/view_by_id.dart';
+import 'package:implementation_panel/Screens/Dashboard/advance%20Filters/advance_filters_screen.dart';
 import 'package:implementation_panel/Screens/Login/login_screen.dart';
 import 'package:implementation_panel/Screens/illustration/splash_screen.dart';
 
@@ -33,10 +33,12 @@ class AppPages {
       page: () => const ListScreen(),
       transition: Transition.noTransition,
     ),
-    // GetPage(
-    //   name: Routes.dynamicViewById,
-    //   page: () => const DynamicViewById(),
-    //   transition: Transition.noTransition,
-    // ),
+
+    ////////////////////////////// Advance Filters //////////////////////////
+    GetPage(
+      name: Routes.advanceFilterScreen,
+      page: () =>    AdvancedFiltersScreen(),
+      transition: Transition.noTransition,
+    ),
   ];
 }
