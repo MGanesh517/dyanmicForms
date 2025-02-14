@@ -3,19 +3,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:implementation_panel/Common/snackbar_widget.dart';
-import 'package:implementation_panel/utils/loader_util.dart';
 
 // class AdvancedFilterController extends GetxController {
 //   final RxString selectedOperator = 'AND'.obs;
 //   final RxList<Map<String, dynamic>> filters = <Map<String, dynamic>>[].obs;
-  
 //   void updateOperator(String? newValue) {
 //     if (newValue != null) {
 //       selectedOperator.value = newValue;
 //     }
 //   }
-  
 //   void addFilter() {
 //     filters.add({
 //       'operator': 'AND',
@@ -24,11 +20,8 @@ import 'package:implementation_panel/utils/loader_util.dart';
 //     });
 //   }
 // }
-
-
 // class AdvancedFilterController extends GetxController {
 //   var filters = <FilterNode>[].obs;
-
 //   List<String> get operatorTypes => [
 //         'AND',
 //         'OR',
@@ -41,7 +34,6 @@ import 'package:implementation_panel/utils/loader_util.dart';
 //         'LTE (<=)',
 //         'CONTAINS'
 //       ];
-
 //   void addFilterNode(FilterNode? parent) {
 //     final newNode = FilterNode();
 //     if (parent == null) {
@@ -50,7 +42,6 @@ import 'package:implementation_panel/utils/loader_util.dart';
 //       parent.children.add(newNode);
 //     }
 //   }
-
 //   void removeFilterNode(FilterNode node, FilterNode? parent) {
 //     if (parent == null) {
 //       filters.remove(node);
@@ -103,7 +94,11 @@ class AdvancedFilterController extends GetxController {
   }
 
   bool isLogicalOperator(String operator) {
-    return operator == 'AND' || operator == 'OR' || operator == 'NAG';
+    return operator == 'AND' || operator == 'OR';
+  }
+
+  bool isConditionFieldsOperator(String operator) {
+    return operator == 'AND' || operator == 'OR' || operator == 'NAG' || operator == '';
   }
 
   void addFilterNode(FilterNode? parent) {
@@ -170,38 +165,94 @@ class AdvancedFilterController extends GetxController {
 //     // }
 //   }
 
+// Map<String, dynamic> generateQuery(List<FilterNode> nodes) {
+//     if (nodes.isEmpty) return {};
+    
+//     // For a single node, format it directly
+//     FilterNode node = nodes[0];
+//     return formatNode(node);
+//   }
 
-Map<String, dynamic> generateQuery(List<FilterNode> filters) {
-  if (filters.isEmpty) return {};
+// Map<String, dynamic> generateQuery(List<FilterNode> filters) {
+//   if (filters.isEmpty) return {};
 
-  Map<String, dynamic> query = {};
+//   Map<String, dynamic> query = {};
 
-  for (var node in filters) {
-    if (query.containsKey(node.operator.value)) {
-      (query[node.operator.value] as List).add(formatNode(node));
-    } else {
-      query[node.operator.value] = [formatNode(node)];
+//   for (var node in filters) {
+//     if (query.containsKey(node.operator.value)) {
+//       (query[node.operator.value] as List).add(formatNode(node));
+//     } else {
+//       query[node.operator.value] = [formatNode(node)];
+//     }
+//   }
+
+//   return query;
+// }
+
+// Map<String, dynamic> formatNode(FilterNode node) {
+//   // Check if the operator is a logical operator
+//   if (isLogicalOperator(node.operator.value)) {
+//     return {
+//       node.operator.value: node.children.map((child) => formatNode(child)).toList(),
+//     };
+//   } else {
+//     return {
+//       node.operator.value: {
+//         "KEY": node.key.value,
+//         "VAL": node.value.value,
+//       }
+//     };
+//   }
+// }
+ Map<String, dynamic> generateQuery(FilterNode node) {
+    return formatNode(node);
+  }
+
+  Map<String, dynamic> formatNode(FilterNode node) {
+    // If node has no operator selected, return empty map
+    if (node.operator.value.isEmpty) return {};
+
+    // If it's a comparison operator (EQ, NEQ, GT, etc.)
+    if (!isLogicalOperator(node.operator.value) && !isConditionFieldsOperator(node.operator.value)) {
+      return {
+        node.operator.value: {
+          "KEY": node.key.value,
+          "VAL": node.value.value,
+        }
+      };
+    }
+    
+    // If it's a logical operator (AND, OR)
+    if (node.children.isNotEmpty) {
+      List<Map<String, dynamic>> childNodes = [];
+      
+      for (var child in node.children) {
+        var formattedChild = formatNode(child);
+        if (formattedChild.isNotEmpty) {
+          childNodes.add(formattedChild);
+        }
+      }
+      
+      if (childNodes.isEmpty) return {};
+      
+      return {
+        node.operator.value: childNodes
+      };
+    }
+    
+    return {};
+  }
+
+  // Use this method to get the JSON string
+  String getJsonQuery() {
+    try {
+      Map<String, dynamic> queryMap = filters.toJson();
+      return jsonEncode(queryMap);
+    } catch (e) {
+      print('Error generating JSON: $e');
+      return '{}';
     }
   }
-
-  return query;
-}
-
-Map<String, dynamic> formatNode(FilterNode node) {
-  // Check if the operator is a logical operator
-  if (isLogicalOperator(node.operator.value)) {
-    return {
-      node.operator.value: node.children.map((child) => formatNode(child)).toList(),
-    };
-  } else {
-    return {
-      node.operator.value: {
-        "KEY": node.key.value,
-        "VAL": node.value.value,
-      }
-    };
-  }
-}
 
 
 
@@ -244,10 +295,47 @@ Map<String, dynamic> formatNode(FilterNode node) {
 
 
 
+
 class FilterNode {
-  RxString operator = 'AND'.obs;
+  RxString operator = ''.obs;
   RxString key = ''.obs;
   RxString value = ''.obs;
   RxBool isExpanded = true.obs;
   RxList<FilterNode> children = <FilterNode>[].obs;
+
+  Map<String, dynamic> toJson() {
+    if (!isLogicalOperator(operator.value) && !isConditionFieldsOperator(operator.value)) {
+      return {
+        operator.value: {
+          "KEY": key.value,
+          "VAL": value.value,
+        }
+      };
+    }
+
+    // If it's a logical operator (AND, OR)
+    if (children.isNotEmpty) {
+      List<Map<String, dynamic>> childNodes = [];
+      for (var child in children) {
+        var formattedChild = child.toJson();
+        if (formattedChild.isNotEmpty) {
+          childNodes.add(formattedChild);
+        }
+      }
+      if (childNodes.isEmpty) return {};
+      return {
+        operator.value: childNodes
+      };
+    }
+
+    return {};
+  }
+
+  bool isLogicalOperator(String operator) {
+    return operator == 'AND' || operator == 'OR';
+  }
+
+  bool isConditionFieldsOperator(String operator) {
+    return operator == 'AND' || operator == 'OR' || operator == 'NAG' || operator == '';
+  }
 }
