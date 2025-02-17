@@ -3,9 +3,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:implementation_panel/BreakPoints/breakpoints.dart';
 import 'package:implementation_panel/Common/Common%20Components/common_components.dart';
+import 'package:implementation_panel/Screens/Dashboard/Sample/Controller/dynamic_controller.dart';
 import 'package:implementation_panel/Screens/Dashboard/advance%20Filters/advance_filter_controller.dart';
 import 'package:implementation_panel/Screens/Dashboard/advance%20Filters/filters_common_cards.dart';
 import 'package:implementation_panel/Screens/Dashboard/custom_appbar.dart';
@@ -14,6 +16,7 @@ import 'package:responsive_toolkit/responsive_grid.dart';
 class AdvancedFiltersScreen extends StatelessWidget {
   final FilterNode? node;
   final controller = Get.put(AdvancedFilterController());
+  final dynamicController = Get.put(DynamicController());
 
   AdvancedFiltersScreen({super.key, this.node});
 
@@ -202,7 +205,6 @@ class FilterNodeWidget extends StatelessWidget {
                           value: node.operator.value == ""
                               ? null
                               : node.operator.value,
-
                           items: controller.operatorTypes
                               .map((op) => DropdownMenuItem(
                                     value: op,
@@ -299,14 +301,50 @@ class FilterNodeWidget extends StatelessWidget {
         alignment: ResponsiveAlignment.center,
         crossAxisAlignment: ResponsiveCrossAlignment.center,
         columns: [
-          ResponsiveColumn(
-            ResponsiveConstants().buttonBreakpoints,
-            child: CommonComponents.defaultTextFieldFixedHeight(
-              context,
-              hintText: 'Enter Key',
-              onChange: (val) => node.key.value = val,
+          // Mixed Values Dropdown
+          if (!controller.isConditionFieldsOperator(node.operator.value))
+            ResponsiveColumn(
+              ResponsiveConstants().buttonBreakpoints,
+              child: Container(
+                height: 40,
+                padding: const EdgeInsets.all(4.0),
+                child: DropdownButton<String>(
+                  hint: Text("Select Value"),
+                  dropdownColor: Theme.of(context).colorScheme.secondary,
+                  underline: const SizedBox(),
+                  value: node.mixedVal.value.isEmpty ? null : node.mixedVal.value,
+                  items: controller
+                      .getFilteredMixedValues(node.operator.value)
+                      .map((entry) => DropdownMenuItem(
+                            value: entry.key,
+                            child: Text(
+                              entry.key,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ))
+                      .toList(),
+                  onChanged: (val) {
+                    if (val != null) {
+                      node.key.value = val;
+                      node.mixedVal.value = val;
+                      // Actualll valur from MixedVal
+                      final selectedValue = controller.mixedValues.elementAt(
+                        controller.mixedValues.toList().indexWhere(
+                              (element) => element.toString() == val,
+                            ),
+                      );
+                      node.dataType.value = controller.getValueType(selectedValue);
+                      node.value.value = selectedValue?.toString() ?? '';
+                    }
+                  },
+                ),
+              ),
             ),
-          ),
+
+          // Operator Symbol
           ResponsiveColumn(
             ResponsiveConstants().smallBreakpoints,
             child: Container(
@@ -314,25 +352,88 @@ class FilterNodeWidget extends StatelessWidget {
               child: Text(
                 controller.getOperatorSymbol(node.operator.value),
                 style: TextStyle(
-                  fontSize: 34,
-                  // fontWeight: FontWeight.w,
+                  fontSize: 28,
                   color: Colors.grey[700],
                 ),
               ),
             ),
           ),
-          ResponsiveColumn(
-            ResponsiveConstants().buttonBreakpoints,
-            child: CommonComponents.defaultTextFieldFixedHeight(
-              context,
-              hintText: 'Enter Value',
-              onChange: (val) => node.value.value = val,
+
+          if (node.mixedVal.value.isNotEmpty)
+            ResponsiveColumn(
+              ResponsiveConstants().buttonBreakpoints,
+              child: _buildDynamicInputField(context),
             ),
-          ),
         ],
       ),
     );
   }
+
+  Widget _buildDynamicInputField(BuildContext context) {
+    final selectedValue = controller.mixedValues.elementAt(
+      controller.mixedValues.toList().indexWhere(
+            (element) => element.toString() == node.mixedVal.value,
+          ),
+    );
+    
+    switch (controller.getValueType(selectedValue)) {
+      case 'string':
+        return CommonComponents.defaultTextFieldFixedHeight(
+          context,
+          hintText: 'Enter String Value',
+          // initialValue: selectedValue?.toString() ?? '',
+          onChange: (val) => node.value.value = val,
+        );
+      
+      case 'int':
+        return CommonComponents.defaultTextFieldFixedHeight(
+          context,
+          hintText: 'Enter Integer Value',
+          // initialValue: selectedValue?.toString() ?? '',
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          onChange: (val) => node.value.value = val,
+        );
+      
+      case 'float':
+        return CommonComponents.defaultTextFieldFixedHeight(
+          context,
+          hintText: 'Enter Float Value',
+          // initialValue: selectedValue?.toString() ?? '',
+          keyboardType: TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+          ],
+          onChange: (val) => node.value.value = val,
+        );
+      
+      case 'bool':
+        return CommonComponents.defaultCheckBoxListTile(
+          context,
+          title: "Required",
+          value: controller.isRequired.value,
+          onChanged: (bool? value) {
+            if (value != null) {
+              node.value.value = value.toString();
+              controller.updateReportOnly(value);
+            }
+          },
+        );
+      
+      case 'null':
+        return CommonComponents.defaultTextFieldFixedHeight(
+          context,
+          hintText: 'Null Value',
+          readOnly: true,
+          // initialValue: selectedValue?.toString() ?? '',
+          onChange: (val) => node.value.value = val,
+        );
+      
+      default:
+        return SizedBox.shrink();
+    }
+  }
+
 
   Widget buildAddButtons(BuildContext context) {
     return Padding(
@@ -360,10 +461,304 @@ class FilterNodeWidget extends StatelessWidget {
 
 
 
+//   Widget buildConditionFields(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(vertical: 4),
+//       child: ResponsiveRow(
+//         alignment: ResponsiveAlignment.center,
+//         crossAxisAlignment: ResponsiveCrossAlignment.center,
+//         columns: [
+// if (node.operator == 'EQ')
+//           ResponsiveColumn(
+//             ResponsiveConstants().buttonBreakpoints,
+//             // child: CommonComponents.defaultTextFieldFixedHeight(
+//             //   context,
+//             //   hintText: 'Enter Key',
+//             //   onChange: (val) => node.key.value = val,
+//             // ),
+//             child: SizedBox(
+//   height: 40,
+//   child: Padding(
+//     padding: const EdgeInsets.all(4.0),
+//     child: DropdownButton<String>(
+//       hint: Text("Select Data Type"),
+//       dropdownColor: Theme.of(context).colorScheme.secondary,
+//       underline: const SizedBox(),
+//       value: node.mixedVal.value.isEmpty ? null : node.mixedVal.value,
+//       items: (controller.mixedValues as Map<String, List<String>>)[node.mixedVal.value]?.map((type) => DropdownMenuItem<String>(
+//             value: type,
+//             child: Text(
+//               type,
+//               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+//             ),
+//           )).toList() ?? [],
+//       onChanged: (val) {
+//         node.mixedVal.value = val!;
+//       },
+//       iconSize: 20,
+//     ),
+//   ),
+// )
+//           ),
+//           ResponsiveColumn(
+//             ResponsiveConstants().smallBreakpoints,
+//             child: Container(
+//               alignment: Alignment.center,
+//               child: Text(
+//                 controller.getOperatorSymbol(node.operator.value),
+//                 style: TextStyle(
+//                   fontSize: 28,
+//                   // fontWeight: FontWeight.w,
+//                   color: Colors.grey[700],
+//                 ),
+//               ),
+//             ),
+//           ),
+//              if (node.dataTypes == 'EQ')
+//           ResponsiveColumn(
+//             ResponsiveConstants().buttonBreakpoints,
+//             child: CommonComponents.defaultTextFieldFixedHeight(
+//               context,
+//               hintText: 'Enter String Value',
+//               onChange: (val) => node.value.value = val,
+//             ),
+//           ),
+//              if (node.dataTypes == 'NEQ')
+//           ResponsiveColumn(
+//                     ResponsiveConstants().buttonBreakpoints,
+//                     child: CommonComponents.defaultCheckBoxListTile(
+//                           context,
+//                           title: "Required",
+//                           value: controller.isRequired.value,
+//                           onChanged: (bool? value) {
+//                                           if (value != null) {
+//                                             controller.updateReportOnly(value);
+//                                           }},
+//                         ),
+//                   ),
+//            if (node.dataTypes == 'GT')
+//           ResponsiveColumn(
+//             ResponsiveConstants().buttonBreakpoints,
+//             child: CommonComponents.defaultTextFieldFixedHeight(
+//               context,
+//               hintText: 'Enter Int Value',
+//               onChange: (val) => node.value.value = val,
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+// Widget buildConditionFields(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(vertical: 4),
+//       child: ResponsiveRow(
+//         alignment: ResponsiveAlignment.center,
+//         crossAxisAlignment: ResponsiveCrossAlignment.center,
+//         columns: [
+//           // Data Type Dropdown
+//           if (!controller.isConditionFieldsOperator(node.operator.value))
+//             ResponsiveColumn(
+//               ResponsiveConstants().buttonBreakpoints,
+//               child: Container(
+//                 padding:
+//                     const EdgeInsets.symmetric(horizontal: 12, vertical: 0.0),
+//                 decoration: BoxDecoration(
+//                   color: Colors.white,
+//                   border: Border.all(color: Colors.grey[300]!),
+//                   borderRadius: BorderRadius.circular(4),
+//                 ),
+//                 child: SizedBox(
+//                         height: 40,
+//                         child: Padding(
+//                           padding: const EdgeInsets.all(4.0),
+//                           child: DropdownButton<String>(
+//                             hint: Text("Select Data Type"),
+//                             dropdownColor:
+//                                 Theme.of(context).colorScheme.secondary,
+//                             underline: const SizedBox(),
+//                             value: node.dataType.value.isEmpty ? null : node.dataType.value,
+//                             items: controller
+//                         .getDataTypesForOperator(node.operator.value)
+//                         .map((type) => DropdownMenuItem(
+//                               value: type,
+//                               child: Text(
+//                                 type,
+//                                 style: TextStyle(
+//                                   fontSize: 14,
+//                                   fontWeight: FontWeight.w500,
+//                                 ),
+//                               ),
+//                             ))
+//                         .toList(),
+//                             onChanged: (val) {
+//                       if (val != null) {
+//                         node.dataType.value = val;
+//                         node.value.value = '';
+//                       }
+//                     },
+//                             // iconSize: 20,
+//                             // isExpanded: true,
+//                           ),
+//                         ),
+//                       ),
+//               )
+//             ),
+//           // Operator Symbol
+//           ResponsiveColumn(
+//             ResponsiveConstants().smallBreakpoints,
+//             child: Container(
+//               alignment: Alignment.center,
+//               child: Text(
+//                 controller.getOperatorSymbol(node.operator.value),
+//                 style: TextStyle(
+//                   fontSize: 28,
+//                   color: Colors.grey[700],
+//                 ),
+//               ),
+//             ),
+//           ),
+// //// inoput Field Based o the Datatype Selected
+//           if (node.dataType.value.isNotEmpty)
+//             ResponsiveColumn(
+//               ResponsiveConstants().buttonBreakpoints,
+//               child: buildInputField(context, node.dataType.value),
+//             ),
+//         ],
+//       ),
+//     );
+//   }
+//   Widget buildInputField(BuildContext context, String dataType) {
+//     switch (dataType) {
+//       case 'str':
+//         return CommonComponents.defaultTextFieldFixedHeight(
+//           context,
+//           hintText: 'Enter String Value',
+//           onChange: (val) => node.value.value = val,
+//         );
+//       case 'int':
+//         return CommonComponents.defaultTextFieldFixedHeight(
+//           context,
+//           hintText: 'Enter Integer Value',
+//           keyboardType: TextInputType.number,
+//           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+//           onChange: (val) => node.value.value = val,
+//         );
+//       case 'float':
+//         return CommonComponents.defaultTextFieldFixedHeight(
+//           context,
+//           hintText: 'Enter Float Value',
+//           keyboardType: TextInputType.numberWithOptions(decimal: true),
+//           inputFormatters: [
+//             FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+//           ],
+//           onChange: (val) => node.value.value = val,
+//         );
+//       case 'bool':
+//         return SizedBox(
+//           height: 40,
+//           child: DropdownButton<String>(
+//             hint: Text("Select Boolean"),
+//             value: node.value.value.isEmpty ? null : node.value.value,
+//             items: ['true', 'false']
+//                 .map((v) => DropdownMenuItem(
+//                       value: v,
+//                       child: Text(v),
+//                     ))
+//                 .toList(),
+//             onChanged: (val) {
+//               if (val != null) node.value.value = val;
+//             },
+//           ),
+//         );
+//       case 'null':
+//         // return Container(
+//         //   height: 40,
+//         //   alignment: Alignment.centerLeft,
+//         //   child: Text('Null value'),
+//         // );
+//         return CommonComponents.defaultTextFieldFixedHeight(
+//           context,
+//           hintText: 'Enter Null Value',
+//           // keyboardType: TextInputType.numberWithOptions(),
+//           // inputFormatters: [
+//           //   FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+//           // ],
+//           onChange: (val) => node.value.value = val,
+//         );
+//       default:
+//         return SizedBox.shrink();
+//     }
+//   }
+// Widget buildConditionFields(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(vertical: 4),
+//       child: ResponsiveRow(
+//         alignment: ResponsiveAlignment.center,
+//         crossAxisAlignment: ResponsiveCrossAlignment.center,
+//         columns: [
+//           if (!controller.isConditionFieldsOperator(node.operator.value))
+//             ResponsiveColumn(
+//               ResponsiveConstants().buttonBreakpoints,
+//               child: Container(
+//                 height: 40,
+//                 padding: const EdgeInsets.all(4.0),
+//                 child: DropdownButton<String>(
+//                   hint: Text("Select Data Type"),
+//                   dropdownColor: Theme.of(context).colorScheme.secondary,
+//                   underline: const SizedBox(),
+//                   value: node.dataType.value.isEmpty ? null : node.dataType.value,
+//                   items: controller
+//                       .getDataTypesForOperator(node.operator.value)
+//                       .map((type) => DropdownMenuItem(
+//                             value: type,
+//                             child: Text(
+//                               type,
+//                               style: TextStyle(
+//                                 fontSize: 14,
+//                                 fontWeight: FontWeight.w500,
+//                               ),
+//                             ),
+//                           ))
+//                       .toList(),
+//                   onChanged: (val) {
+//                     if (val != null) {
+//                       node.dataType.value = val;
+//                       node.value.value = '';
+//                     }
+//                   },
+//                 ),
+//               ),
+//             ),
+//           // Operator Symbol
+//           ResponsiveColumn(
+//             ResponsiveConstants().smallBreakpoints,
+//             child: Container(
+//               alignment: Alignment.center,
+//               child: Text(
+//                 controller.getOperatorSymbol(node.operator.value),
+//                 style: TextStyle(
+//                   fontSize: 28,
+//                   color: Colors.grey[700],
+//                 ),
+//               ),
+//             ),
+//           ),
+//           // Dynamic Input Field based on Data Type
+//           if (node.dataType.value.isNotEmpty)
+//             ResponsiveColumn(
+//               ResponsiveConstants().buttonBreakpoints,
+//               child: _buildInputField(context, node.dataType.value),
+//             ),
+//         ],
+//       ),
+//     );
+//   }
+
 
 // // // class AdvancedFilterController extends GetxController {
 // // //   var filters = <FilterNode>[].obs;
-
 // // //   List<String> get operatorTypes => [
 // // //         'AND',
 // // //         'OR',
@@ -376,7 +771,6 @@ class FilterNodeWidget extends StatelessWidget {
 // // //         'LTE (<=)',
 // // //         'CONTAINS'
 // // //       ];
-
 // // //   void addFilterNode(FilterNode? parent) {
 // // //     final newNode = FilterNode();
 // // //     if (parent == null) {
@@ -385,7 +779,6 @@ class FilterNodeWidget extends StatelessWidget {
 // // //       parent.children.add(newNode);
 // // //     }
 // // //   }
-
 // // //   void removeFilterNode(FilterNode node, FilterNode? parent) {
 // // //     if (parent == null) {
 // // //       filters.remove(node);
@@ -394,7 +787,6 @@ class FilterNodeWidget extends StatelessWidget {
 // // //     }
 // // //   }
 // // // }
-
 // // // class FilterNode {
 // // //   RxString operator = 'AND'.obs;
 // // //   RxString operator2 = 'OR'.obs;
@@ -402,12 +794,9 @@ class FilterNodeWidget extends StatelessWidget {
 // // //   RxString conditionValue = ''.obs;
 // // //   RxList<FilterNode> children = <FilterNode>[].obs;
 // // // }
-
 // // // class AdvancedFiltersScreen extends StatelessWidget {
 // // //   final controller = Get.put(AdvancedFilterController());
-
 // // //   AdvancedFiltersScreen({super.key});
-
 // // //   @override
 // // //   Widget build(BuildContext context) {
 // // //     return CommonScaffoldWithAppBar(
@@ -483,7 +872,6 @@ class FilterNodeWidget extends StatelessWidget {
 // // //     );
 // // //   }
 // // // }
-
 // // // class FilterNodeWidget extends StatelessWidget {
 // // //   final FilterNode node;
 // // //   final FilterNode? parent;
@@ -645,11 +1033,9 @@ class FilterNodeWidget extends StatelessWidget {
 // // //     );
 // // //   }
 // // // }
-
 // // // Condition Object(Json)
 // // // Condition Array for (OR, AND)
 // // // Condition Object(Key , Value)
-
 // // // class MultiLevelDropdown extends StatefulWidget {
 // // //   const MultiLevelDropdown({super.key});
 // // //   @override
@@ -788,21 +1174,16 @@ class FilterNodeWidget extends StatelessWidget {
 // // //     );
 // // //   }
 // // // }
-
 // // // AND, OR - Condition Array
 // // // NAG - Condition JSON
 // // // Others -  Key-Value JSON
-
 // // // Condition Object(Json)
 // // // Condition Array for (OR, AND)
 // // // Condition Object(Key , Value)
-
 // class AdvancedFiltersScreen extends StatelessWidget {
 //   final FilterNode? node;
 //   final controller = Get.put(AdvancedFilterController());
-
 //   AdvancedFiltersScreen({super.key, this.node});
-
 //   @override
 //   Widget build(BuildContext context) {
 //     return CommonScaffoldWithAppBar(
@@ -879,13 +1260,11 @@ class FilterNodeWidget extends StatelessWidget {
 //     );
 //   }
 // }
-
 // // class FilterNodeWidget extends StatelessWidget {
 // //   final FilterNode node;
 // //   final FilterNode? parent;
 // //   final AdvancedFilterController controller;
 // //   final int depth;
-
 // //   const FilterNodeWidget({
 // //     super.key,
 // //     required this.node,
@@ -893,13 +1272,11 @@ class FilterNodeWidget extends StatelessWidget {
 // //     required this.controller,
 // //     this.depth = 0,
 // //   });
-
 // //   @override
 // //   Widget build(BuildContext context) {
 // //     return Obx(() => Column(
 // //       crossAxisAlignment: CrossAxisAlignment.start,
 // //       children: [
-
 // //         Stack(
 // //           children: [
 // //             if (parent != null)
@@ -943,7 +1320,6 @@ class FilterNodeWidget extends StatelessWidget {
 // //       ],
 // //     ));
 // //   }
-
 // //   Widget _buildOperatorRow(BuildContext context) {
 // //     return Container(
 // //       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -992,7 +1368,6 @@ class FilterNodeWidget extends StatelessWidget {
 // //       ),
 // //     );
 // //   }
-
 // //   Widget _buildConditions(BuildContext context) {
 // //     return Column(
 // //       children: [
@@ -1010,7 +1385,6 @@ class FilterNodeWidget extends StatelessWidget {
 // //       ],
 // //     );
 // //   }
-
 // //   Widget _buildConditionRow(BuildContext context) {
 // //     return Padding(
 // //       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -1083,7 +1457,6 @@ class FilterNodeWidget extends StatelessWidget {
 // //       // ),
 // //     );
 // //   }
-
 // //   Widget _buildAddButtons(BuildContext context) {
 // //     return Padding(
 // //       padding: const EdgeInsets.only(left: 24),
@@ -1111,7 +1484,6 @@ class FilterNodeWidget extends StatelessWidget {
 // //     );
 // //   }
 // // }
-
 // //   // Widget _buildDropdown(
 // //   //   String hint,
 // //   //   String value,
@@ -1139,7 +1511,6 @@ class FilterNodeWidget extends StatelessWidget {
 // //   //     ),
 // //   //   );
 // //   // }
-
 // // // // class MultiLevelDropdown extends StatefulWidget {
 // // // //   const MultiLevelDropdown({super.key});
 // // // //   @override
@@ -1255,7 +1626,6 @@ class FilterNodeWidget extends StatelessWidget {
 // // // //     );
 // // // //   }
 // // // // }
-
 // class AdvancedFilterController extends GetxController {
 //   var filters = <FilterNode>[].obs;
 //   final operatorTypes = [
@@ -1270,7 +1640,6 @@ class FilterNodeWidget extends StatelessWidget {
 //     'LTE (<=)',
 //     'CONTAINS'
 //   ];
-
 //   void addFilterNode(FilterNode? parent) {
 //     final newNode = FilterNode();
 //     if (parent == null) {
@@ -1279,7 +1648,6 @@ class FilterNodeWidget extends StatelessWidget {
 //       parent.children.add(newNode);
 //     }
 //   }
-
 //   void removeFilterNode(FilterNode node, FilterNode? parent) {
 //     if (parent == null) {
 //       filters.remove(node);
@@ -1288,7 +1656,6 @@ class FilterNodeWidget extends StatelessWidget {
 //     }
 //   }
 // }
-
 // class FilterNode {
 //   RxString operator = 'AND'.obs;
 //   RxString field = ''.obs;
@@ -1298,13 +1665,11 @@ class FilterNodeWidget extends StatelessWidget {
 //   RxBool isExpanded = true.obs;
 //   RxList<FilterNode> children = <FilterNode>[].obs;
 // }
-
 // class FilterNodeWidget extends StatelessWidget {
 //   final FilterNode node;
 //   final FilterNode? parent;
 //   final AdvancedFilterController controller;
 //   final int depth;
-
 //   const FilterNodeWidget({
 //     super.key,
 //     required this.node,
@@ -1312,7 +1677,6 @@ class FilterNodeWidget extends StatelessWidget {
 //     required this.controller,
 //     this.depth = 0,
 //   });
-
 //   @override
 //   Widget build(BuildContext context) {
 //     return Obx(() => Column(
@@ -1361,7 +1725,6 @@ class FilterNodeWidget extends StatelessWidget {
 //           ],
 //         ));
 //   }
-
 //   Widget _buildOperatorRow(BuildContext context) {
 //     return Container(
 //       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -1412,7 +1775,6 @@ class FilterNodeWidget extends StatelessWidget {
 //       ),
 //     );
 //   }
-
 //   Widget _buildConditions(BuildContext context) {
 //     return Obx(() => Column(
 //           children: [
@@ -1429,11 +1791,9 @@ class FilterNodeWidget extends StatelessWidget {
 //           ],
 //         ));
 //   }
-
 //   Widget _buildConditionRow(BuildContext context) {
 //     return Padding(
 //       padding: const EdgeInsets.symmetric(vertical: 4),
-      
 //       child: ResponsiveRow(
 //         columns: [
 //           // if (controller.operatorTypes != 'AND' ||
@@ -1471,7 +1831,6 @@ class FilterNodeWidget extends StatelessWidget {
 //       ),
 //     );
 //   }
-
 //   Widget _buildAddButtons(BuildContext context) {
 //     return Padding(
 //       padding: const EdgeInsets.only(left: 24),
