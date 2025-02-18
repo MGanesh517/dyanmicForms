@@ -1,6 +1,5 @@
 
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -8,31 +7,404 @@ class AdvancedFilterController extends GetxController {
   var filters = FilterNode();
   var isRequired = false.obs;
   void updateReportOnly(bool value) => isRequired.value = value;
-  
-  final Map<String, Set<dynamic>> sampleData = {
-    'str': {'Sample Text', 'Another String', 'Test Data'},
-    'int': {1, 2, 3, 4, 5},
-    'float': {1.5, 2.7, 3.14, 4.2, 5.0},
-    'bool': {true, false},
+  RxString selectedVariable = ''.obs;
+  RxString selectedDataType = ''.obs;
+
+
+  // final Map<String, String> mixedValues = {
+  //   'Name': 'string',
+  //   'Age': 'int',
+  //   'Decimal': 'float',
+  //   'Boolean': 'bool',
+  //   'Gender': 'choices',
+  //   'Groups': 'foreignkey'
+  // };
+//   List<MapEntry<String, String>> getFilteredMixedValues(String operator) {
+//   if (!operatorDataTypes.containsKey(operator)) {
+//     return [];
+//   }
+//   Set<String> allowedTypes = operatorDataTypes[operator]!;
+//   return mixedValues.entries
+//       .where((entry) => allowedTypes.contains(entry.value))
+//       .toList();
+// }
+// static final Map<String, Set<String>> operatorDataTypes = {
+//   'EQ': {'str', 'int', 'float', 'bool', 'null'},
+//   'NEQ': {'str', 'int', 'float', 'bool', 'null'},
+//   'GT': {'int', 'float', 'str'},
+//   'GTE': {'int', 'float', 'str'},
+//   'LT': {'int', 'float', 'str'},
+//   'LTE': {'int', 'float', 'str'},
+//   'CONTAINS': {'str'},
+//   'ICONTAINS': {'str'},
+//   'STARTSWITH': {'str'},
+//   'ISTARTSWITH': {'str'},
+//   'ENDSWITH': {'str'},
+//   'IENDSWITH': {'str'},
+//   'REGEX': {'str'},
+//   'IREGEX': {'str'},
+//   'YEAR': {'int'},
+//   'MONTH': {'int'},
+//   'DAY': {'int'},
+//   'WEEK_DAY': {'int'},
+//   'HOUR': {'int'},
+//   'MINUTE': {'int'},
+//   'SECOND': {'int'},
+//   'ISNULL': {'bool'},
+// };
+// String getValueType(dynamic value) {
+//   if (value == null) return 'null';
+//   if (value is int) return 'int';
+//   if (value is double) return 'float';
+//   if (value is String) return 'str';
+//   if (value is bool) return 'bool';
+//   return 'unknown';
+// }
+// String fieldConditions(String operator, dynamic value) {
+//   String valueType = getValueType(value);
+//   if (operatorDataTypes.containsKey(operator) &&
+//       operatorDataTypes[operator]!.contains(valueType)) {
+//     return valueType;
+//   }
+//   return 'unknown';
+// }
+
+
+  // List<MapEntry<String, String>> getFilteredMixedValues(String operator) {
+  //   switch (operator) {
+  //     case 'EQ':
+  //     case 'NEQ':
+  //       // return mixedValues.entries.toList();
+  //       return mixedValues
+  //           .where((e) => e['data_type'] == 'int' || e['data_type'] == 'float' || e['data_type'] == 'str' || e['data_type'] == 'bool')
+  //           .map((e) => MapEntry(e['verbose_name'] as String, e['data_type'] as String))
+  //           .toList();
+  //     case 'GT':
+  //     case 'GTE':
+  //     case 'LT':
+  //     case 'LTE':
+  //       return mixedValues
+  //           .where((e) => e['data_type'] == 'int' || e['data_type'] == 'float' || e['data_type'] == 'str')
+  //           .map((e) => MapEntry(e['verbose_name'] as String, e['data_type'] as String))
+  //           .toList();
+  //     case 'CONTAINS':
+  //     case 'ICONTAINS':
+  //     case 'STARTSWITH':
+  //     case 'ISTARTSWITH':
+  //     case 'ENDSWITH':
+  //     case 'DATE':
+  //     case 'IENDSWITH':
+  //     case 'REGEX':
+  //     case 'IREGEX':
+  //       return mixedValues
+  //           .where((e) => e['data_type'] == 'str')
+  //           .map((e) => MapEntry(e['verbose_name'] as String, e['data_type'] as String))
+  //           .toList();
+  //     // case 'IN':
+  //     // case 'NOT_IN':
+  //     // case 'CONTAINED_BY':
+  //     // case 'CONTAINS_ANY':
+  //     // case 'RANGE':
+  //     //   return mixedValues.entries
+  //     //       .where((e) => e.value == 'choices' || e.value == 'foreignkey')
+  //     //       .toList();
+  //     case 'YEAR':
+  //     case 'MONTH':
+  //     case 'DAY':
+  //     case 'WEEK_DAY':
+  //     case 'HOUR':
+  //     case 'MINUTE':
+  //     case 'SECOND':
+  //       return mixedValues
+  //           .where((e) => e['data_type'] == 'int')
+  //           .map((e) => MapEntry(e['verbose_name'] as String, e['data_type'] as String))
+  //           .toList();
+  //     case 'ISNULL':
+  //       return mixedValues
+  //           .where((e) => e['data_type'] == 'bool')
+  //           .map((e) => MapEntry(e['verbose_name'] as String, e['data_type'] as String))
+  //           .toList();
+  //     default:
+  //       return [];
+  //   }
+  // }
+
+
+  final List<Map<String, Object>>  mixedValues = [
+    {
+          "name": "productioninitems",
+          "verbose_name": "",
+          "data_type": "ForeignKey",
+          "concrete": false,
+          "editable": false,
+          "null": true,
+          "INS": "ManyToOneRel",
+          "related_model": {
+              "app_name": "Production",
+              "model_name": "productioninitem",
+              "verbose_name": "Production In Item",
+              "fields": []
+          }
+      },
+      {
+          "name": "productionout",
+          "verbose_name": "",
+          "data_type": "ForeignKey",
+          "concrete": false,
+          "editable": false,
+          "null": true,
+          "INS": "ManyToOneRel",
+          "related_model": {
+              "app_name": "Production",
+              "model_name": "productionout",
+              "verbose_name": "Production Out",
+              "fields": []
+          }
+      },
+      {
+          "name": "id",
+          "verbose_name": "Id",
+          "data_type": "UUIDField",
+          "concrete": true,
+          "editable": false,
+          "null": false,
+          "INS": "UUIDField"
+      },
+      {
+          "name": "erp_id",
+          "verbose_name": "Erp Id",
+          "data_type": "int",
+          "concrete": true,
+          "editable": true,
+          "null": true,
+          "INS": "int"
+      },
+      {
+          "name": "erp_code",
+          "verbose_name": "Erp Code",
+          "data_type": "string",
+          "concrete": true,
+          "editable": true,
+          "null": true,
+          "INS": "string"
+      },
+      {
+          "name": "created_by",
+          "verbose_name": "Created By",
+          "data_type": "ForeignKey",
+          "concrete": true,
+          "editable": true,
+          "null": true,
+          "INS": "ForeignKey",
+          "related_model": {
+              "app_name": "Users",
+              "model_name": "user",
+              "verbose_name": "User",
+              "fields": []
+          }
+      },
+      {
+          "name": "created_on",
+          "verbose_name": "Created On",
+          "data_type": "DateTimeField",
+          "concrete": true,
+          "editable": false,
+          "null": false,
+          "INS": "DateTimeField"
+      },
+      {
+          "name": "modified_by",
+          "verbose_name": "Modified By",
+          "data_type": "ForeignKey",
+          "concrete": true,
+          "editable": true,
+          "null": true,
+          "INS": "ForeignKey",
+          "related_model": {
+              "app_name": "Users",
+              "model_name": "user",
+              "verbose_name": "User",
+              "fields": []
+          }
+      },
+      {
+          "name": "modified_on",
+          "verbose_name": "Modified On",
+          "data_type": "DateTimeField",
+          "concrete": true,
+          "editable": false,
+          "null": true,
+          "INS": "DateTimeField"
+      },
+      {
+          "name": "is_deleted",
+          "verbose_name": "Is Deleted",
+          "data_type": "bool",
+          "concrete": true,
+          "editable": true,
+          "null": true,
+          "INS": "bool"
+      },
+      {
+          "name": "code",
+          "verbose_name": "Code",
+          "data_type": "string",
+          "concrete": true,
+          "editable": true,
+          "null": false,
+          "INS": "string"
+      },
+      {
+          "name": "date",
+          "verbose_name": "Date",
+          "data_type": "DateField",
+          "concrete": true,
+          "editable": true,
+          "null": true,
+          "INS": "DateField"
+      },
+      {
+          "name": "narration",
+          "verbose_name": "Narration",
+          "data_type": "TextField",
+          "concrete": true,
+          "editable": true,
+          "null": true,
+          "INS": "TextField"
+      },
+      {
+          "name": "productiontype",
+          "verbose_name": "Productiontype",
+          "data_type": "int",
+          "concrete": true,
+          "editable": true,
+          "null": true,
+          "INS": "int"
+      },
+      {
+          "name": "location",
+          "verbose_name": "Location",
+          "data_type": "ForeignKey",
+          "concrete": true,
+          "editable": true,
+          "null": true,
+          "INS": "ForeignKey",
+          "related_model": {
+              "app_name": "Masters",
+              "model_name": "location",
+              "verbose_name": "Location",
+              "fields": []
+          }
+      },
+      {
+          "name": "status",
+          "verbose_name": "Status",
+          "data_type": "int",
+          "concrete": true,
+          "editable": true,
+          "null": true,
+          "INS": "int"
+      },
+      {
+          "name": "type",
+          "verbose_name": "Type",
+          "data_type": "int",
+          "concrete": true,
+          "editable": true,
+          "null": true,
+          "INS": "int"
+      }
+  ];
+
+  // List<MapEntry<String, String>> getFilteredMixedValues(String operator) {
+  //   return mixedValues
+  //       .where((e) => e['data_type'] == 'int' || e['data_type'] == 'float' || e['data_type'] == 'string' || e['data_type'] == 'bool')
+  //       .map((e) {
+  //         String name = e['name'] as String;
+  //         String verboseName = (e['verbose_name'] as String).isNotEmpty ? e['verbose_name'] as String : name;
+  //         return MapEntry(name, verboseName);
+  //       })
+  //       .toList();
+  // }
+  List<MapEntry<String, String>> getFilteredMixedValues(String operator) {
+  final Map<String, Set<String>> operatorDataTypes = {
+    'EQ': {'string', 'int', 'float', 'bool', 'null'},
+    'NEQ': {'string', 'int', 'float', 'bool', 'null'},
+    'GT': {'int', 'float'},
+    'GTE': {'int', 'float'},
+    'LT': {'int', 'float'},
+    'LTE': {'int', 'float'},
+    'CONTAINS': {'string'},
   };
-  
-  final  mixedValues = {
-    123,
-    'John Doe',
-    true,
-    99.99,
-    'Sai',
-    12512,
-    'MAC Ganesh',
-    true,
-    null,
-    '27/08/2000',
-    25,
-    85.5,
-    'test@test.com',
-    null,
-    false
-  };
+
+//Checkingthe operator exists
+  if (!operatorDataTypes.containsKey(operator)) return [];
+
+  return mixedValues
+      .where((e) => operatorDataTypes[operator]!.contains(e['data_type']))
+      .map((e) {
+        String name = e['name'] as String;
+        String verboseName = (e['verbose_name'] as String).isNotEmpty ? e['verbose_name'] as String : name;
+        return MapEntry(name, verboseName);
+      })
+      .toList();
+}
+
+
+  String fieldConditionsMap(String operator, dynamic value) {
+    final Map<String, Set<Type>> validTypes = {
+      'EQ': {String, int, double, bool, Null},
+      'NEQ': {String, int, double, bool, Null},
+      'GT': {int, double},
+      'GTE': {int, double},
+      'LT': {int, double},
+      'LTE': {int, double},
+      'ISNULL': {Null},
+    };
+
+//checking operatorexists
+  if (validTypes.containsKey(operator)) {
+    // Check if the value's type is in the valid set
+    for (var type in validTypes[operator]!) {
+      if (value == null && type == Null) return 'null';
+      if (value.runtimeType == type) {
+        return type.toString().toLowerCase();
+      }
+    }
+  }
+
+  return 'unknown';
+}
+
+void main() {
+  print(fieldConditions('EQ', 'Hello'));  // Output: string
+  print(fieldConditions('EQ', 100));      // Output: int
+  print(fieldConditions('EQ', 3.14));     // Output: double
+  print(fieldConditions('EQ', true));     // Output: bool
+  print(fieldConditions('EQ', null));     // Output: null
+  print(fieldConditions('GT', 50));       // Output: int
+  print(fieldConditions('GT', 2.5));      // Output: double
+  print(fieldConditions('GT', 'text'));   // Output: unknown
+  print(fieldConditions('ISNULL', null)); // Output: null
+}
+
+
+  String fieldConditions(String operator, dynamic value) {
+    if (isFieldConditionOperator(operator) && value is int) {
+      return 'int';
+    } else if (isFieldConditionOperator(operator) && value is String) {
+      return 'string';
+    } else if (isFieldConditionOperator(operator) && value is double) {
+      return 'float';
+    } else if ((operator == 'QE' || operator == 'NEQ' || operator == 'ISNULL') && value is bool) {
+      return 'bool';
+    }
+    return 'unknown';
+  }
+
+  bool isFieldConditionOperator(String operator) {
+    return ['QE', 'NEQ', 'GT', 'GTE', 'LT', 'LTE'].contains(operator);
+  }
 
   String getValueType(dynamic value) {
     if (value == null) return 'null';
@@ -43,43 +415,9 @@ class AdvancedFilterController extends GetxController {
     return 'unknown';
   }
 
-  List<MapEntry<String, dynamic>> getFilteredMixedValues(String operator) {
-    switch (operator) {
-      case 'EQ':
-      case 'NEQ':
-        return mixedValues.map((e) => MapEntry(e.toString(), e)).toList();
-      case 'GT':
-      case 'GTE':
-      case 'LT':
-      case 'LTE':
-        return mixedValues.where((e) => e is num || e is String)
-            .map((e) => MapEntry(e.toString(), e))
-                .toList();
-      // case 'CONTAINS':
-      //   return mixedValues.entries
-      //       .where((e) => e.value is String)
-      //       .toList();
-      case 'CONTAINS':
-      case 'ICONTAINS':
-      case 'STARTSWITH':
-      case 'ISTARTSWITH':
-      case 'ENDSWITH':
-      case 'DATE':
-      case 'IENDSWITH':
-      case 'REGEX':
-      case 'IREGEX':
-        return mixedValues.map((e) => MapEntry(e.toString(), e)).toList()
-            .where((e) => e.value is String)
-            .toList();
-
-
-      default:
-        return [];
-    }
-  }
-
-  Iterable<String> getDataTypesForOperator(String operator) {
-    return FilterNode.operatorDataTypes[operator] ?? [];
+  void updateSelectedVariable(String variable) {
+    selectedVariable.value = variable;
+    selectedDataType.value = mixedValues.firstWhere((element) => element['name'] == variable)['data_type'] as String;
   }
 
   final operatorMap = {
@@ -106,7 +444,23 @@ class AdvancedFilterController extends GetxController {
     'GTE',
     'LT',
     'LTE',
-    'CONTAINS'
+    'CONTAINS',
+    'ICONTAINS',
+    'STARTSWITH',
+    'ISTARTSWITH',
+    'ENDSWITH',
+    'DATE',
+    'IENDSWITH',
+    'REGEX',
+    'IREGEX',
+    'ISNULL',
+    'YEAR',
+    'MONTH',
+    'DAY',
+    'WEEK_DAY',
+    'HOUR',
+    'MINUTE',
+    'SECOND'
   ];
 
   final TextEditingController keyTextField = TextEditingController();

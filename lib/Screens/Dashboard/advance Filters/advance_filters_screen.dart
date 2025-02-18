@@ -126,7 +126,7 @@ class FilterNodeWidget extends StatelessWidget {
                   Positioned(
                     left: 0,
                     top: 0,
-                    bottom: 20,
+                    bottom: 0,
                     child: Container(
                       width: 2,
                       color: Theme.of(context).colorScheme.primary,
@@ -198,6 +198,7 @@ class FilterNodeWidget extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(4.0),
                         child: DropdownButton<String>(
+                          menuMaxHeight: 300,
                           hint: Text("Select"),
                           dropdownColor:
                               Theme.of(context).colorScheme.secondary,
@@ -301,45 +302,86 @@ class FilterNodeWidget extends StatelessWidget {
         alignment: ResponsiveAlignment.center,
         crossAxisAlignment: ResponsiveCrossAlignment.center,
         columns: [
-          // Mixed Values Dropdown
           if (!controller.isConditionFieldsOperator(node.operator.value))
             ResponsiveColumn(
               ResponsiveConstants().buttonBreakpoints,
               child: Container(
-                height: 40,
-                padding: const EdgeInsets.all(4.0),
-                child: DropdownButton<String>(
-                  hint: Text("Select Value"),
-                  dropdownColor: Theme.of(context).colorScheme.secondary,
-                  underline: const SizedBox(),
-                  value: node.mixedVal.value.isEmpty ? null : node.mixedVal.value,
-                  items: controller
-                      .getFilteredMixedValues(node.operator.value)
-                      .map((entry) => DropdownMenuItem(
-                            value: entry.key,
-                            child: Text(
-                              entry.key,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ))
-                      .toList(),
-                  onChanged: (val) {
-                    if (val != null) {
-                      node.key.value = val;
-                      node.mixedVal.value = val;
-                      // Actualll valur from MixedVal
-                      final selectedValue = controller.mixedValues.elementAt(
-                        controller.mixedValues.toList().indexWhere(
-                              (element) => element.toString() == val,
-                            ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Colors.grey[300]!),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Container(
+                  height: 40,
+                  padding: const EdgeInsets.all(4.0),
+        //           child: DropdownButton<String>(
+        //             alignment: AlignmentDirectional.centerStart,
+        //             isExpanded: true,
+        //             hint: Text("Select Field"),
+        //             dropdownColor: Theme.of(context).colorScheme.secondary,
+        //             underline: const SizedBox(),
+        //             value: node.mixedVal.value.isEmpty ? null : node.mixedVal.value,
+        //             // value: controller.dropdownDetails.name,
+        //             items: controller
+        //                 .getFilteredMixedValues(node.operator.value)
+        //                 .map((entry) => DropdownMenuItem(
+        //                       value: entry.key,
+        //                       child: Text(
+        //                         // "${entry.key} (${entry.value})",
+        //                         "${entry.key}",
+        //                         style: TextStyle(
+        //                           fontSize: 14,
+        //                           fontWeight: FontWeight.w500,
+        //                         ),
+        //                       ),
+        //                     ))
+        //                 .toList(),
+        //             onChanged: (val) {
+        //               if (val != null) {
+        //                 // node.key.value = controller.dropdownDetails.verboseName!;
+        //       print("print the Datatype.value ${controller.mixedValues}");
+        //       print("print the Datatype.value ${val}");
+        //       print("print the Datatype.value ${controller.mixedValues}");
+        //                 node.key.value = val;
+        //                 node.mixedVal.value = val;
+        // // Set the data type based on the selected field
+        //                 node.dataType.value = controller.mixedValues as String;
+        //                 node.value.value = '';
+        //               }
+        //             },
+        //           ),
+                            child: DropdownButton<String>(
+                    alignment: AlignmentDirectional.centerStart,
+                    isExpanded: true,
+                    hint: Text("Select Field"),
+                    dropdownColor: Theme.of(context).colorScheme.secondary,
+                    underline: const SizedBox(),
+                    value: node.mixedVal.value.isEmpty ? null : node.mixedVal.value,
+                    items: controller.getFilteredMixedValues(node.operator.value).map((entry) {
+                      return DropdownMenuItem(
+                        value: entry.key,
+                        child: Text(
+                          entry.value, // verbose_name
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                        ),
                       );
-                      node.dataType.value = controller.getValueType(selectedValue);
-                      node.value.value = selectedValue?.toString() ?? '';
-                    }
-                  },
+                    }).toList(),
+                    onChanged: (val) {
+                      if (val != null) {
+                        node.key.value = val;
+                        node.mixedVal.value = val;
+                        node.dataType.value = controller.mixedValues
+                            .firstWhere((e) => e['name'] == val, orElse: () => {'data_type': ''})['data_type'] as String;
+                        node.value.value = '';
+
+                        // Debugging prints
+                        print("Selected Key: ${node.key.value}");
+                        print("Selected Mixed Value: ${node.mixedVal.value}");
+                        print("Selected Data Type: ${node.dataType.value}");
+                      }
+                    },
+                  ),
                 ),
               ),
             ),
@@ -362,77 +404,112 @@ class FilterNodeWidget extends StatelessWidget {
           if (node.mixedVal.value.isNotEmpty)
             ResponsiveColumn(
               ResponsiveConstants().buttonBreakpoints,
-              child: _buildDynamicInputField(context),
+              child: buildDynamicInputField(context),
             ),
         ],
       ),
     );
   }
 
-  Widget _buildDynamicInputField(BuildContext context) {
-    final selectedValue = controller.mixedValues.elementAt(
-      controller.mixedValues.toList().indexWhere(
-            (element) => element.toString() == node.mixedVal.value,
-          ),
-    );
-    
-    switch (controller.getValueType(selectedValue)) {
-      case 'string':
-        return CommonComponents.defaultTextFieldFixedHeight(
-          context,
-          hintText: 'Enter String Value',
-          // initialValue: selectedValue?.toString() ?? '',
-          onChange: (val) => node.value.value = val,
-        );
-      
-      case 'int':
-        return CommonComponents.defaultTextFieldFixedHeight(
-          context,
-          hintText: 'Enter Integer Value',
-          // initialValue: selectedValue?.toString() ?? '',
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          onChange: (val) => node.value.value = val,
-        );
-      
-      case 'float':
-        return CommonComponents.defaultTextFieldFixedHeight(
-          context,
-          hintText: 'Enter Float Value',
-          // initialValue: selectedValue?.toString() ?? '',
-          keyboardType: TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-          ],
-          onChange: (val) => node.value.value = val,
-        );
-      
-      case 'bool':
-        return CommonComponents.defaultCheckBoxListTile(
-          context,
-          title: "Required",
-          value: controller.isRequired.value,
-          onChanged: (bool? value) {
-            if (value != null) {
-              node.value.value = value.toString();
-              controller.updateReportOnly(value);
-            }
-          },
-        );
-      
-      case 'null':
-        return CommonComponents.defaultTextFieldFixedHeight(
-          context,
-          hintText: 'Null Value',
-          readOnly: true,
-          // initialValue: selectedValue?.toString() ?? '',
-          onChange: (val) => node.value.value = val,
-        );
-      
-      default:
-        return SizedBox.shrink();
-    }
+  Widget buildDynamicInputField(BuildContext context) {
+  final selectedField = controller.mixedValues.firstWhere(
+  (element) => element['name'] == node.mixedVal.value,
+  orElse: () => {},
+);
+
+
+  final dataType = selectedField.isNotEmpty ? selectedField['data_type'] : '';
+
+  switch (dataType) {
+    case 'string':
+      return CommonComponents.defaultTextFieldFixedHeight(
+        context,
+        hintText: 'Enter String Value',
+        onChange: (val) => node.value.value = val,
+      );
+
+    case 'int':
+      return CommonComponents.defaultTextFieldFixedHeight(
+        context,
+        hintText: 'Enter Integer Value',
+        keyboardType: TextInputType.number,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        onChange: (val) => node.value.value = val,
+      );
+
+    case 'float':
+      return CommonComponents.defaultTextFieldFixedHeight(
+        context,
+        hintText: 'Enter Float Value',
+        keyboardType: TextInputType.numberWithOptions(decimal: true),
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+        ],
+        onChange: (val) => node.value.value = val,
+      );
+
+    case 'bool':
+      return CommonComponents.defaultCheckBoxListTile(
+        context,
+        title: "Required",
+        value: controller.isRequired.value,
+        onChanged: (bool? value) {
+          if (value != null) {
+            node.value.value = value.toString();
+            controller.updateReportOnly(value);
+          }
+        },
+      );
+
+    default:
+      return SizedBox.shrink();
   }
+}
+
+
+  // Widget buildDynamicInputField(BuildContext context) {
+  //   final dataType = controller.mixedValues[int.tryParse(node.mixedVal.value) ?? 0] ?? '';
+  //   switch (dataType) {
+  //     case 'string':
+  //       return CommonComponents.defaultTextFieldFixedHeight(
+  //         context,
+  //         hintText: 'Enter String Value',
+  //         onChange: (val) => node.value.value = val,
+  //       );
+  //     case 'int':
+  //       return CommonComponents.defaultTextFieldFixedHeight(
+  //         context,
+  //         hintText: 'Enter Integer Value',
+  //         keyboardType: TextInputType.number,
+  //         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+  //         onChange: (val) => node.value.value = val,
+  //       );
+  //     case 'float':
+  //       return CommonComponents.defaultTextFieldFixedHeight(
+  //         context,
+  //         hintText: 'Enter Float Value',
+  //         keyboardType: TextInputType.numberWithOptions(decimal: true),
+  //         inputFormatters: [
+  //           FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+  //         ],
+  //         onChange: (val) => node.value.value = val,
+  //       );
+  //     case 'bool':
+  //       return CommonComponents.defaultCheckBoxListTile(
+  //         context,
+  //         title: "Required",
+  //         value: controller.isRequired.value,
+  //         onChanged: (bool? value) {
+  //           if (value != null) {
+  //             node.value.value = value.toString();
+  //             controller.updateReportOnly(value);
+  //           }
+  //         },
+  //       );
+  //     default:
+  //       return SizedBox.shrink();
+  //   }
+  // }
 
 
   Widget buildAddButtons(BuildContext context) {
