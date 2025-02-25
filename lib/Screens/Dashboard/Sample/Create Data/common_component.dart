@@ -1,45 +1,44 @@
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:implementation_panel/BreakPoints/breakpoints.dart';
 import 'package:implementation_panel/Common/Common%20Components/common_components.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Controller/dynamic_controller.dart';
-import 'package:implementation_panel/Screens/Dashboard/Sample/Model/ModelName_validator_list_model.dart';
 import 'package:responsive_toolkit/responsive_grid.dart';
 
 class FieldManagementComponent extends StatelessWidget {
   final bool isInDialog;
+  final String? filterText;
+  final VoidCallback? filterOnTap;
 
   final String fieldNameText;
+  final String fieldNameLabelText;
   final String fieldNameLabeText;
   final TextEditingController fieldNameController;
   final String? Function(String?)? fieldNameValidation;
 
   final String typeHintText;
+  final String typeLabelText;
   final String? typeValue;
   final List<DropdownMenuItem<String>> typeItems;
   final Function(String?) typeOnChanged;
   final String? Function(String?)? typeValidator;
   final VoidCallback choiceOnTap;
 
+  final String foreignKeyHintText;
+  final String foreignKeyLabelText;
+  final String? foreignKeyValue;
+  final List<DropdownMenuItem<String>> foreignKeyItems;
+  final Function(String?) foreignKeyOnChanged;
+  final String? Function(String?)? foreignKeyValidator;
+
   final String addedChoiceHintText;
+  final String addedChoiceLabelText;
   final String? addedChoiceValue;
   final List<DropdownMenuItem<String>> addedChoiceItems;
   final Function(String?) addedChoiceOnChanged;
   final String? Function(String?)? addedChoiceValidator;
   final VoidCallback? addedChoiceOnTap;
-
-  final String modelNameMastersText;
-  final String? modelNameMastersValue;
-  final Future<List<DynamicModelsNameData>> Function(String, LoadProps?)? modelNameMastersItems;
-  final Function(DynamicModelsNameData?) modelNameMastersOnChanged;
-  final String? Function(String?)? modelNameMastersValidator;
-  final VoidCallback? modelNameMastersOnTap;
-  final dynamic modelNameMastersItemBuilder;
-  final dynamic modelNameMastersCompareFN;
-  final dynamic modelNameMastersItemAsString;
-
 
   final String choiceText;
   final String choiceLabeText;
@@ -82,14 +81,22 @@ class FieldManagementComponent extends StatelessWidget {
   final Function(bool?) defaultOnChanged;
 
   final String maxLengthText;
+  final String maxLengthLabelText;
   final String maxLengthLabeText;
   final TextEditingController maxLengthController;
   final String? Function(String?)? maxLengthValidation;
 
   final String minLengthText;
+  final String minLengthLabelText;
   final String minLengthLabeText;
   final TextEditingController minLengthController;
   final String? Function(String?)? minLengthValidation;
+
+  final String relatedNameText;
+  final String relatedNameLabelText;
+  final String relatedNameLabeText;
+  final TextEditingController relatedNameController;
+  final String? Function(String?)? relatedNameValidation;
 
   final String rangeFilterCheckBoxName;
   final bool rangeFilterValue;
@@ -100,11 +107,13 @@ class FieldManagementComponent extends StatelessWidget {
   final Function(bool?) readOnlyOnChanged;
 
   final String maxDigitsText;
+  final String maxDigitsLabelText;
   final String maxDigitsLabeText;
   final TextEditingController maxDigitsController;
   final String? Function(String?)? maxDigitsValidation;
 
   final String decimalText;
+  final String decimalLabelText;
   final String decimalLabeText;
   final TextEditingController decimalController;
   final String? Function(String?)? decimalValidation;
@@ -113,126 +122,136 @@ class FieldManagementComponent extends StatelessWidget {
   final VoidCallback clearButtonOnTap;
   final String submitButtonText;
   final VoidCallback submitButtonOnTap;
-  
-  // final Widget dialogBoxCustomWidget;
 
-   FieldManagementComponent({
+  final String verboseNameText;
+  final String verboseNameLabelText;
+  final String verboseNameLabeText;
+  final TextEditingController verboseNameController;
+  final String? Function(String?)? verboseNameValidation;
+  final void Function(String)? verboseNameOnChange;
+
+  final Widget childMultiSelectDrop;
+
+  final String verboseNamePluralText;
+  final String verboseNamePluralLabelText;
+  final String verboseNamePluralLabeText;
+  final TextEditingController verboseNamePluralController;
+  final String? Function(String?)? verboseNamePluralValidation;
+
+  FieldManagementComponent({
     super.key,
     this.isInDialog = false,
-
+    this.filterText,
+    this.filterOnTap,
+    required this.childMultiSelectDrop,
     required this.fieldNameText,
     required this.fieldNameController,
     required this.fieldNameLabeText,
     required this.fieldNameValidation,
-
+    required this.fieldNameLabelText,
     required this.typeHintText,
     this.typeValue,
     required this.typeItems,
     required this.typeOnChanged,
     this.typeValidator,
     required this.choiceOnTap,
-
+    required this.typeLabelText,
+    required this.foreignKeyHintText,
+    this.foreignKeyValue,
+    required this.foreignKeyItems,
+    required this.foreignKeyOnChanged,
+    this.foreignKeyValidator,
+    required this.foreignKeyLabelText,
     required this.addedChoiceHintText,
     this.addedChoiceValue,
     required this.addedChoiceItems,
     required this.addedChoiceOnChanged,
     this.addedChoiceValidator,
     this.addedChoiceOnTap,
-
-    required this.modelNameMastersText,
-    this.modelNameMastersValue,
-    required this.modelNameMastersItems,
-    required this.modelNameMastersOnChanged,
-    this.modelNameMastersValidator,
-    this.modelNameMastersOnTap,
-    this.modelNameMastersItemBuilder,
-    this.modelNameMastersCompareFN,
-    this.modelNameMastersItemAsString,
-
+    required this.addedChoiceLabelText,
     required this.choiceText,
     required this.choiceLabeText,
     required this.choiceController,
-
     required this.requiredCheckBoxName,
     required this.requiredValue,
     required this.requiredOnChanged,
-
     required this.showViewCheckBoxName,
     required this.showViewValue,
     required this.showViewOnChanged,
-    
     required this.showReportCheckBoxName,
     required this.showReportValue,
     required this.showReportOnChanged,
-    
     required this.showEditCheckBoxName,
     required this.showEditValue,
     required this.showEditOnChanged,
-    
     required this.showListCheckBoxName,
     required this.showListValue,
     required this.showListOnChanged,
-    
     required this.showFilterCheckBoxName,
     required this.showFilterValue,
     required this.showFilterOnChanged,
-    
     required this.showAddCheckBoxName,
     required this.showAddValue,
     required this.showAddOnChanged,
-    
     required this.showMultipleFilterCheckBoxName,
     required this.showMultipleFilterValue,
     required this.showMultipleFilterOnChanged,
-    
     required this.defaultCheckBoxName,
     required this.defaultValue,
     required this.defaultOnChanged,
-    
     required this.maxLengthText,
     required this.maxLengthLabeText,
     required this.maxLengthController,
     this.maxLengthValidation,
-    
+    required this.maxLengthLabelText,
     required this.minLengthText,
     required this.minLengthLabeText,
     required this.minLengthController,
     this.minLengthValidation,
-    
+    required this.minLengthLabelText,
+    required this.relatedNameText,
+    required this.relatedNameLabeText,
+    required this.relatedNameController,
+    this.relatedNameValidation,
+    required this.relatedNameLabelText,
     required this.rangeFilterCheckBoxName,
     required this.rangeFilterValue,
     required this.rangeFilterOnChanged,
-    
     required this.readOnlyCheckBoxName,
     required this.readOnlyValue,
     required this.readOnlyOnChanged,
-    
     required this.maxDigitsText,
     required this.maxDigitsLabeText,
     required this.maxDigitsController,
     this.maxDigitsValidation,
-    
+    required this.maxDigitsLabelText,
     required this.decimalText,
     required this.decimalLabeText,
     required this.decimalController,
     this.decimalValidation,
-    
+    required this.decimalLabelText,
     required this.clearButtonText,
     required this.clearButtonOnTap,
     required this.submitButtonText,
     required this.submitButtonOnTap,
-    
-    // required this.dialogBoxCustomWidget,
-    
-
+    required this.verboseNameText,
+    required this.verboseNameLabelText,
+    required this.verboseNameLabeText,
+    required this.verboseNameController,
+    this.verboseNameValidation,
+    this.verboseNameOnChange,
+    required this.verboseNamePluralText,
+    required this.verboseNamePluralLabelText,
+    required this.verboseNamePluralLabeText,
+    required this.verboseNamePluralController,
+    this.verboseNamePluralValidation,
   });
 
   final controller = Get.put(DynamicController());
 
-
   @override
   Widget build(BuildContext context) {
-    // return 
+    // return
     return Container(
       padding: EdgeInsets.all(16.0),
       decoration: BoxDecoration(
@@ -246,56 +265,78 @@ class FieldManagementComponent extends StatelessWidget {
         children: [
           Visibility(
             // visible: controller.dynamicDetails.id == null,
-            child: ResponsiveRow(
-              runSpacing: 10,
-              spacing: 20,
-              columns: [
-                ResponsiveColumn(
-                  ResponsiveConstants().buttonBreakpoints,
-                  child: CommonComponents.defaultTextFormField(
-                    context,
-                    controller: fieldNameController,
-                    hintText: fieldNameText,
-                    validator: fieldNameValidation,
-                    decoration: InputDecoration(
-                      labelText: fieldNameLabeText,
-                      border: OutlineInputBorder(),
-                    ),
+            child: ResponsiveRow(runSpacing: 10, spacing: 20, columns: [
+              ResponsiveColumn(
+                ResponsiveConstants().buttonBreakpoints,
+                child: CommonComponents.defaultTextField(
+                  context,
+                  labelTitle: fieldNameLabelText,
+                  controller: fieldNameController,
+                  hintText: fieldNameText,
+                  validator: fieldNameValidation,
+                  decoration: InputDecoration(
+                    labelText: fieldNameLabeText,
+                    border: OutlineInputBorder(),
                   ),
                 ),
-                ResponsiveColumn(
-                  ResponsiveConstants().buttonBreakpoints,
-                  child:  DropdownButtonFormField<String>(
-                      dropdownColor: Theme.of(context).colorScheme.secondary,
-                      menuMaxHeight: 250,
-                      focusColor: Theme.of(context).colorScheme.primary,
-                      value: typeValue,
-                      decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide(
-                              color: Colors.grey.shade300, width: 1.5),
-                        ),
-                        hintText: typeHintText,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide(
-                              color: Colors.grey.shade300, width: 1.5),
-                        ),
-                      ),
-                      items: typeItems,
-                      onChanged: typeOnChanged,
+              ),
+              ResponsiveColumn(
+                ResponsiveConstants().buttonBreakpoints,
+                child: DropdownButtonFormField<String>(
+                  dropdownColor: Theme.of(context).colorScheme.secondary,
+                  menuMaxHeight: 250,
+                  focusColor: Theme.of(context).colorScheme.primary,
+                  value: typeValue,
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide:
+                          BorderSide(color: Colors.grey.shade300, width: 1.5),
                     ),
+                    hintText: typeHintText,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide:
+                          BorderSide(color: Colors.grey.shade300, width: 1.5),
+                    ),
+                  ),
+                  items: typeItems,
+                  onChanged: typeOnChanged,
                 ),
-      if (shouldShowAdditionalFields()) ...[
-                if (controller.selectedFieldType == 'Choice' || controller.selectedChildrenFieldType == 'Choice')
+              ),
+              // if (controller.selectedFieldType != 'Children' ||
+                //     controller.selectedChildrenFieldType != 'Children')
+                  ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
+                      child: CommonComponents.defaultTextField(
+                        context,
+                        labelTitle: verboseNameLabeText,
+                        controller: verboseNameController,
+                        hintText: verboseNameText,
+                        onChange: verboseNameOnChange,
+                        validator: verboseNameValidation,
+                      )),
+                // if (controller.selectedFieldType != 'Children' ||
+                //     controller.selectedChildrenFieldType != 'Children')
+                  ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
+                      child: CommonComponents.defaultTextField(
+                        context,
+                        // readOnly: true,
+                        labelTitle: verboseNamePluralLabeText,
+                        controller: verboseNamePluralController,
+                        hintText: verboseNamePluralText,
+                        validator: verboseNamePluralValidation,
+                      )),
+              if (shouldShowAdditionalFields()) ...[
+                if (controller.selectedFieldType == 'Choice' ||
+                    controller.selectedChildrenFieldType == 'Choice')
                   ResponsiveColumn(
                     ResponsiveConstants().buttonBreakpoints,
                     child: Row(
                       children: [
                         Expanded(
-                          child: CommonComponents.defaultTextFormField(
+                          child: CommonComponents.defaultTextField(
                             context,
+                            labelTitle: choiceLabeText,
                             controller: choiceController,
                             validator: addedChoiceValidator,
                             hintText: choiceText,
@@ -314,7 +355,10 @@ class FieldManagementComponent extends StatelessWidget {
                       ],
                     ),
                   ),
-                if (controller.choices.isNotEmpty)
+                if ((controller.selectedFieldType == 'Choice' ||
+                        controller.selectedChildrenFieldType == 'Choice') &&
+                    controller.choices.isNotEmpty)
+                  // if (controller.choices.isNotEmpty)
                   ResponsiveColumn(
                     ResponsiveConstants().buttonBreakpoints,
                     child: DropdownButtonFormField<String>(
@@ -337,188 +381,357 @@ class FieldManagementComponent extends StatelessWidget {
                       onChanged: addedChoiceOnChanged,
                     ),
                   ),
-
-                  if (controller.selectedFieldType == 'ForeignKey' || controller.selectedFieldType == 'ManyToMany')
+                if (controller.selectedFieldType == 'ForeignKey' ||
+                    controller.selectedFieldType == 'ManyToMany' ||
+                    controller.selectedChildrenFieldType == 'ForeignKey' ||
+                    controller.selectedChildrenFieldType == 'ManyToMany')
+                  // if (controller.selectedChildrenFieldType == 'ForeignKey' || controller.selectedChildrenFieldType == 'ManyToMany')
+                  ResponsiveColumn(
+                    ResponsiveConstants().buttonBreakpoints,
+                    child: DropdownButtonFormField<String>(
+                      dropdownColor: Theme.of(context).colorScheme.secondary,
+                      menuMaxHeight: 250,
+                      focusColor: Theme.of(context).colorScheme.primary,
+                      value: foreignKeyValue,
+                      decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: BorderSide(
+                              color: Colors.grey.shade300, width: 1.5),
+                        ),
+                        hintText: foreignKeyHintText,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: BorderSide(
+                              color: Colors.grey.shade300, width: 1.5),
+                        ),
+                      ),
+                      items: foreignKeyItems,
+                      onChanged: foreignKeyOnChanged,
+                    ),
+                  ),
+                if (controller.selectedFieldType == 'ForeignKey' ||
+                    controller.selectedFieldType == 'ManyToMany' ||
+                    controller.selectedChildrenFieldType == 'ForeignKey' ||
+                    controller.selectedChildrenFieldType == 'ManyToMany')
+                  // if (controller.selectedChildrenFieldType == 'ForeignKey' || controller.selectedChildrenFieldType == 'ManyToMany')
+                  ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
+                      child: CommonComponents.defaultTextField(
+                        context,
+                        labelTitle: relatedNameLabelText,
+                        controller: relatedNameController,
+                        hintText: relatedNameText,
+                        validator: relatedNameValidation,
+                        // decoration: InputDecoration(
+                        //   labelText: relatedNameLabeText,
+                        //   border: OutlineInputBorder(),
+                        // ),
+                      )),
+                if (controller.selectedFieldType == 'ForeignKey' ||
+                    controller.selectedFieldType == 'ManyToMany' ||
+                    controller.selectedChildrenFieldType == 'ForeignKey' ||
+                    controller.selectedChildrenFieldType == 'ManyToMany')
+                  // if (controller.selectedChildrenFieldType == 'ForeignKey' || controller.selectedChildrenFieldType == 'ManyToMany')
+                  ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
+                      child: GestureDetector(
+                        // onTap: ,
+                        child: Row(
+                          children: [
+                            Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  border: Border.all(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      width: 0.5),
+                                ),
+                                height: 45,
+                                width: 70,
+                                child: Obx(() => OutlinedButton(
+                                      autofocus: true,
+                                      style: ButtonStyle(
+                                        shape: WidgetStatePropertyAll(
+                                          RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                          ),
+                                        ),
+                                      ),
+                                      onPressed:
+                                          controller.selectedModelName != null
+                                              ? filterOnTap
+                                              : null,
+                                      child: Icon(Icons.filter_alt_outlined,
+                                          size: 25),
+                                    ))),
+                            Container()
+                          ],
+                        ),
+                      )
+                      //   child: Container(
+                      //   color: Theme.of(context).colorScheme.secondary,
+                      //   child: MaterialButton(
+                      //     elevation: 2,
+                      //     onPressed: filterOnTap,
+                      //     height: 50,
+                      //     minWidth: 100,
+                      //     color: Theme.of(context).colorScheme.primary,
+                      //     shape: const RoundedRectangleBorder(
+                      //       borderRadius: BorderRadius.all(Radius.circular(6)),
+                      //     ),
+                      //     child: Center(
+                      //       child: Text(
+                      //         "$filterText",
+                      //         style: TextStyle(
+                      //           color: Theme.of(context).colorScheme.secondary,
+                      //           fontSize: 15,
+                      //           fontWeight: FontWeight.w600,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // )
+                      ),
+                if (controller.selectedFieldType == 'ForeignKey' ||
+                    controller.selectedFieldType == 'ManyToMany' ||
+                    controller.selectedChildrenFieldType == 'ForeignKey' ||
+                    controller.selectedChildrenFieldType == 'ManyToMany')
+                  // if (controller.selectedChildrenFieldType == 'ForeignKey' || controller.selectedChildrenFieldType == 'ManyToMany')
+                  ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 0.0),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.grey[300]!),
+                            borderRadius: BorderRadius.circular(10.0)),
+                        child: childMultiSelectDrop,
+                      )),
+                if (controller.selectedFieldType != 'Children' ||
+                    controller.selectedChildrenFieldType != 'Children')
+                  ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
+                      child: CommonComponents.defaultCheckBoxListTile(context,
+                          value: requiredValue,
+                          title: requiredCheckBoxName,
+                          onChanged: requiredOnChanged)),
+                if (controller.selectedFieldType != 'Children' ||
+                    controller.selectedChildrenFieldType != 'Children')
+                  ResponsiveColumn(
+                    ResponsiveConstants().buttonBreakpoints,
+                    child: CommonComponents.defaultCheckBoxListTile(
+                      context,
+                      title: showViewCheckBoxName,
+                      value: showViewValue,
+                      onChanged: showViewOnChanged,
+                    ),
+                  ),
+                if (controller.selectedFieldType != 'Children' ||
+                    controller.selectedChildrenFieldType != 'Children')
+                  ResponsiveColumn(
+                    ResponsiveConstants().buttonBreakpoints,
+                    child: CommonComponents.defaultCheckBoxListTile(
+                      context,
+                      title: showAddCheckBoxName,
+                      value: showAddValue,
+                      onChanged: showAddOnChanged,
+                    ),
+                  ),
+                if (controller.selectedFieldType != 'Children' ||
+                    controller.selectedChildrenFieldType != 'Children')
+                  ResponsiveColumn(
+                    ResponsiveConstants().buttonBreakpoints,
+                    child: CommonComponents.defaultCheckBoxListTile(
+                      context,
+                      title: showEditCheckBoxName,
+                      value: showEditValue,
+                      onChanged: showEditOnChanged,
+                    ),
+                  ),
+                if (controller.selectedFieldType != 'Children' ||
+                    controller.selectedChildrenFieldType != 'Children')
+                  ResponsiveColumn(
+                    ResponsiveConstants().buttonBreakpoints,
+                    child: CommonComponents.defaultCheckBoxListTile(
+                      context,
+                      title: showFilterCheckBoxName,
+                      value: showFilterValue,
+                      onChanged: showFilterOnChanged,
+                    ),
+                  ),
+                if (controller.selectedFieldType != 'Children' ||
+                    controller.selectedChildrenFieldType != 'Children')
+                  ResponsiveColumn(
+                    ResponsiveConstants().buttonBreakpoints,
+                    child: CommonComponents.defaultCheckBoxListTile(
+                      context,
+                      title: showListCheckBoxName,
+                      value: showListValue,
+                      onChanged: showListOnChanged,
+                    ),
+                  ),
+                if (controller.selectedFieldType != 'Children' ||
+                    controller.selectedChildrenFieldType != 'Children')
+                  ResponsiveColumn(
+                    ResponsiveConstants().buttonBreakpoints,
+                    child: CommonComponents.defaultCheckBoxListTile(
+                      context,
+                      title: showReportCheckBoxName,
+                      value: showReportValue,
+                      onChanged: showReportOnChanged,
+                    ),
+                  ),
+                if (controller.selectedFieldType == 'ManyToMany' ||
+                    controller.selectedChildrenFieldType == 'ManyToMany')
+                  ResponsiveColumn(
+                    ResponsiveConstants().buttonBreakpoints,
+                    child: CommonComponents.defaultCheckBoxListTile(
+                      context,
+                      title: showMultipleFilterCheckBoxName,
+                      value: showMultipleFilterValue,
+                      onChanged: showMultipleFilterOnChanged,
+                    ),
+                  ),
+                if (controller.selectedFieldType == 'Boolean' ||
+                    controller.selectedChildrenFieldType == 'Boolean')
+                  ResponsiveColumn(
+                    ResponsiveConstants().buttonBreakpoints,
+                    child: CommonComponents.defaultCheckBoxListTile(
+                      context,
+                      title: defaultCheckBoxName,
+                      value: defaultValue,
+                      onChanged: defaultOnChanged,
+                    ),
+                  ),
+                if (controller.selectedFieldType == 'Char' || controller.selectedFieldType == 'Text')
+                  if (controller.selectedChildrenFieldType == 'Char' || controller.selectedChildrenFieldType == 'Text')
                     ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
-                      child: CommonComponents.defaultDropdownSearch(
-  context,
-  hintText: modelNameMastersText,
-  showBottomSheet: false,
-  items: (filter, infiniteScrollProps) async {
-    if (modelNameMastersItems == null) {
-      debugPrint("modelNameMastersItems is null");
-      return [];
-    }
-    return await modelNameMastersItems!(filter, infiniteScrollProps);
-  },
-  itemBuilder: modelNameMastersItemBuilder,
-  compareFn: modelNameMastersCompareFN,
-  itemAsString: modelNameMastersCompareFN,
-  onChanged: modelNameMastersOnChanged,
-),
-                  ),
-     
-  
-                if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType != 'Children')
-                  ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
-                      child: CommonComponents.defaultCheckBoxListTile(
-                              context,
-                              value: requiredValue,
-                              title: requiredCheckBoxName, onChanged: requiredOnChanged)),
-                if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType != 'Children')
-                  ResponsiveColumn(
-                    ResponsiveConstants().buttonBreakpoints,
-                    child: CommonComponents.defaultCheckBoxListTile(
+                        child: CommonComponents.defaultTextField(
                           context,
-                          title: showViewCheckBoxName,
-                          value: showViewValue,
-                          onChanged: showViewOnChanged,
-                        ),
-                  ),
-                if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType != 'Children')
-                  ResponsiveColumn(
-                    ResponsiveConstants().buttonBreakpoints,
-                    child: CommonComponents.defaultCheckBoxListTile(
+                          labelTitle: maxLengthLabelText,
+                          controller: maxLengthController,
+                          hintText: maxLengthText,
+                          validator: maxLengthValidation,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp('[0-9]'))
+                          ],
+                        )),
+                if (controller.selectedFieldType == 'Char' || controller.selectedFieldType == 'Text')
+                  if (controller.selectedChildrenFieldType == 'Char' || controller.selectedChildrenFieldType == 'Text')
+                    ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
+                        child: CommonComponents.defaultTextField(
                           context,
-                          title: showReportCheckBoxName,
-                          value: showReportValue,
-                          onChanged: showReportOnChanged,
-                        ),
-                  ),
-                if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType != 'Children' )
-                  ResponsiveColumn(
-                    ResponsiveConstants().buttonBreakpoints,
-                    child: CommonComponents.defaultCheckBoxListTile(
-                          context,
-                          title: showEditCheckBoxName,
-                          value: showEditValue,
-                          onChanged: showEditOnChanged,
-                        ),
-                  ),
-                if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType != 'Children')
-                  ResponsiveColumn(
-                    ResponsiveConstants().buttonBreakpoints,
-                    child:  CommonComponents.defaultCheckBoxListTile(
-                          context,
-                          title: showFilterCheckBoxName,
-                          value: showFilterValue,
-                          onChanged: showFilterOnChanged,
-                        ),
-                  ),
-                if (controller.selectedFieldType != 'Children'  || controller.selectedChildrenFieldType != 'Children')
-                  ResponsiveColumn(
-                    ResponsiveConstants().buttonBreakpoints,
-                    child:  CommonComponents.defaultCheckBoxListTile(
-                          context,
-                          title: showListCheckBoxName,
-                          value: showListValue,
-                          onChanged: showListOnChanged,
-                        ),
-                  ),
-                if (controller.selectedFieldType != 'Children' || controller.selectedChildrenFieldType != 'Children' )
-                  ResponsiveColumn(
-                    ResponsiveConstants().buttonBreakpoints,
-                    child: CommonComponents.defaultCheckBoxListTile(
-                          context,
-                          title: showAddCheckBoxName,
-                          value: showAddValue,
-                          onChanged: showAddOnChanged,
-                        ),
-                  ),
-                if (controller.selectedFieldType == 'ManyToMany' || controller.selectedChildrenFieldType == 'ManyToMany' )
-                  ResponsiveColumn(
-                    ResponsiveConstants().buttonBreakpoints,
-                    child: CommonComponents.defaultCheckBoxListTile(
-                          context,
-                          title: showMultipleFilterCheckBoxName,
-                          value: showMultipleFilterValue,
-                          onChanged: showMultipleFilterOnChanged,
-                        ),
-                  ),
-                if (controller.selectedFieldType == 'Boolean' || controller.selectedChildrenFieldType == 'Boolean')
-                  ResponsiveColumn(
-                    ResponsiveConstants().buttonBreakpoints,
-                    child:  CommonComponents.defaultCheckBoxListTile(
-                          context,
-                          title: defaultCheckBoxName,
-                          value: defaultValue,
-                          onChanged: defaultOnChanged,
-                        ),
-                  ),
-               if (controller.selectedFieldType == 'Char' || controller.selectedFieldType == 'Text' || controller.selectedChildrenFieldType == 'Char' || controller.selectedChildrenFieldType == 'Text' )
-                  ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
-                      child: CommonComponents.defaultTextFormField(
-                        context,
-                        controller: maxLengthController,
-                        hintText: maxLengthText,
-                        validator: maxLengthValidation,
-                        decoration:  InputDecoration(
-                          labelText: maxLengthLabeText,
-                          border: OutlineInputBorder(),
-                        ),
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
-                      )),
-                      
-                if (controller.selectedFieldType == 'Char' || controller.selectedFieldType == 'Text' || controller.selectedChildrenFieldType == 'Char' || controller.selectedChildrenFieldType == 'Text' )
-                  ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
-                      child: CommonComponents.defaultTextFormField(
-                        context,
-                        controller: minLengthController,
-                        hintText: minLengthText,
-                        validator: minLengthValidation,
-                        decoration: InputDecoration(
-                          labelText: minLengthLabeText,
-                          border: OutlineInputBorder(),
-                        ),
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
-                      )),
-                if (controller.selectedFieldType == 'DateTime' || controller.selectedFieldType == 'Date' || controller.selectedChildrenFieldType == 'DateTime' || controller.selectedChildrenFieldType == 'Date' )
+                          labelTitle: minLengthLabelText,
+                          controller: minLengthController,
+                          hintText: minLengthText,
+                          validator: minLengthValidation,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp('[0-9]'))
+                          ],
+                        )),
+                if (controller.selectedFieldType == 'DateTime' || controller.selectedFieldType == 'Date' ||
+                    controller.selectedChildrenFieldType == 'DateTime' || controller.selectedChildrenFieldType == 'Date')
+                  // if (controller.selectedChildrenFieldType == 'DateTime' || controller.selectedChildrenFieldType == 'Date' )
                   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
                       child: CommonComponents.defaultCheckBoxListTile(context,
                           value: rangeFilterValue,
-                          title: rangeFilterCheckBoxName, onChanged: rangeFilterOnChanged)),
-                if (controller.selectedFieldType == 'DateTime' || controller.selectedFieldType == 'Date' || controller.selectedFieldType == 'Time' || controller.selectedFieldType == 'Duration' || 
-                    controller.selectedChildrenFieldType == 'DateTime' || controller.selectedChildrenFieldType == 'Date' || controller.selectedChildrenFieldType == 'Time' || controller.selectedChildrenFieldType == 'Duration'  )
+                          title: rangeFilterCheckBoxName,
+                          onChanged: rangeFilterOnChanged)),
+                if (controller.selectedFieldType == 'DateTime' ||
+                    controller.selectedFieldType == 'Date' ||
+                    controller.selectedFieldType == 'Time' ||
+                    controller.selectedFieldType == 'Duration' ||
+                    controller.selectedChildrenFieldType == 'DateTime' ||
+                    controller.selectedChildrenFieldType == 'Date' ||
+                    controller.selectedChildrenFieldType == 'Time' ||
+                    controller.selectedChildrenFieldType == 'Duration')
+                  // if (controller.selectedChildrenFieldType == 'DateTime' || controller.selectedChildrenFieldType == 'Date' || controller.selectedChildrenFieldType == 'Time' || controller.selectedChildrenFieldType == 'Duration'  )
                   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
                       child: CommonComponents.defaultCheckBoxListTile(context,
                           value: readOnlyValue,
-                          title: readOnlyCheckBoxName, onChanged: readOnlyOnChanged)),
-                if (controller.selectedFieldType == 'Decimal' || controller.selectedChildrenFieldType == 'Decimal' )
+                          title: readOnlyCheckBoxName,
+                          onChanged: readOnlyOnChanged)),
+                if (controller.selectedFieldType == 'Decimal' ||
+                    controller.selectedChildrenFieldType == 'Decimal')
                   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
-                      child: CommonComponents.defaultTextFormField(
+                      child: CommonComponents.defaultTextField(
                         context,
+                        labelTitle: maxDigitsLabelText,
                         controller: maxDigitsController,
                         hintText: maxDigitsText,
                         validator: maxDigitsValidation,
-                        decoration: InputDecoration(
-                          labelText: maxDigitsLabeText,
-                          border: OutlineInputBorder(),
-                        ),
+                        // decoration: InputDecoration(
+                        //   labelText: maxDigitsLabeText,
+                        //   border: OutlineInputBorder(),
+                        // ),
                         keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp('[0-9]'))
+                        ],
                       )),
-                if (controller.selectedFieldType == 'Decimal'  || controller.selectedChildrenFieldType == 'Decimal')
+                if (controller.selectedFieldType == 'Decimal' ||
+                    controller.selectedChildrenFieldType == 'Decimal')
                   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
-                      child: CommonComponents.defaultTextFormField(
+                      child: CommonComponents.defaultTextField(
                         context,
+                        labelTitle: decimalLabelText,
                         controller: decimalController,
                         hintText: decimalText,
                         validator: decimalValidation,
-                        decoration: InputDecoration(
-                          labelText: decimalLabeText,
-                          border: OutlineInputBorder(),
-                        ),
                         keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp('[0-9]'))
+                        ],
                       )),
-
-                
-              ]]
-            ),
+                // // if (controller.selectedFieldType != 'Children' ||
+                // //     controller.selectedChildrenFieldType != 'Children')
+                //   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
+                //       child: CommonComponents.defaultTextField(
+                //         context,
+                //         labelTitle: verboseNameLabeText,
+                //         controller: verboseNameController,
+                //         hintText: verboseNameText,
+                //         onChange: verboseNameOnChange,
+                //         validator: verboseNameValidation,
+                //       )),
+                // // if (controller.selectedFieldType != 'Children' ||
+                // //     controller.selectedChildrenFieldType != 'Children')
+                //   ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
+                //       child: CommonComponents.defaultTextField(
+                //         context,
+                //         // readOnly: true,
+                //         labelTitle: verboseNamePluralLabeText,
+                //         controller: verboseNamePluralController,
+                //         hintText: verboseNamePluralText,
+                //         validator: verboseNamePluralValidation,
+                //       )),
+              ],
+              //  // if (controller.selectedFieldType != 'Children' ||
+              //   //     controller.selectedChildrenFieldType != 'Children')
+              //     ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
+              //         child: CommonComponents.defaultTextField(
+              //           context,
+              //           labelTitle: verboseNameLabeText,
+              //           controller: verboseNameController,
+              //           hintText: verboseNameText,
+              //           onChange: verboseNameOnChange,
+              //           validator: verboseNameValidation,
+              //         )),
+              //   // if (controller.selectedFieldType != 'Children' ||
+              //   //     controller.selectedChildrenFieldType != 'Children')
+              //     ResponsiveColumn(ResponsiveConstants().buttonBreakpoints,
+              //         child: CommonComponents.defaultTextField(
+              //           context,
+              //           // readOnly: true,
+              //           labelTitle: verboseNamePluralLabeText,
+              //           controller: verboseNamePluralController,
+              //           hintText: verboseNamePluralText,
+              //           validator: verboseNamePluralValidation,
+              //         )),
+            ]),
           ),
-SizedBox(height: 12),
+          SizedBox(height: 12),
           Visibility(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -592,7 +805,6 @@ SizedBox(height: 12),
               ],
             ),
           ),
-          
         ],
       ),
     );
@@ -608,8 +820,6 @@ SizedBox(height: 12),
     }
   }
 }
-
-
 
 class DynamicFieldDataTable extends StatelessWidget {
   final List<Map<String, dynamic>> formFields;
@@ -642,9 +852,11 @@ class DynamicFieldDataTable extends StatelessWidget {
               child: DataTable(
                 showCheckboxColumn: true,
                 checkboxHorizontalMargin: 10.0,
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0)),
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(10.0)),
                 dataTextStyle: const TextStyle(fontWeight: FontWeight.w400),
-                headingRowColor: const WidgetStatePropertyAll(Color(0xfff7fafc)),
+                headingRowColor:
+                    const WidgetStatePropertyAll(Color(0xfff7fafc)),
                 dataRowColor: const WidgetStatePropertyAll(Color(0xffffffff)),
                 columns: _buildColumns(),
                 rows: _buildRows(context),
@@ -659,17 +871,35 @@ class DynamicFieldDataTable extends StatelessWidget {
   /// Creates column headers dynamically
   List<DataColumn> _buildColumns() {
     final columnTitles = [
-      'S.No', 'Field Name', 'Type', 'Required', 'Show in View', 'Show in Report',
-      'Show in Edit', 'Show in Filter', 'Show in List', 'Show in Add', 'Choices',
-      'To', 'Min Length', 'Max Length', 'Read Only', 'Max Digits', 'Decimal Places',
-      'Range Filter', 'Default', 'Multiple Filter', 'Actions'
+      'S.No',
+      'Field Name',
+      'Type',
+      'Required',
+      'Show in View',
+      'Show in Report',
+      'Show in Edit',
+      'Show in Filter',
+      'Show in List',
+      'Show in Add',
+      'Choices',
+      'To',
+      'Min Length',
+      'Max Length',
+      'Read Only',
+      'Max Digits',
+      'Decimal Places',
+      'Range Filter',
+      'Default',
+      'Multiple Filter',
+      'Actions'
     ];
 
     return columnTitles
         .map((title) => DataColumn(
               label: Text(
                 title,
-                style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.black),
+                style: const TextStyle(
+                    fontWeight: FontWeight.w600, color: Colors.black),
               ),
             ))
         .toList();
@@ -712,7 +942,8 @@ class DynamicFieldDataTable extends StatelessWidget {
   }
 
   /// Builds dropdown for 'Choice' type fields
-  Widget _buildChoiceDropdown(Map<String, dynamic> attributes, BuildContext context) {
+  Widget _buildChoiceDropdown(
+      Map<String, dynamic> attributes, BuildContext context) {
     if (attributes['type'] == 'Choice' && attributes['choices'] != null) {
       return Container(
         margin: const EdgeInsets.all(5.0),
@@ -725,7 +956,8 @@ class DynamicFieldDataTable extends StatelessWidget {
           borderRadius: BorderRadius.circular(10.0),
           dropdownColor: Theme.of(context).colorScheme.secondary,
           value: null,
-          items: (attributes['choices'] as List).map<DropdownMenuItem<String>>((choice) {
+          items: (attributes['choices'] as List)
+              .map<DropdownMenuItem<String>>((choice) {
             return DropdownMenuItem<String>(
               value: choice[1].toString(),
               child: Text(choice[1].toString()),

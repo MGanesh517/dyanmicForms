@@ -7,10 +7,10 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:implementation_panel/BreakPoints/breakpoints.dart';
 import 'package:implementation_panel/Common/Common%20Components/common_components.dart';
+import 'package:implementation_panel/Screens/Dashboard/Dropdown/model_details_Drodown_keys.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Controller/dynamic_controller.dart';
 import 'package:implementation_panel/Screens/Dashboard/advance%20Filters/advance_filter_controller.dart';
 import 'package:implementation_panel/Screens/Dashboard/advance%20Filters/filters_common_cards.dart';
-import 'package:implementation_panel/Screens/Dashboard/custom_appbar.dart';
 import 'package:responsive_toolkit/responsive_grid.dart';
 
 class AdvancedFiltersScreen extends StatelessWidget {
@@ -22,32 +22,32 @@ class AdvancedFiltersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CommonScaffoldWithAppBar(
-      body: Container(
-        color: Colors.grey[50],
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+    // return Scaffold(
+      return SizedBox(
+        // color: Colors.grey[50],
+        // child: Padding(
+        //   padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Advance Filters",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey[800],
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.more_horiz),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12.0),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     Text(
+              //       "Advance Filters",
+              //       style: TextStyle(
+              //         fontSize: 18,
+              //         fontWeight: FontWeight.w600,
+              //         color: Colors.grey[800],
+              //       ),
+              //     ),
+              //     IconButton(
+              //       icon: const Icon(Icons.more_horiz),
+              //       onPressed: () {},
+              //     ),
+              //   ],
+              // ),
+              // const SizedBox(height: 12.0),
               Expanded(
                 child: Container(
                   width: Get.width,
@@ -75,17 +75,26 @@ class AdvancedFiltersScreen extends StatelessWidget {
               ),
               SizedBox(height: 12),
               Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  // CommonButton(
-                  //   onPressed: () => controller.addFilterNode(node),
-                  //   icon: Icons.add,
-                  //   text: 'Add Condition',
-                  // ),
-                  // SizedBox(width: 12),
+                  CommonButton(
+                    onPressed: () {
+                      controller.clearFilters();
+                      // Navigator.of(context).pop();
+                      controller.update();
+                    },
+                    icon: Icons.cleaning_services_outlined,
+                    text: 'Clear',
+                  ),
+                  SizedBox(width: 15.0),
                   CommonButton(
                     onPressed: () {
                       controller.generateQuery(controller.filters);
-                  print(jsonEncode(controller.filters));
+                      dynamicController.update();
+                      print("Printing Query: ${controller.filters}");
+                      Navigator.of(context).pop();
+                      // controller.clearFilters();
+                        print(jsonEncode(controller.filters));
                     },
                     icon: Icons.check,
                     text: 'Submit',
@@ -94,8 +103,8 @@ class AdvancedFiltersScreen extends StatelessWidget {
               )
             ],
           ),
-        ),
-      ),
+        // ),
+      // ),
     );
   }
 }
@@ -106,13 +115,14 @@ class FilterNodeWidget extends StatelessWidget {
   final AdvancedFilterController controller;
   final int depth;
 
-  const FilterNodeWidget({
+   FilterNodeWidget({
     super.key,
     required this.node,
     this.parent,
     required this.controller,
     this.depth = 0,
   });
+  final dynamicController = Get.put(DynamicController());
 
   @override
   Widget build(BuildContext context) {
@@ -315,73 +325,98 @@ class FilterNodeWidget extends StatelessWidget {
                 child: Container(
                   height: 40,
                   padding: const EdgeInsets.all(4.0),
-        //           child: DropdownButton<String>(
-        //             alignment: AlignmentDirectional.centerStart,
-        //             isExpanded: true,
-        //             hint: Text("Select Field"),
-        //             dropdownColor: Theme.of(context).colorScheme.secondary,
-        //             underline: const SizedBox(),
-        //             value: node.mixedVal.value.isEmpty ? null : node.mixedVal.value,
-        //             // value: controller.dropdownDetails.name,
-        //             items: controller
-        //                 .getFilteredMixedValues(node.operator.value)
-        //                 .map((entry) => DropdownMenuItem(
-        //                       value: entry.key,
-        //                       child: Text(
-        //                         // "${entry.key} (${entry.value})",
-        //                         "${entry.key}",
-        //                         style: TextStyle(
-        //                           fontSize: 14,
-        //                           fontWeight: FontWeight.w500,
-        //                         ),
-        //                       ),
-        //                     ))
-        //                 .toList(),
-        //             onChanged: (val) {
-        //               if (val != null) {
-        //                 // node.key.value = controller.dropdownDetails.verboseName!;
-        //       print("print the Datatype.value ${controller.mixedValues}");
-        //       print("print the Datatype.value ${val}");
-        //       print("print the Datatype.value ${controller.mixedValues}");
-        //                 node.key.value = val;
-        //                 node.mixedVal.value = val;
-        // // Set the data type based on the selected field
-        //                 node.dataType.value = controller.mixedValues as String;
-        //                 node.value.value = '';
-        //               }
-        //             },
-        //           ),
-                            child: DropdownButton<String>(
+                  //           child: DropdownButton<String>(
+                  //   alignment: AlignmentDirectional.centerStart,
+                  //   isExpanded: true,
+                  //   hint: Text("Select Field"),
+                  //   dropdownColor: Theme.of(context).colorScheme.secondary,
+                  //   underline: const SizedBox(),
+                  //   value: node.mixedVal.value.isEmpty ? null : node.mixedVal.value,
+                  //   items: controller.getFilteredMixedValues(node.operator.value).map((entry) {
+                  //     return DropdownMenuItem(
+                  //       value: entry.key,
+                  //       child: Text(
+                  //         entry.value, // verbose_name
+                  //         style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  //       ),
+                  //     );
+                  //   }).toList(),
+                  //   onChanged: (val) {
+                  //     if (val != null) {
+                  //       node.key.value = val;
+                  //       node.mixedVal.value = val;
+                  //       node.dataType.value = controller.mixedValues
+                  //           .firstWhere((e) => e['name'] == val, orElse: () => {'data_type': ''})['data_type'] as String;
+                  //       node.value.value = '';
+                  //       // Debugging prints
+                  //       print("Selected Key: ${node.key.value}");
+                  //       print("Selected Mixed Value: ${node.mixedVal.value}");
+                  //       print("Selected Data Type: ${node.dataType.value}");
+                  //     }
+                  //   },
+                  // ),
+
+//////      Main-Dropdown Single Level
+                  child: Obx(() => DropdownButton<String>(
                     alignment: AlignmentDirectional.centerStart,
                     isExpanded: true,
                     hint: Text("Select Field"),
                     dropdownColor: Theme.of(context).colorScheme.secondary,
                     underline: const SizedBox(),
-                    value: node.mixedVal.value.isEmpty ? null : node.mixedVal.value,
-                    items: controller.getFilteredMixedValues(node.operator.value).map((entry) {
-                      return DropdownMenuItem(
-                        value: entry.key,
-                        child: Text(
-                          entry.value, // verbose_name
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (val) {
-                      if (val != null) {
-                        node.key.value = val;
-                        node.mixedVal.value = val;
-                        node.dataType.value = controller.mixedValues
-                            .firstWhere((e) => e['name'] == val, orElse: () => {'data_type': ''})['data_type'] as String;
-                        node.value.value = '';
+                      value: dynamicController.fieldsList.isNotEmpty ? dynamicController.fieldsList.first.verboseName : null,
+                      items: dynamicController.fieldsList.map((Field item) {
+                        return DropdownMenuItem<String>(
+                          value: item.dataType == 'ManyToManyRel' ? item.relatedModel!.verboseName :  item.verboseName,
+                          child: Text(item.verboseName ?? item.name ?? ""),
+                        );
+                      }).toList(),
+                      onChanged: (String? val) {
+                        if (val != null) {
+                            val = dynamicController.fieldsList.firstWhere((field) => field.verboseName == val).name!;
+                            node.key.value = val;
+                          debugPrint("Selected Field: $val");
+                        }
+                      },
+                    )),
 
-                        // Debugging prints
-                        print("Selected Key: ${node.key.value}");
-                        print("Selected Mixed Value: ${node.mixedVal.value}");
-                        print("Selected Data Type: ${node.dataType.value}");
-                      }
-                    },
-                  ),
+/////////   Multi-Level Dropdown
+                    // child:  MultiLevelDropdown(
+                    //     fieldsList: dynamicController.fieldsList,
+                    //     onSelected: (String? val) {
+                    //       if (val != null) {
+                    //         debugPrint("Selected Field: $val");
+                    //       }
+                    //     },
+                    //   ),
+
+                  // child:  Obx(() {
+                  //   String? selectedValue = dynamicController.fieldsList.isNotEmpty
+                  //       ? (dynamicController.fieldsList.first.dataType == 'ManyToManyRel'
+                  //           ? dynamicController.fieldsList.first.relatedModel?.verboseName
+                  //           : dynamicController.fieldsList.first.verboseName)
+                  //       : null;
+                  //   List<DropdownMenuItem<String>> dropdownItems = dynamicController.fieldsList.map((Field item) {
+                  //     return DropdownMenuItem<String>(
+                  //       value: item.dataType == 'ManyToManyRel' ? item.relatedModel?.verboseName : item.verboseName,
+                  //       child: Text(item.verboseName ?? item.name ?? ""),
+                  //     );
+                  //   }).toList();
+                  //   bool isValidValue = dropdownItems.any((item) => item.value == selectedValue);
+                  //   return DropdownButton<String>(
+                  //     alignment: AlignmentDirectional.centerStart,
+                  //     isExpanded: true,
+                  //     hint: const Text("Select Field"),
+                  //     dropdownColor: Theme.of(Get.context!).colorScheme.secondary,
+                  //     underline: const SizedBox(),
+                  //     value: isValidValue ? selectedValue : null,
+                  //     items: dropdownItems,
+                  //     onChanged: (String? val) {
+                  //       if (val != null) {
+                  //         debugPrint("Selected Field: $val");
+                  //       }
+                  //     },
+                  //   );
+                  // }),
                 ),
               ),
             ),

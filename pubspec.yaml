@@ -46,7 +46,7 @@ dependencies:
   flutter_displaymode: ^0.6.0
   hive_flutter: ^1.1.0
   flutter_svg: ^2.0.10+1
-  dropdown_search: ^6.0.2
+  dropdown_search: ^5.0.6
   slide_to_act: ^2.0.2
   device_info_plus: ^11.2.2
   pull_to_refresh: ^2.0.0
@@ -58,6 +58,7 @@ dependencies:
   responsive_toolkit: ^0.0.6
   # syncfusion_flutter_datagrid: ^28.1.41
   toastification: ^2.3.0
+  easy_stepper: ^0.8.5+1
 
 dev_dependencies:
   flutter_test:

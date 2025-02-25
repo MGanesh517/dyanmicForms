@@ -10,6 +10,10 @@ class AdvancedFilterController extends GetxController {
   RxString selectedVariable = ''.obs;
   RxString selectedDataType = ''.obs;
 
+  void clearFilters() {
+    filters = FilterNode();
+    update();
+  }
 
   // final Map<String, String> mixedValues = {
   //   'Name': 'string',
@@ -129,6 +133,20 @@ class AdvancedFilterController extends GetxController {
   //   }
   // }
 
+// @override
+//   void onClose() {
+//     appLabel.dispose();
+//     fieldNameController.dispose();
+//     maxLengthController.dispose();
+//     relatedNameController.dispose();
+//     minLengthController.dispose();
+//     maxDigitsController.dispose();
+//     decimalPlacesController.dispose();
+//     choiceController.dispose();
+//     // modelName.removeListener(validateModelNameRealTime);
+//     modelName.dispose();
+//     super.onClose();
+//   }
 
   final List<Map<String, Object>>  mixedValues = [
     {

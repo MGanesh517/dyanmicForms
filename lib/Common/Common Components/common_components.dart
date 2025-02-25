@@ -60,6 +60,7 @@ class CommonComponents {
   static Column defaultTextField(context,
       {TextEditingController? controller,
       String? title = '',
+      String? labelTitle = '',
       String? hintText,
       String? errorText,
       String? initialValue,
@@ -120,28 +121,28 @@ class CommonComponents {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           inputFormatters: inputFormatters,
           cursorColor: Theme.of(context).colorScheme.primary,
-          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           decoration: InputDecoration(
               // contentPadding: EdgeInsets.symmetric(horizontal: 0),
-              // label: Text(
-              //   title!,
-              //   style: TextStyle(color: Theme.of(context).colorScheme.surface, fontWeight: FontWeight.w500, fontSize: 12),
-              // ),
-              // floatingLabelBehavior: FloatingLabelBehavior.always,
-              // floatingLabelAlignment: FloatingLabelAlignment.start,
+              label: Text(
+                labelTitle!,
+                style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 14),
+              ),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              floatingLabelAlignment: FloatingLabelAlignment.start,
               counterText: '',
               hintText: hintText,
               errorStyle: TextStyle(fontSize: 10, fontWeight: FontWeight.normal, color: Colors.red),
-              hintStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+              hintStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black),
               prefixIcon: prefixIcon,
               suffixIcon: suffixIcon,
               filled: true,
-              fillColor: Theme.of(context).colorScheme.secondaryContainer,
+              fillColor: Theme.of(context).colorScheme.secondary,
               suffixIconConstraints: BoxConstraints(minHeight: 10, minWidth: 10, maxHeight: 20, maxWidth: 60),
               prefixIconConstraints: BoxConstraints(minHeight: 10, minWidth: 10, maxHeight: 20, maxWidth: 100),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0), borderSide: BorderSide.none),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0), borderSide: BorderSide.none),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0), borderSide: BorderSide.none)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5)),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5)),),
           onChanged: onChange,
           onFieldSubmitted: onFieldSubmitted,
           onSaved: onSaved,
@@ -149,19 +150,17 @@ class CommonComponents {
           validator: validator,
           onEditingComplete: onEditingComplete,
         ),
-        errorText != null
-            ? Column(
-                children: [
-                  Container(
-                    height: 2,
-                  ),
-                  Text(
-                    errorText,
-                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.normal, color: Colors.red),
-                  ),
-                ],
-              )
-            : Container(),
+        if (errorText != null)
+        Padding(
+          padding: const EdgeInsets.only(top: 4.0),
+          child: Text(
+            errorText,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.red,
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -584,177 +583,177 @@ static Column defaultTextFieldFixedHeight(
       //   ),
       // )
 
-  static Column defaultDropdownSearch<T>(context,
-      {Key? key,
-      //   TextEditingController? controller,
-      String? title,
-      String? hintText,
-      bool? enabled,
-      // List<T>? items,
-      validator,
-     Future<List<T>> Function(String, LoadProps?)? items,
-      compareFn,
-      itemAsString,
-      selectedItem,
-      onChanged,
-      itemBuilder,
-      bool? showTitle = true,
-      bool? showBottomSheet = true,
-      }) {
-    return Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Visibility(
-        visible: showTitle == true ? true : false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title!, style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w500, fontSize: 10)),
-            Container(height: 8),
-          ],
-        ),
-      ),
-      DropdownSearch<T>(
-         autoValidateMode: AutovalidateMode.onUserInteraction,
-          items: items,
-          key: ValueKey(title),
-          suffixProps: DropdownSuffixProps(
-            dropdownButtonProps: DropdownButtonProps(
-                iconOpened: Icon(Icons.keyboard_arrow_down),
-                iconClosed:Icon(Icons.keyboard_arrow_down)),
-          ),
-          validator: validator,
-          compareFn: compareFn,
-          enabled: enabled ?? true,
-          decoratorProps: DropDownDecoratorProps(
-            baseStyle: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
+  // static Column defaultDropdownSearch<T>(context,
+  //     {Key? key,
+  //     //   TextEditingController? controller,
+  //     String? title,
+  //     String? hintText,
+  //     bool? enabled,
+  //     // List<T>? items,
+  //     validator,
+  //    Future<List<T>> Function(String, LoadProps?)? items,
+  //     compareFn,
+  //     itemAsString,
+  //     selectedItem,
+  //     onChanged,
+  //     itemBuilder,
+  //     bool? showTitle = true,
+  //     bool? showBottomSheet = true,
+  //     }) {
+  //   return Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+  //     Visibility(
+  //       visible: showTitle == true ? true : false,
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Text(title!, style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w500, fontSize: 10)),
+  //           Container(height: 8),
+  //         ],
+  //       ),
+  //     ),
+  //     DropdownSearch<T>(
+  //        autoValidateMode: AutovalidateMode.onUserInteraction,
+  //         items: items,
+  //         key: ValueKey(title),
+  //         suffixProps: DropdownSuffixProps(
+  //           dropdownButtonProps: DropdownButtonProps(
+  //               iconOpened: Icon(Icons.keyboard_arrow_down),
+  //               iconClosed:Icon(Icons.keyboard_arrow_down)),
+  //         ),
+  //         validator: validator,
+  //         compareFn: compareFn,
+  //         enabled: enabled ?? true,
+  //         decoratorProps: DropDownDecoratorProps(
+  //           baseStyle: TextStyle(
+  //             fontSize: 14,
+  //             fontWeight: FontWeight.w500,
+  //           ),
           
-             decoration: InputDecoration(
-              // constraints: BoxConstraints(maxHeight: Get.height * 40 / 896, minHeight: Get.height * 40 / 896),
-              floatingLabelAlignment: FloatingLabelAlignment.start, floatingLabelBehavior: FloatingLabelBehavior.always, labelText: title,
+  //            decoration: InputDecoration(
+  //             // constraints: BoxConstraints(maxHeight: Get.height * 40 / 896, minHeight: Get.height * 40 / 896),
+  //             floatingLabelAlignment: FloatingLabelAlignment.start, floatingLabelBehavior: FloatingLabelBehavior.always, labelText: title,
         
-              focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Theme.of(context).colorScheme.primaryFixed), borderRadius: BorderRadius.circular(8)),
-              border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Color.fromRGBO(153, 153, 169, 1)), borderRadius: BorderRadius.circular(8)),
-              hintText: "$title",
-              hintStyle: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Theme.of(context).colorScheme.primaryFixed),
-              contentPadding: const EdgeInsets.fromLTRB(15, 13, 15, 12),
-              // suffixIconConstraints: const BoxConstraints(minHeight: 10, minWidth: 10, maxHeight: 20, maxWidth: 60),
-              // prefixIconConstraints: const BoxConstraints(minHeight: 10, minWidth: 10, maxHeight: 20, maxWidth: 40),
-            ),
-          ),
+  //             focusedBorder: OutlineInputBorder(
+  //                 borderSide: BorderSide(color: Theme.of(context).colorScheme.primaryFixed), borderRadius: BorderRadius.circular(8)),
+  //             border: OutlineInputBorder(
+  //                 borderSide: BorderSide(color: Color.fromRGBO(153, 153, 169, 1)), borderRadius: BorderRadius.circular(8)),
+  //             hintText: "$title",
+  //             hintStyle: TextStyle(
+  //                 fontSize: 14,
+  //                 fontWeight: FontWeight.w500,
+  //                 color: Theme.of(context).colorScheme.primaryFixed),
+  //             contentPadding: const EdgeInsets.fromLTRB(15, 13, 15, 12),
+  //             // suffixIconConstraints: const BoxConstraints(minHeight: 10, minWidth: 10, maxHeight: 20, maxWidth: 60),
+  //             // prefixIconConstraints: const BoxConstraints(minHeight: 10, minWidth: 10, maxHeight: 20, maxWidth: 40),
+  //           ),
+  //         ),
           
-    popupProps: showBottomSheet==false?PopupProps.menu(
-    fit: FlexFit.loose, constraints: BoxConstraints())
-          :PopupPropsMultiSelection.modalBottomSheet(
-        showSelectedItems: true,
-        showSearchBox: true,
-        itemBuilder: itemBuilder,
-        fit: FlexFit.tight,
-        searchFieldProps: const TextFieldProps(
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              filled: true,
-              fillColor: Color(0xffFAFAFF),
-              // border: OutlineInputBorder(
-              //     borderSide: BorderSide(color: Theme.of(context).colorScheme.primaryContainer), borderRadius: BorderRadius.circular(15)),
-              suffixIcon: Icon(Icons.search),
-              // labelText: 'Search Here',
-              // labelStyle:  TextStyle(fontSize: 16),
-              // floatingLabelAlignment: FloatingLabelAlignment.start,
-              // floatingLabelBehavior: FloatingLabelBehavior.always,
-              hintText: 'Search Here',
-            )),
-        modalBottomSheetProps: ModalBottomSheetProps(
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(25),
-                topRight: Radius.circular(25),
-              ),
-            )),
-        title: Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(25),
-              topRight: Radius.circular(25),
-            ),
-            // boxShadow:  [BoxShadow(color: Theme.of(context).colorScheme.secondary, blurRadius: 10.0)],
-          ),
-          child: Center(
-            child: Text(
-              title,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.secondary,
-              ),
-            ),
-          ),
-        )
-    ),
-        //   popupProps: PopupPropsMultiSelection.modalBottomSheet(
-        //       showSelectedItems: true,
-        //       showSearchBox: true,
-        //       itemBuilder: itemBuilder,
-        //       fit: FlexFit.tight,
-        //       searchFieldProps: const TextFieldProps(
-        //           decoration: InputDecoration(
-        //         border: InputBorder.none,
-        //         filled: true,
-        //         fillColor: Color(0xffFAFAFF),
-        //         // border: OutlineInputBorder(
-        //         //     borderSide: BorderSide(color: Theme.of(context).colorScheme.primaryContainer), borderRadius: BorderRadius.circular(15)),
-        //         suffixIcon: Icon(Icons.search),
-        //         // labelText: 'Search Here',
-        //         // labelStyle:  TextStyle(fontSize: 16),
-        //         // floatingLabelAlignment: FloatingLabelAlignment.start,
-        //         // floatingLabelBehavior: FloatingLabelBehavior.always,
-        //         hintText: 'Search Here',
-        //       )),
-        //       modalBottomSheetProps: ModalBottomSheetProps(
-        //           backgroundColor: Theme.of(context).colorScheme.secondary,
-        //           shape: const RoundedRectangleBorder(
-        //             borderRadius: BorderRadius.only(
-        //               topLeft: Radius.circular(25),
-        //               topRight: Radius.circular(25),
-        //             ),
-        //           )),
-        //       title: Container(
-        //         height: 50,
-        //         decoration: BoxDecoration(
-        //           color: Theme.of(context).colorScheme.primary,
-        //           borderRadius: const BorderRadius.only(
-        //             topLeft: Radius.circular(25),
-        //             topRight: Radius.circular(25),
-        //           ),
-        //           // boxShadow:  [BoxShadow(color: Theme.of(context).colorScheme.secondary, blurRadius: 10.0)],
-        //         ),
-        //         child: Center(
-        //           child: Text(
-        //             title,
-        //             style: TextStyle(
-        //               fontSize: 24,
-        //               fontWeight: FontWeight.bold,
-        //               color: Theme.of(context).colorScheme.secondary,
-        //             ),
-        //           ),
-        //         ),
-        //       )
-        // ),
-          itemAsString: itemAsString,
-          selectedItem: selectedItem,
-          onChanged: onChanged),
-      // const SizedBox(height: 24)
-    ]);
-  }
+  //   popupProps: showBottomSheet==false?PopupProps.menu(
+  //   fit: FlexFit.loose, constraints: BoxConstraints())
+  //         :PopupPropsMultiSelection.modalBottomSheet(
+  //       showSelectedItems: true,
+  //       showSearchBox: true,
+  //       itemBuilder: itemBuilder,
+  //       fit: FlexFit.tight,
+  //       searchFieldProps: const TextFieldProps(
+  //           decoration: InputDecoration(
+  //             border: InputBorder.none,
+  //             filled: true,
+  //             fillColor: Color(0xffFAFAFF),
+  //             // border: OutlineInputBorder(
+  //             //     borderSide: BorderSide(color: Theme.of(context).colorScheme.primaryContainer), borderRadius: BorderRadius.circular(15)),
+  //             suffixIcon: Icon(Icons.search),
+  //             // labelText: 'Search Here',
+  //             // labelStyle:  TextStyle(fontSize: 16),
+  //             // floatingLabelAlignment: FloatingLabelAlignment.start,
+  //             // floatingLabelBehavior: FloatingLabelBehavior.always,
+  //             hintText: 'Search Here',
+  //           )),
+  //       modalBottomSheetProps: ModalBottomSheetProps(
+  //           backgroundColor: Theme.of(context).colorScheme.primary,
+  //           shape: const RoundedRectangleBorder(
+  //             borderRadius: BorderRadius.only(
+  //               topLeft: Radius.circular(25),
+  //               topRight: Radius.circular(25),
+  //             ),
+  //           )),
+  //       title: Container(
+  //         height: 50,
+  //         decoration: BoxDecoration(
+  //           color: Theme.of(context).colorScheme.primary,
+  //           borderRadius: const BorderRadius.only(
+  //             topLeft: Radius.circular(25),
+  //             topRight: Radius.circular(25),
+  //           ),
+  //           // boxShadow:  [BoxShadow(color: Theme.of(context).colorScheme.secondary, blurRadius: 10.0)],
+  //         ),
+  //         child: Center(
+  //           child: Text(
+  //             title,
+  //             style: TextStyle(
+  //               fontSize: 24,
+  //               fontWeight: FontWeight.bold,
+  //               color: Theme.of(context).colorScheme.secondary,
+  //             ),
+  //           ),
+  //         ),
+  //       )
+  //   ),
+  //       //   popupProps: PopupPropsMultiSelection.modalBottomSheet(
+  //       //       showSelectedItems: true,
+  //       //       showSearchBox: true,
+  //       //       itemBuilder: itemBuilder,
+  //       //       fit: FlexFit.tight,
+  //       //       searchFieldProps: const TextFieldProps(
+  //       //           decoration: InputDecoration(
+  //       //         border: InputBorder.none,
+  //       //         filled: true,
+  //       //         fillColor: Color(0xffFAFAFF),
+  //       //         // border: OutlineInputBorder(
+  //       //         //     borderSide: BorderSide(color: Theme.of(context).colorScheme.primaryContainer), borderRadius: BorderRadius.circular(15)),
+  //       //         suffixIcon: Icon(Icons.search),
+  //       //         // labelText: 'Search Here',
+  //       //         // labelStyle:  TextStyle(fontSize: 16),
+  //       //         // floatingLabelAlignment: FloatingLabelAlignment.start,
+  //       //         // floatingLabelBehavior: FloatingLabelBehavior.always,
+  //       //         hintText: 'Search Here',
+  //       //       )),
+  //       //       modalBottomSheetProps: ModalBottomSheetProps(
+  //       //           backgroundColor: Theme.of(context).colorScheme.secondary,
+  //       //           shape: const RoundedRectangleBorder(
+  //       //             borderRadius: BorderRadius.only(
+  //       //               topLeft: Radius.circular(25),
+  //       //               topRight: Radius.circular(25),
+  //       //             ),
+  //       //           )),
+  //       //       title: Container(
+  //       //         height: 50,
+  //       //         decoration: BoxDecoration(
+  //       //           color: Theme.of(context).colorScheme.primary,
+  //       //           borderRadius: const BorderRadius.only(
+  //       //             topLeft: Radius.circular(25),
+  //       //             topRight: Radius.circular(25),
+  //       //           ),
+  //       //           // boxShadow:  [BoxShadow(color: Theme.of(context).colorScheme.secondary, blurRadius: 10.0)],
+  //       //         ),
+  //       //         child: Center(
+  //       //           child: Text(
+  //       //             title,
+  //       //             style: TextStyle(
+  //       //               fontSize: 24,
+  //       //               fontWeight: FontWeight.bold,
+  //       //               color: Theme.of(context).colorScheme.secondary,
+  //       //             ),
+  //       //           ),
+  //       //         ),
+  //       //       )
+  //       // ),
+  //         itemAsString: itemAsString,
+  //         selectedItem: selectedItem,
+  //         onChanged: onChanged),
+  //     // const SizedBox(height: 24)
+  //   ]);
+  // }
 
 
   // static Column defaultMultiSelectionDropdownSearch<T>(context,
@@ -927,7 +926,174 @@ static Column defaultTextFieldFixedHeight(
   // }
 
 
-
+static Column defaultMultiSelectionDropdownSearch<T>(context,
+{Key? key,
+  //   TextEditingController? controller,
+  String? title,
+  String? hintText,
+  bool? enabled,
+  List<T>? items,
+  validator,
+  Future<List<T>> Function(String)? asyncItems,
+  compareFn,
+  itemAsString,
+  selectedItem,
+  onChanged,
+  itemBuilder,
+  bool? showTitle = true,
+  bool? underLineBorder = false}) {
+return Column(
+  mainAxisAlignment: MainAxisAlignment.start,
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Visibility(
+      visible: showTitle == true ? true : false,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title!, style: Theme.of(context).textTheme.labelMedium),
+          Container(height: 8),
+        ],
+      ),
+    ),
+    DropdownSearch<T>.multiSelection(
+        autoValidateMode: AutovalidateMode.onUserInteraction,
+        asyncItems: asyncItems ?? asyncItems,
+        items: items ?? [],
+        key: ValueKey(title),
+        dropdownButtonProps: const DropdownButtonProps(
+            icon: Icon(Icons.keyboard_arrow_down)),
+        // clearButtonProps: const ClearButtonProps(isVisible: true),
+        validator: validator,
+        compareFn: compareFn,
+        enabled: enabled ?? true,
+        dropdownDecoratorProps: DropDownDecoratorProps(
+          dropdownSearchDecoration: InputDecoration(
+            border: OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.primary),
+                borderRadius: BorderRadius.circular(25)),
+            enabledBorder: underLineBorder == true
+                ? UnderlineInputBorder(
+              borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary),
+            )
+                : OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.primary),
+                borderRadius: BorderRadius.circular(25)),
+            focusedBorder: underLineBorder == true
+                ? UnderlineInputBorder(
+              borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary),
+            )
+                : OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.primary),
+                borderRadius: BorderRadius.circular(25)),
+            disabledBorder: underLineBorder == true
+                ? UnderlineInputBorder(
+              borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary),
+            )
+                : OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.primary),
+                borderRadius: BorderRadius.circular(25)),
+            errorBorder: underLineBorder == true
+                ? UnderlineInputBorder(
+              borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary),
+            )
+                : OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.primary),
+                borderRadius: BorderRadius.circular(25)),
+            focusedErrorBorder: underLineBorder == true
+                ? UnderlineInputBorder(
+              borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary),
+            )
+                : OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.primary),
+                borderRadius: BorderRadius.circular(25)),
+            // border: OutlineInputBorder(
+            //     borderSide: BorderSide(color: Theme.of(context).colorScheme.primaryContainer), borderRadius: BorderRadius.circular(15)),
+            // labelText: title,
+            filled: true,
+            fillColor: enabled == true
+                ? Colors.white.withOpacity(0.2)
+                : Theme.of(context)
+                .colorScheme
+                .secondaryContainer
+                .withOpacity(0.2),
+            labelStyle:  TextStyle(fontSize: 12,color: Theme.of(context).colorScheme.primary.withOpacity(0.5)),
+            floatingLabelAlignment: FloatingLabelAlignment.start,
+            floatingLabelBehavior: FloatingLabelBehavior.always,
+            hintText: "Select $title",
+            hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary.withOpacity(0.5)),
+            counterStyle: TextStyle(color: Theme.of(context).colorScheme.primary.withOpacity(0.5)),
+            // filled: true,
+            // fillColor: Colors.grey[100],
+          ),
+        ),
+        popupProps: PopupPropsMultiSelection.modalBottomSheet(
+            showSelectedItems: true,
+            showSearchBox: true,
+            itemBuilder: itemBuilder,
+            fit: FlexFit.tight,
+            searchFieldProps: TextFieldProps(
+                decoration: InputDecoration(
+                  enabled: true,
+                  border: OutlineInputBorder(
+                      borderSide: BorderSide(
+                          color:
+                          Theme.of(context).colorScheme.primaryContainer),
+                      borderRadius: BorderRadius.circular(15)),
+                  suffixIcon: const Icon(Icons.search),
+                  // labelText: 'Search Here',
+                  // labelStyle: const TextStyle(fontSize: 16),
+                  // floatingLabelAlignment: FloatingLabelAlignment.start,
+                  // floatingLabelBehavior: FloatingLabelBehavior.always,
+                  hintText: 'Search Here',
+                )),
+            modalBottomSheetProps: ModalBottomSheetProps(
+                backgroundColor:
+                Theme.of(context).colorScheme.secondaryContainer,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(25),
+                    topRight: Radius.circular(25),
+                  ),
+                )),
+            title: Container(
+              height: 50,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(25),
+                  topRight: Radius.circular(25),
+                ),
+                // boxShadow: const [BoxShadow(color: Colors.white, blurRadius: 10.0)],
+              ),
+              child: Center(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            )),
+        itemAsString: itemAsString,
+        selectedItems: selectedItem,
+        // selectedItem: selectedItem,
+        onChanged: onChanged)
+  ]);
+}
 
   
 }

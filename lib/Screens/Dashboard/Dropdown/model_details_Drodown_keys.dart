@@ -1,22 +1,42 @@
 // To parse this JSON data, do
 //
-//     final dropdownModel = dropdownModelFromJson(jsonString);
+//     final modelsDetailsKeys = modelsDetailsKeysFromJson(jsonString);
 
 import 'dart:convert';
 
-DropdownModel dropdownModelFromJson(String str) => DropdownModel.fromJson(json.decode(str));
+ModelsDetailsKeys modelsDetailsKeysFromJson(String str) => ModelsDetailsKeys.fromJson(json.decode(str));
 
-String dropdownModelToJson(DropdownModel data) => json.encode(data.toJson());
+String modelsDetailsKeysToJson(ModelsDetailsKeys data) => json.encode(data.toJson());
 
-class DropdownModel {
+class ModelsDetailsKeys {
+    String? status;
+    ModelsDetailsKeysData? model;
+
+    ModelsDetailsKeys({
+        this.status,
+        this.model,
+    });
+
+    factory ModelsDetailsKeys.fromJson(Map<String, dynamic> json) => ModelsDetailsKeys(
+        status: json["status"],
+        model: json["model"] == null ? null : ModelsDetailsKeysData.fromJson(json["model"]),
+    );
+
+    Map<String, dynamic> toJson() => {
+        "status": status,
+        "model": model?.toJson(),
+    };
+}
+
+class ModelsDetailsKeysData {
     String? appName;
     String? modelName;
     String? verboseName;
     String? verboseNamePlural;
     String? tableName;
-    List<DropdownModelData>? fields;
+    List<Field>? fields;
 
-    DropdownModel({
+    ModelsDetailsKeysData({
         this.appName,
         this.modelName,
         this.verboseName,
@@ -25,13 +45,13 @@ class DropdownModel {
         this.fields,
     });
 
-    factory DropdownModel.fromJson(Map<String, dynamic> json) => DropdownModel(
+    factory ModelsDetailsKeysData.fromJson(Map<String, dynamic> json) => ModelsDetailsKeysData(
         appName: json["app_name"],
         modelName: json["model_name"],
         verboseName: json["verbose_name"],
         verboseNamePlural: json["verbose_name_plural"],
         tableName: json["table_name"],
-        fields: json["fields"] == null ? [] : List<DropdownModelData>.from(json["fields"]!.map((x) => DropdownModelData.fromJson(x))),
+        fields: json["fields"] == null ? [] : List<Field>.from(json["fields"]!.map((x) => Field.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
@@ -44,35 +64,32 @@ class DropdownModel {
     };
 }
 
-class DropdownModelData {
+class Field {
     String? name;
     String? verboseName;
     String? dataType;
     bool? concrete;
     bool? editable;
     bool? fieldNull;
-    String? ins;
     RelatedModel? relatedModel;
 
-    DropdownModelData({
+    Field({
         this.name,
         this.verboseName,
         this.dataType,
         this.concrete,
         this.editable,
         this.fieldNull,
-        this.ins,
         this.relatedModel,
     });
 
-    factory DropdownModelData.fromJson(Map<String, dynamic> json) => DropdownModelData(
+    factory Field.fromJson(Map<String, dynamic> json) => Field(
         name: json["name"],
         verboseName: json["verbose_name"],
         dataType: json["data_type"],
         concrete: json["concrete"],
         editable: json["editable"],
         fieldNull: json["null"],
-        ins: json["INS"],
         relatedModel: json["related_model"] == null ? null : RelatedModel.fromJson(json["related_model"]),
     );
 
@@ -83,7 +100,6 @@ class DropdownModelData {
         "concrete": concrete,
         "editable": editable,
         "null": fieldNull,
-        "INS": ins,
         "related_model": relatedModel?.toJson(),
     };
 }
