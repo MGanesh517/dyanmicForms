@@ -1,23 +1,23 @@
 // To parse this JSON data, do
 //
-//     final modelValidation = modelValidationFromJson(jsonString);
+//     final ModelNameValidation = modelValidationFromJson(jsonString);
 
 import 'dart:convert';
 
-ModelValidation modelValidationFromJson(String str) => ModelValidation.fromJson(json.decode(str));
+ModelNameValidation modelValidationFromJson(String str) => ModelNameValidation.fromJson(json.decode(str));
 
-String modelValidationToJson(ModelValidation data) => json.encode(data.toJson());
+String modelValidationToJson(ModelNameValidation data) => json.encode(data.toJson());
 
-class ModelValidation {
+class ModelNameValidation {
     String? status;
     String? message;
 
-    ModelValidation({
+    ModelNameValidation({
         this.status,
         this.message,
     });
 
-    factory ModelValidation.fromJson(Map<String, dynamic> json) => ModelValidation(
+    factory ModelNameValidation.fromJson(Map<String, dynamic> json) => ModelNameValidation(
         status: json["status"],
         message: json["message"],
     );

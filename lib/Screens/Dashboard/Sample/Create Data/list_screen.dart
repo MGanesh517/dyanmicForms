@@ -44,6 +44,7 @@ class _ListScreenState extends State<ListScreen> {
                       elevation: 2,
                       onPressed: () {
                         Get.toNamed('/dashboardView');
+                        // Get.toNamed('/stepperWidget');
                       },
                       height: 50,
                       minWidth: 100,

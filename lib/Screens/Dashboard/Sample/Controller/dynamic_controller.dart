@@ -5,10 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:implementation_panel/Common/common_service.dart';
 import 'package:implementation_panel/Common/snackbar_widget.dart';
+import 'package:implementation_panel/Screens/Dashboard/Dropdown/model_details_Drodown_keys.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Model/ModelName_validator_list_model.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Model/get_dynamic_data_list_model.dart';
+import 'package:implementation_panel/Screens/Dashboard/Sample/Model/model_name_validation.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Model/view_by_id_model.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Repo/dynamic_repo.dart';
+import 'package:implementation_panel/Screens/Dashboard/advance%20Filters/advance_filter_controller.dart';
 import 'package:implementation_panel/Screens/Dashboard/drawer_controller.dart';
 import 'package:implementation_panel/utils/loader_util.dart';
 
@@ -18,15 +21,62 @@ class DynamicController extends GetxController {
   static DynamicController get to => Get.find();
   var commonService = CommonService.instance;
   final drawerController = Get.find<DrawerControllerX>();
+  final AdvancedFilterController controller = Get.put(AdvancedFilterController());
+  RxInt currentStep = 0.obs;
+
 
   final TextEditingController appLabel = TextEditingController();
   final TextEditingController modelName = TextEditingController();
+  final TextEditingController verboseName = TextEditingController();
   final TextEditingController fieldNameController = TextEditingController();
   final TextEditingController maxLengthController = TextEditingController();
+  final TextEditingController verboseNameFields = TextEditingController();
+  final TextEditingController relatedNameController = TextEditingController();
   final TextEditingController minLengthController = TextEditingController();
   final TextEditingController maxDigitsController = TextEditingController();
   final TextEditingController decimalPlacesController = TextEditingController();
   final TextEditingController choiceController = TextEditingController();
+
+////// ************  Read Only Multi Select  Start ************ //////
+  RxList<String> selectedFields = <String>[].obs;
+  List<String> get readFields => selectedFields.toList();
+
+  void toggleFieldSelection(String fieldName) {
+    if (selectedFields.contains(fieldName)) {
+      selectedFields.remove(fieldName);
+    } else {
+      selectedFields.add(fieldName);
+    }
+    update();
+  }
+
+////// ************  Read Only Multi Select  End ************ //////
+
+////// ************  Verbose Name Start  ************ //////
+
+  var verboseNamePlural = "".obs;
+  void updateVerboseNamePlural() {
+    String name = verboseName.text.trim();
+    if (name.isNotEmpty) {
+      verboseNamePlural.value = "${name}s";
+    }
+  }
+
+////// ************  Verbose Name End  ************ //////
+
+////// ************  Verbose Name Fields Start  ************ //////
+
+  var verboseNamePluralFields = "".obs;
+  void updateVerboseNamePluralFields() {
+    String name = verboseNameFields.text.trim();
+    if (name.isNotEmpty) {
+      // verboseNamePlural.value = "${name.toLowerCase()}s"; // Lowercase + 's'
+      verboseNamePluralFields.value = "${name}s"; // 's' only
+    }
+  }
+
+////// ************  Verbose Name Fields End  ************ //////
+
 
   int editingIndex = -1;
   var _isEditMode = false.obs;
@@ -73,35 +123,13 @@ class DynamicController extends GetxController {
   int get selectedChoice => _selectedChoice.value;
   set selectedChoice(value) => _selectedChoice.value = value;
 
+////// ************  Model Validation Start  ************ //////
 
-  
-  // RxString modelNameError = "".obs;
-  // RxBool isModelNameValid = false.obs;
-  // RxBool debounceText = true.obs;
+  final _modelValidation = ModelNameValidation().obs;
+  ModelNameValidation get modelValidation => _modelValidation.value;
+  set modelValidation(value) => _modelValidation.value = value;
 
-  // void validateModelName(String val) {
-  //   if (val.isNotEmpty) {
-  //     debugPrint("🖊️ User entered: $val");
-
-  //     debounce(RxString(val), (modelNameValue) async {
-  //       debugPrint("⏳ Validating Model Name: $modelNameValue");
-        
-  //       var validation = await DynamicRepo().getModelNameValidation({"model_name": modelNameValue});
-
-  //       if (validation != null && validation.status == "error") {
-  //         debugPrint("🚫 Validation Failed: ${validation.message}");
-  //         modelNameError.value = validation.message ?? 'Invalid Model Name';
-  //         isModelNameValid.value = false;
-  //       } else {
-  //         debugPrint("✅ Model Name is valid");
-  //         modelNameError.value = '';
-  //         isModelNameValid.value = true;
-  //       }
-  //     }, time: const Duration(milliseconds: 500)); // Debouncing for API call optimization
-  //   }
-  // }
-
-    RxString modelNameError = "".obs;
+  RxString modelNameError = "".obs;
   RxBool isModelNameValid = false.obs;
   RxString _debouncedText = "".obs;
 
@@ -109,31 +137,31 @@ class DynamicController extends GetxController {
   void onInit() {
     super.onInit();
     
-    // Debounce input and validate when typing stops
     debounce(_debouncedText, (value) async {
       if (value.isNotEmpty) {
         debugPrint("⏳ Validating Model Name: $value");
 
-        var validation = await DynamicRepo().getModelNameValidation({"model_name": value});
+        var validation = await DynamicRepo().getModelNameValidation(value);
 
         if (validation != null && validation.status == "error") {
-          debugPrint("🚫 Validation Failed: ${validation.message}");
+          debugPrint(" Validation Failed: ${validation.message}");
           modelNameError.value = validation.message ?? 'Invalid Model Name';
           isModelNameValid.value = false;
         } else {
-          debugPrint("✅ Model Name is valid");
+          debugPrint(" Model Name is valid");
           modelNameError.value = '';
           isModelNameValid.value = true;
         }
       }
-    }, time: const Duration(milliseconds: 800)); // Wait 800ms before validating
+    }, time: const Duration(milliseconds: 800));
   }
 
   void onTextChanged(String value) {
     debugPrint("🖊️ User entered: $value");
-    _debouncedText.value = value; // Assign value to trigger debounce
+    _debouncedText.value = value;
   }
 
+////// ************  Model Validation End  ************ //////
 
 
   initDialogBoxState() {
@@ -150,6 +178,8 @@ class DynamicController extends GetxController {
       isRefresh = true;
       appLabel.text == '';
       modelName.text == '';
+      verboseName.text == '';
+      verboseNamePlural.value == '';
       update();
     });
   }
@@ -173,6 +203,11 @@ class DynamicController extends GetxController {
   void addFieldsDisposeController() {
     fieldNameController.clear();
     maxLengthController.clear();
+    verboseNameFields.clear();
+    verboseNamePluralFields.value = '';
+    // verboseName.clear();
+    verboseNameFields.clear();
+    relatedNameController.clear();
     minLengthController.clear();
     maxDigitsController.clear();
     decimalPlacesController.clear();
@@ -190,6 +225,8 @@ class DynamicController extends GetxController {
     choices.clear();
     nextChoiceId.value = 1;
   }
+
+////// ************  Edit Field Start  ************ //////
 
   void editField(int index, Map field) {
     try {
@@ -280,7 +317,9 @@ class DynamicController extends GetxController {
     }
   }
 
-////////////////////////////////////////////////////////////////////////////////
+////// ************  Edit Field End  ************ //////
+
+////// ************  Choices Field Start  ************ //////
 
   void addChoice() {
     if (choiceController.text.isNotEmpty) {
@@ -314,6 +353,11 @@ class DynamicController extends GetxController {
     }
   }
 
+////// ************  Choices Field End  ************ //////
+
+
+////// ************  CheckBox Functions Start  ************ //////
+
   // Update Bool Values      Methods
   void updateRequired(bool value) => isRequired.value = value;
   void updateMultipleFilter(bool value) => isMultipleFilter.value = value;
@@ -327,10 +371,18 @@ class DynamicController extends GetxController {
   void updateListOnly(bool value) => isList.value = value;
   void updateAddOnly(bool value) => isAdd.value = value;
 
+////// ************  CheckBox Functions Start  ************ //////
+
   void disposeController() {
     submit = false;
     appLabel.clear();
     modelName.clear();
+    verboseName.clear();
+    selectedFields.clear();
+    readFields.clear();
+    verboseNamePlural.value = '';
+    isModelNameValid.value = false;
+    modelNameError.value = '';
     formFields.clear();
     itemFields.clear();
     addFieldsDisposeController();
@@ -339,8 +391,15 @@ class DynamicController extends GetxController {
   @override
   void onClose() {
     appLabel.dispose();
+    verboseName.dispose();
     fieldNameController.dispose();
     maxLengthController.dispose();
+    relatedNameController.dispose();
+    selectedFields.clear();
+    isModelNameValid.value = false;
+    modelNameError.value = '';
+    readFields.clear();
+    verboseNameFields.dispose();
     minLengthController.dispose();
     maxDigitsController.dispose();
     decimalPlacesController.dispose();
@@ -459,6 +518,7 @@ class DynamicController extends GetxController {
   void _initializeFields() {
     appLabel.text = dynamicDetails.appLabel ?? '';
     modelName.text = dynamicDetails.modelName ?? '';
+    // verboseName.text = dynamicDetails.verboseName ?? '';
     update();
   }
 
@@ -470,6 +530,8 @@ class DynamicController extends GetxController {
       updateData = {
         "app_label": appLabel.text,
         "model_name": modelName.text,
+        "verbose_name": verboseName.text,
+        "verbose_name_plural": verboseNamePlural.value,
         "fields": jsonEncode(formFields.fold<Map<String, dynamic>>(
           {},
           (map, element) => {...map, ...element},
@@ -507,7 +569,7 @@ class DynamicController extends GetxController {
   }
 
   createDynamicData() async {
-    if (appLabel.text.isEmpty || modelName.text.isEmpty || formFields.isEmpty) {
+    if (appLabel.text.isEmpty || modelName.text.isEmpty || verboseName.text.isEmpty || formFields.isEmpty) {
       showSnackBar(
         title: 'Error',
         message: 'App Label, Model Name, and at least one Field are required',
@@ -523,28 +585,48 @@ class DynamicController extends GetxController {
     for (var field in formFields) {
       combinedFields.addAll(field);
     }
-////////////////////////////////////////////////////////////////////////////////
+
+    // Add field if name is not empty
     String fieldName = fieldNameController.text.trim();
-    if (fieldName.isEmpty) {
-      showSnackBar(
-        title: 'Error',
-        message: 'App Label, Model Name, and at least one Field are required',
-        icon: Icon(Icons.error, color: Colors.red),
-      );
-      // fieldName = "children";
+    if (fieldName.isNotEmpty && itemFields.isNotEmpty) {
+      if (!combinedFields.containsKey(fieldName)) {
+        combinedFields[fieldName] = {
+          "type": "Children",
+          "fields": itemFields.fold<Map<String, dynamic>>(
+            {},
+            (map, element) => {...map, ...element},
+          ),
+          "verbose_name": verboseNameFields.text.trim(),
+          "verbose_name_plural": verboseNamePluralFields.value,
+        };
+      } else {
+        showSnackBar(
+          title: 'Error',
+          message: 'Field name "$fieldName" already exists.',
+          icon: Icon(Icons.error, color: Colors.red),
+        );
+        submit = false;
+        return;
+      }
     }
-////////////////////////////////////////////////////////////////////////////////
-    combinedFields[fieldName] = {
-      "type": "Children",
-      "fields": itemFields.fold<Map<String, dynamic>>(
-        {},
-        (map, element) => {...map, ...element},
-      )
-    };
+
+    // REMOVE THIS SECTION - It's causing the duplicate "Children" field
+    // Only add "Children" if itemFields is not empty
+    // if (itemFields.isNotEmpty) {
+    //   combinedFields["Children"] = {
+    //     "type": "Children",
+    //     "fields": itemFields.fold<Map<String, dynamic>>(
+    //       {},
+    //       (map, element) => {...map, ...element},
+    //     ),
+    //   };
+    // }
 
     var postData = {
       "app_label": appLabel.text,
       "model_name": modelName.text,
+      "verbose_name": verboseName.text,
+      "verbose_name_plural": verboseNamePlural.value,
       "fields": jsonEncode(combinedFields),
     };
 
@@ -554,16 +636,13 @@ class DynamicController extends GetxController {
 
     try {
       var data = await DynamicRepo().createDynamicData(postData);
+      print("Printing The PostData ::: ====>>>>>>     $postData");
+      print("Printing The json PostData ::: ====>>>>>>     ${json.encode(postData)}");
       closeLoadingDialog();
 
       if (data != null) {
         Get.back();
         submit = false;
-        showSnackBar(
-          title: 'Success',
-          message: 'Data Submitted Successfully.',
-          icon: Icon(Icons.check, color: Colors.green),
-        );
         disposeController();
         isRefresh = true;
         await getDynamicList();
@@ -582,7 +661,9 @@ class DynamicController extends GetxController {
   }
 
   void addChildField() {
-    if (fieldNameController.text.isEmpty) {
+    String fieldName = fieldNameController.text.trim();
+
+    if (fieldName.isEmpty) {
       showSnackBar(
         title: 'Error',
         message: 'Field Name is required',
@@ -591,8 +672,19 @@ class DynamicController extends GetxController {
       return;
     }
 
+    // Check for duplicate field names
+    bool isDuplicate = itemFields.any((field) => field.containsKey(fieldName));
+    if (isDuplicate) {
+      showSnackBar(
+        title: 'Error',
+        message: 'Field Name already exists',
+        icon: Icon(Icons.warning, color: Colors.orange),
+      );
+      return;
+    }
+
     final newChildFieldData = {
-      fieldNameController.text: {
+      fieldName: {
         "type": selectedChildrenFieldType,
         "required": isRequired.value,
         "show_in_view": isView.value,
@@ -621,17 +713,19 @@ class DynamicController extends GetxController {
               : null,
         },
         if (selectedChildrenFieldType == 'ManyToMany') ...{
-          'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
+          'to': '${selectedModelName!.appName}.${selectedModelName!.modelName}',
           'multiple_filter': isMultipleFilter.value,
-          'read_fields': ['name'],
-          'filter_data': {},
-          'related_name': 'sample_show_items_multi',
+          'read_fields': readFields,
+          'filter_data': controller.filters,
+          // 'filter_data': {},
+          'related_name': relatedNameController.text.trim(),
         },
         if (selectedChildrenFieldType == 'ForeignKey') ...{
-          'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
-          'read_fields': ['name'],
-          'filter_data': {},
-          'related_name': 'sample_show_items',
+          'to': '${selectedModelName!.appName}.${selectedModelName!.modelName}',
+          'read_fields': readFields,
+          'filter_data': controller.filters,
+          // 'filter_data': {},
+          'related_name': relatedNameController.text.trim(),
           'import_fields': ['name'],
           'export_fields': ['name'],
         },
@@ -652,6 +746,16 @@ class DynamicController extends GetxController {
   }
 
   void addField() {
+    String fieldName = fieldNameController.text.trim();
+
+    if (fieldName.isEmpty) {
+      showSnackBar(
+        title: 'Error',
+        message: 'Field Name is required',
+        icon: Icon(Icons.error, color: Colors.red),
+      );
+      return;
+    }
 
     Map<String, dynamic> fieldContent = {
       "type": selectedFieldType,
@@ -662,6 +766,8 @@ class DynamicController extends GetxController {
       "show_in_filter": isFilter.value,
       "show_in_list": isList.value,
       "show_in_add": isAdd.value,
+      "verbose_name": verboseNameFields.text.trim(),
+      "verbose_name_plural": verboseNamePluralFields.value,
     };
 
     // Add type-specific fields
@@ -679,12 +785,11 @@ class DynamicController extends GetxController {
         'default': choices.isNotEmpty ? choices[0][0] : 1,
         'choices': choices.map((choice) => [choice[0], choice[1]]).toList(),
       });
-      
     } else if (selectedFieldType == 'Integer') {
       fieldContent.addAll({
         'default': 0,
       });
-    }  else if (selectedFieldType == 'Boolean') {
+    } else if (selectedFieldType == 'Boolean') {
       fieldContent.addAll({
         'default': false,
       });
@@ -700,18 +805,20 @@ class DynamicController extends GetxController {
       });
     } else if (selectedFieldType == 'ManyToMany') {
       fieldContent.addAll({
-        'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
+        'to': '${selectedModelName!.appName}.${selectedModelName!.modelName}',
         'multiple_filter': isMultipleFilter.value,
-        'read_fields': ['name'],
-        'filter_data': {},
-        'related_name': 'sample_show_multi',
+        'read_fields': readFields,
+        'filter_data': controller.filters,
+        // 'filter_data': {},
+        'related_name': relatedNameController.text.trim(),
       });
     } else if (selectedFieldType == 'ForeignKey') {
       fieldContent.addAll({
-        'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
-        'read_fields': ['name'],
-        'filter_data': {},
-        'related_name': 'sample_show',
+        'to': '${selectedModelName!.appName}.${selectedModelName!.modelName}',
+        'read_fields': readFields,
+        'filter_data': controller.filters,
+        // 'filter_data': {},
+        'related_name': relatedNameController.text.trim(),
         'import_fields': ['name'],
         'export_fields': ['name'],
       });
@@ -722,7 +829,10 @@ class DynamicController extends GetxController {
       });
     } else if (selectedFieldType == 'Time' || selectedFieldType == 'Duration') {
       fieldContent["read_only"] = isReadOnly.value;
-    } else if (selectedFieldType == 'Children') {
+    }
+
+    // **Only add Children if itemFields is not empty**
+    if (selectedFieldType == 'Children' && itemFields.isNotEmpty) {
       fieldContent.addAll({
         "type": "Children",
         "fields": jsonEncode(itemFields.fold<Map<String, dynamic>>(
@@ -732,7 +842,7 @@ class DynamicController extends GetxController {
       });
     }
 
-    final newFieldData = {fieldNameController.text: fieldContent};
+    final newFieldData = {fieldName: fieldContent};
 
     if (editingIndex >= 0) {
       formFields[editingIndex] = newFieldData;
@@ -791,7 +901,9 @@ class DynamicController extends GetxController {
   final RxList<DynamicModelsNameData> _modelNameList = <DynamicModelsNameData>[].obs;
   List<DynamicModelsNameData> get modelNameList => _modelNameList;
   
-  DynamicModelsNameData? selectedModelName;
+  final Rx<DynamicModelsNameData?> _selectedModelName = Rx<DynamicModelsNameData?>(null);
+  DynamicModelsNameData? get selectedModelName => _selectedModelName.value;
+  set selectedModelName(DynamicModelsNameData? value) => _selectedModelName.value = value;
 
   Future<void> getModelNameList({bool isLoading = true}) async {
     if (modelNameIsRefresh) {
@@ -804,11 +916,8 @@ class DynamicController extends GetxController {
       }
     }
 
-    final filterParams = <String, dynamic>{};
-
     try {
-      final data = await DynamicRepo().getModelNameList(filterParams);
-
+      final data = await DynamicRepo().getModelNameList();
       if (data != null && data.models != null) {
         _modelNameList.value = [...modelNameList, ...data.models!];
 
@@ -829,6 +938,27 @@ class DynamicController extends GetxController {
     } catch (e) {
       closeLoadingDialog();
       debugPrint("Error fetching model names: $e");
+    }
+  }
+
+  Rx<ModelsDetailsKeysData?> selectedModelDetails = Rx<ModelsDetailsKeysData?>(null);
+  RxList<Field> fieldsList = <Field>[].obs;
+
+  getModelDetailsDropdown(String appName, String modelName) async {
+    showLoadingDialog();
+    try {
+      final data = await DynamicRepo().fetchModelDetails(appName, modelName);
+      if (data != null) {
+        selectedModelDetails.value = data.model;
+        fieldsList.value = data.model?.fields ?? [];
+        update();
+      } else {
+        debugPrint("API Response error: Data is null");
+      }
+    } catch (e) {
+      debugPrint("Error fetching model details: $e");
+    } finally {
+      closeLoadingDialog();
     }
   }
 }
