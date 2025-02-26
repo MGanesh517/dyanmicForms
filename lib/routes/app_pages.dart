@@ -2,8 +2,8 @@
 
 import 'package:get/get.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Create%20Data/list_screen.dart';
+import 'package:implementation_panel/Screens/Dashboard/Sample/Create%20Data/new.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Create%20Data/new_post_screen.dart';
-import 'package:implementation_panel/Screens/Dashboard/Sample/Stepper.dart';
 import 'package:implementation_panel/Screens/Dashboard/advance%20Filters/advance_filters_screen.dart';
 import 'package:implementation_panel/Screens/Login/login_screen.dart';
 import 'package:implementation_panel/Screens/illustration/splash_screen.dart';
