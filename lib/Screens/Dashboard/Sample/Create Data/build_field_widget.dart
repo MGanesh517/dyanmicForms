@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:implementation_panel/Common/Common%20Components/common_components.dart';
 import 'package:implementation_panel/Screens/Dashboard/Dropdown/model_details_Drodown_keys.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Controller/dynamic_controller.dart';
 import 'package:implementation_panel/Screens/Dashboard/Sample/Create%20Data/common_component.dart';
@@ -317,21 +318,38 @@ Widget buildChildFieldList() {
                   }
                   return null;
                 },
-                typeHintText: "Select Type",
-                typeLabelText: "Select Type",
-                typeValue: controller.selectedFieldType,
-                typeOnChanged: (value) {
-                  if (value != null) {
-                    controller.selectedFieldType = value;
-                    controller.update();
-                  }
-                },
-                typeItems: controller.fieldTypes
-                    .map((type) => DropdownMenuItem(
-                          value: type,
-                          child: Text(type),
-                        ))
-                    .toList(),
+                // typeHintText: "Select Type",
+                // typeLabelText: "Select Type",
+                // typeValue: controller.selectedFieldType,
+                // typeOnChanged: (value) {
+                //   if (value != null) {
+                //     controller.selectedFieldType = value;
+                //     controller.update();
+                //   }
+                // },
+                // typeItems: controller.fieldTypes
+                //     .map((type) => DropdownMenuItem(
+                //           value: type,
+                //           child: Text(type),
+                //         ))
+                //     .toList(),
+
+
+                typeChildWidget: CommonComponents.defaultDropdownSearch(context,
+                    title: "Types",
+                    showTitle: false,
+                    showBottomSheet: false,
+                    //  asyncItems: (String? filter) async => await fetchMasterList(fieldName: title),
+                    items: controller.fieldTypes,
+                    onChanged:  (value) {
+                          if (value != null) {
+                            controller.selectedFieldType =  value;
+                            controller.update();
+                        }},
+                        compareFn: (i, dynamic s) => i == s,
+                        itemAsString: (dynamic u) => u.toString(),
+                      ),
+
                 choiceOnTap: () {
                   print('asdasas ${jsonEncode(controller.choices)}');
                   controller.addChoice();
@@ -855,28 +873,43 @@ Widget buildChildFieldList() {
                                                     return null;
                                                   },
 
-                                                  typeHintText: "Select Type",
-                                                  typeLabelText: "Type",
-                                                  typeValue: controller
-                                                      .selectedChildrenFieldType,
-                                                  typeOnChanged: (value) {
-                                                    if (value != null) {
-                                                      controller
-                                                              .selectedChildrenFieldType =
-                                                          value;
-                                                      controller.update();
-                                                    }
-                                                  },
-                                                  typeItems: controller
-                                                      .fieldTypes
-                                                      .where((type) =>
-                                                          type != 'Children')
-                                                      .map((type) =>
-                                                          DropdownMenuItem(
-                                                            value: type,
-                                                            child: Text(type),
-                                                          ))
-                                                      .toList(),
+                                                  typeChildWidget: CommonComponents.defaultDropdownSearch(context,
+                                                    title: "Types",
+                                                    showTitle: false,
+                                                    showBottomSheet: false,
+                                                    //  asyncItems: (String? filter) async => await fetchMasterList(fieldName: title),
+                                                    items: controller.fieldTypes,
+                                                    onChanged:  (value) {
+                                                          if (value != null) {
+                                                            controller.selectedChildrenFieldType =  value;
+                                                            controller.update();
+                                                        }},
+                                                        compareFn: (i, dynamic s) => i == s,
+                                                        itemAsString: (dynamic u) => u.toString(),
+                                                      ),
+
+                                                  // typeHintText: "Select Type",
+                                                  // typeLabelText: "Type",
+                                                  // typeValue: controller
+                                                  //     .selectedChildrenFieldType,
+                                                  // typeOnChanged: (value) {
+                                                  //   if (value != null) {
+                                                  //     controller
+                                                  //             .selectedChildrenFieldType =
+                                                  //         value;
+                                                  //     controller.update();
+                                                  //   }
+                                                  // },
+                                                  // typeItems: controller
+                                                  //     .fieldTypes
+                                                  //     .where((type) =>
+                                                  //         type != 'Children')
+                                                  //     .map((type) =>
+                                                  //         DropdownMenuItem(
+                                                  //           value: type,
+                                                  //           child: Text(type),
+                                                  //         ))
+                                                  //     .toList(),
 
                                                   submitButtonText:
                                                       controller.editingIndex >=
@@ -951,108 +984,74 @@ Widget buildChildFieldList() {
                                                   foreignKeyHintText: "To",
                                                   foreignKeyLabelText: "To",
                                                   // foreignKeyValue: controller.modelNameList.isNotEmpty ? controller.modelNameList.first.verboseName : null,
-                                                  foreignKeyValue: controller
-                                                      .selectedModelName
-                                                      ?.verboseName,
-                                                  foreignKeyOnChanged:
-                                                      (String? newValue) {
+                                                  foreignKeyValue: controller.selectedModelName?.verboseName,
+                                                  foreignKeyOnChanged: (String? newValue) {
                                                     if (newValue != null) {
-                                                      DynamicModelsNameData
-                                                          selectedModel =
-                                                          controller
-                                                              .modelNameList
-                                                              .firstWhere(
-                                                        (element) =>
-                                                            element
-                                                                .verboseName ==
-                                                            newValue,
-                                                        orElse: () =>
-                                                            DynamicModelsNameData(
+                                                      DynamicModelsNameData selectedModel = controller.modelNameList.firstWhere(
+                                                        (element) => element.verboseName == newValue,
+                                                        orElse: () =>DynamicModelsNameData(
                                                                 appName: "",
                                                                 modelName: "",
-                                                                verboseName:
-                                                                    newValue),
+                                                                verboseName: newValue),
                                                       );
-                                                      controller
-                                                              .selectedModelName =
-                                                          selectedModel;
+                                                      controller.selectedModelName = selectedModel;
 
                                                       // Fetch fields based on selected model
-                                                      controller
-                                                          .getModelDetailsDropdown(
-                                                              selectedModel
-                                                                      .appName ??
-                                                                  "",
-                                                              selectedModel
-                                                                      .modelName ??
-                                                                  "");
+                                                      controller.getModelDetailsDropdown(
+                                                            selectedModel.appName ?? "",
+                                                            selectedModel.modelName ?? ""
+                                                          );
                                                       controller.update();
                                                     }
                                                   },
-                                                  foreignKeyItems: controller
-                                                      .modelNameList
-                                                      .map(
-                                                          (DynamicModelsNameData
-                                                              item) {
-                                                    return DropdownMenuItem<
-                                                        String>(
+                                                  foreignKeyItems: controller.modelNameList.map((DynamicModelsNameData item) {
+                                                    return DropdownMenuItem<String>(
                                                       value: item.verboseName,
-                                                      child: Text(
-                                                          item.verboseName ??
-                                                              ""),
+                                                      child: Text(item.verboseName ?? ""),
                                                     );
                                                   }).toList(),
 
+                                                  // childMultiSelectDrop:
+                                                  //   Obx(
+                                                  //     ()=> CommonComponents.defaultMultiSelectionDropdownSearch(
+                                                  //         context,
+                                                  //     title: "Test",
+                                                  //       items: controller.fieldsList,
+                                                  //       onChanged: (String? val) {
+                                                  //                 if (val != null) {
+                                                  //                   debugPrint("Selected Field: $val");
+                                                  //                 }
+                                                  //               },
+                                                  //       selectedItem: [],
+                                                  //       compareFn: (i, dynamic s) => i == s,
+                                                  //       itemAsString: (dynamic u) => u.toString(),
+ 
+                                                  //     ),
+                                                  //   ),
+
                                                   childMultiSelectDrop: Column(
                                                     children: [
-                                                      Obx(
-                                                          () => DropdownButton<
-                                                                  String>(
-                                                                alignment:
-                                                                    AlignmentDirectional
-                                                                        .centerStart,
-                                                                isExpanded:
-                                                                    true,
-                                                                hint: Text(
-                                                                    "Select Field"),
-                                                                dropdownColor: Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .secondary,
-                                                                underline:
-                                                                    const SizedBox(),
-                                                                value: controller
-                                                                        .selectedFields
-                                                                        .isNotEmpty
-                                                                    ? controller
-                                                                        .selectedFields
-                                                                        .first
+                                                      Obx(() => DropdownButton<String>(
+                                                                alignment: AlignmentDirectional.centerStart,
+                                                                isExpanded: true,
+                                                                hint: Text("Select Field"),
+                                                                dropdownColor: Theme.of(context).colorScheme.secondary,
+                                                                underline: const SizedBox(),
+                                                                value: controller.selectedFields.isNotEmpty
+                                                                    ? controller.selectedFields.first
                                                                     : null,
-                                                                items: controller
-                                                                    .fieldsList
-                                                                    .map((Field
-                                                                        item) {
-                                                                  return DropdownMenuItem<
-                                                                      String>(
-                                                                    value: item
-                                                                        .name,
+                                                                items: controller.fieldsList.map((Field item) {
+                                                                  return DropdownMenuItem<String>(
+                                                                    value: item.name,
                                                                     child: Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .spaceBetween,
+                                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                       children: [
-                                                                        Text(item.verboseName ??
-                                                                            item.name ??
-                                                                            ""),
+                                                                        Text(item.verboseName ?? item.name ?? ""),
                                                                         Checkbox(
-                                                                          value: controller
-                                                                              .selectedFields
-                                                                              .contains(item.name),
-                                                                          onChanged:
-                                                                              (bool? value) {
+                                                                          value: controller.selectedFields.contains(item.name),
+                                                                          onChanged: (bool? value) {
                                                                             print("printn the seleced field ${item.name}");
-                                                                            if (value !=
-                                                                                null) {
+                                                                            if (value != null) {
                                                                               controller.toggleFieldSelection(item.name!);
                                                                               controller.update();
                                                                             }
@@ -1062,33 +1061,21 @@ Widget buildChildFieldList() {
                                                                     ),
                                                                   );
                                                                 }).toList(),
-                                                                onChanged:
-                                                                    (String?
-                                                                        val) {
-                                                                  if (val !=
-                                                                      null) {
-                                                                    debugPrint(
-                                                                        "Selected Field: $val");
+                                                                onChanged: (String? val) {
+                                                                  if (val != null) {
+                                                                    debugPrint("Selected Field: $val");
                                                                   }
                                                                 },
                                                               )),
                                                       Wrap(
                                                         spacing: 1.0,
-                                                        children: controller
-                                                            .selectedFields
-                                                            .map((field) {
+                                                        children: controller.selectedFields.map((field) {
                                                           return Chip(
-                                                            color:
-                                                                WidgetStatePropertyAll(
-                                                                    Colors
-                                                                        .white),
+                                                            color: WidgetStatePropertyAll(Colors.white),
                                                             label: Text(field),
-                                                            deleteIcon: Icon(
-                                                                Icons.close),
+                                                            deleteIcon: Icon(Icons.close),
                                                             onDeleted: () {
-                                                              controller
-                                                                  .toggleFieldSelection(
-                                                                      field);
+                                                              controller.toggleFieldSelection(field);
                                                             },
                                                           );
                                                         }).toList(),
@@ -1097,45 +1084,27 @@ Widget buildChildFieldList() {
                                                   ),
 
                                                   choiceOnTap: () {
-                                                    print(
-                                                        'asdasas ${jsonEncode(controller.choices)}');
+                                                    print('asdasas ${jsonEncode(controller.choices)}');
                                                     controller.addChoice();
                                                     // controller.update();
                                                   },
-                                                  addedChoiceHintText:
-                                                      "Added Choice",
-                                                  addedChoiceLabelText:
-                                                      "Added Choice",
-                                                  addedChoiceOnChanged:
-                                                      (value) {},
-                                                  addedChoiceItems:
-                                                      controller.choices.map<
-                                                              DropdownMenuItem<
-                                                                  String>>(
-                                                          (choice) {
-                                                    return DropdownMenuItem<
-                                                        String>(
+                                                  addedChoiceHintText: "Added Choice",
+                                                  addedChoiceLabelText: "Added Choice",
+                                                  addedChoiceOnChanged: (value) {},
+                                                  addedChoiceItems: controller.choices.map<
+                                                              DropdownMenuItem<String>>((choice) {
+                                                    return DropdownMenuItem<String>(
                                                       value: choice[1],
                                                       child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                         children: [
-                                                          Text(choice[1],
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis),
+                                                          Text(choice[1],overflow: TextOverflow.ellipsis),
                                                           IconButton(
-                                                            icon: const Icon(
-                                                                Icons.delete,
-                                                                color:
-                                                                    Colors.red),
+                                                            icon: const Icon(Icons.delete,
+                                                                color: Colors.red),
                                                             onPressed: () {
-                                                              controller
-                                                                  .removeChoice(
-                                                                      choice);
-                                                              controller
-                                                                  .update();
+                                                              controller.removeChoice(choice);
+                                                              controller.update();
                                                             },
                                                           ),
                                                         ],
@@ -1144,246 +1113,153 @@ Widget buildChildFieldList() {
                                                   }).toList(),
 
                                                   choiceText: "Enter Choice",
-                                                  choiceController: controller
-                                                      .choiceController,
+                                                  choiceController: controller.choiceController,
                                                   choiceLabeText: "Add Choice",
 
-                                                  requiredCheckBoxName:
-                                                      "Required",
-                                                  requiredValue: controller
-                                                      .isRequired.value,
-                                                  requiredOnChanged:
-                                                      (bool? value) {
+                                                  requiredCheckBoxName: "Required",
+                                                  requiredValue: controller.isRequired.value,
+                                                  requiredOnChanged: (bool? value) {
                                                     if (value != null) {
-                                                      controller.updateRequired(
-                                                          value);
+                                                      controller.updateRequired(value);
                                                     }
                                                   },
 
-                                                  showViewCheckBoxName:
-                                                      "Show In View",
-                                                  showViewValue:
-                                                      controller.isView.value,
-                                                  showViewOnChanged:
-                                                      (bool? value) {
+                                                  showViewCheckBoxName: "Show In View",
+                                                  showViewValue: controller.isView.value,
+                                                  showViewOnChanged: (bool? value) {
                                                     if (value != null) {
-                                                      controller.updateViewOnly(
-                                                          value);
+                                                      controller.updateViewOnly(value);
                                                     }
                                                   },
 
-                                                  showEditCheckBoxName:
-                                                      "Show In Edit",
-                                                  showEditValue:
-                                                      controller.isEdit.value,
-                                                  showEditOnChanged:
-                                                      (bool? value) {
+                                                  showEditCheckBoxName: "Show In Edit",
+                                                  showEditValue: controller.isEdit.value,
+                                                  showEditOnChanged: (bool? value) {
                                                     if (value != null) {
-                                                      controller.updateEditOnly(
-                                                          value);
+                                                      controller.updateEditOnly(value);
                                                     }
                                                   },
 
-                                                  showReportCheckBoxName:
-                                                      "Show In Report",
-                                                  showReportValue:
-                                                      controller.isReport.value,
-                                                  showReportOnChanged:
-                                                      (bool? value) {
+                                                  showReportCheckBoxName: "Show In Report",
+                                                  showReportValue: controller.isReport.value,
+                                                  showReportOnChanged: (bool? value) {
                                                     if (value != null) {
-                                                      controller
-                                                          .updateReportOnly(
-                                                              value);
+                                                      controller.updateReportOnly(value);
                                                     }
                                                   },
 
-                                                  showAddCheckBoxName:
-                                                      "Show In Add",
-                                                  showAddValue:
-                                                      controller.isAdd.value,
-                                                  showAddOnChanged:
-                                                      (bool? value) {
+                                                  showAddCheckBoxName: "Show In Add",
+                                                  showAddValue: controller.isAdd.value,
+                                                  showAddOnChanged: (bool? value) {
                                                     if (value != null) {
-                                                      controller
-                                                          .updateAddOnly(value);
+                                                      controller.updateAddOnly(value);
                                                     }
                                                   },
 
-                                                  showListCheckBoxName:
-                                                      "Show In List",
-                                                  showListValue:
-                                                      controller.isList.value,
-                                                  showListOnChanged:
-                                                      (bool? value) {
+                                                  showListCheckBoxName: "Show In List",
+                                                  showListValue: controller.isList.value,
+                                                  showListOnChanged: (bool? value) {
                                                     if (value != null) {
-                                                      controller.updateListOnly(
-                                                          value);
+                                                      controller.updateListOnly(value);
                                                     }
                                                   },
 
-                                                  showFilterCheckBoxName:
-                                                      "Show In Filter",
-                                                  showFilterValue:
-                                                      controller.isFilter.value,
-                                                  showFilterOnChanged:
-                                                      (bool? value) {
+                                                  showFilterCheckBoxName: "Show In Filter",
+                                                  showFilterValue: controller.isFilter.value,
+                                                  showFilterOnChanged: (bool? value) {
                                                     if (value != null) {
-                                                      controller
-                                                          .updateFilterOnly(
-                                                              value);
+                                                      controller.updateFilterOnly(value);
                                                     }
                                                   },
 
-                                                  showMultipleFilterCheckBoxName:
-                                                      "Multiple Filter",
-                                                  showMultipleFilterValue:
-                                                      controller
-                                                          .isMultipleFilter
-                                                          .value,
-                                                  showMultipleFilterOnChanged:
-                                                      (bool? value) {
+                                                  showMultipleFilterCheckBoxName: "Multiple Filter",
+                                                  showMultipleFilterValue: controller.isMultipleFilter.value,
+                                                  showMultipleFilterOnChanged: (bool? value) {
                                                     if (value != null) {
-                                                      controller
-                                                          .updateMultipleFilter(
-                                                              value);
+                                                      controller.updateMultipleFilter(value);
                                                     }
                                                   },
 
-                                                  rangeFilterCheckBoxName:
-                                                      "Range Filter",
-                                                  rangeFilterValue: controller
-                                                      .rangeFilter.value,
-                                                  rangeFilterOnChanged:
-                                                      (bool? value) {
+                                                  rangeFilterCheckBoxName: "Range Filter",
+                                                  rangeFilterValue: controller.rangeFilter.value,
+                                                  rangeFilterOnChanged: (bool? value) {
                                                     if (value != null) {
-                                                      controller
-                                                          .updateRangeFilter(
-                                                              value);
+                                                      controller.updateRangeFilter(value);
                                                     }
                                                   },
 
-                                                  readOnlyCheckBoxName:
-                                                      "Read Only",
-                                                  readOnlyValue: controller
-                                                      .isReadOnly.value,
-                                                  readOnlyOnChanged:
-                                                      (bool? value) {
+                                                  readOnlyCheckBoxName: "Read Only",
+                                                  readOnlyValue: controller.isReadOnly.value,
+                                                  readOnlyOnChanged: (bool? value) {
                                                     if (value != null) {
-                                                      controller.updateReadOnly(
-                                                          value);
+                                                      controller.updateReadOnly(value);
                                                     }
                                                   },
 
-                                                  defaultCheckBoxName:
-                                                      "Default",
-                                                  defaultValue: controller
-                                                      .isDefault.value,
-                                                  defaultOnChanged:
-                                                      (bool? value) {
+                                                  defaultCheckBoxName: "Default",
+                                                  defaultValue: controller.isDefault.value,
+                                                  defaultOnChanged: (bool? value) {
                                                     if (value != null) {
-                                                      controller
-                                                          .updateDefault(value);
+                                                      controller.updateDefault(value);
                                                     }
                                                   },
 
-                                                  maxLengthText:
-                                                      "Enter Max Length",
-                                                  maxLengthLabelText:
-                                                      "Max Length",
-                                                  maxLengthController:
-                                                      controller
-                                                          .maxLengthController,
-                                                  maxLengthLabeText:
-                                                      "Max Length",
+                                                  maxLengthText: "Enter Max Length",
+                                                  maxLengthLabelText: "Max Length",
+                                                  maxLengthController: controller.maxLengthController,
+                                                  maxLengthLabeText: "Max Length",
                                                   maxLengthValidation: (value) {
-                                                    if (value == null ||
-                                                        value.isEmpty) {
+                                                    if (value == null ||   value.isEmpty) {
                                                       return 'Please enter Max Length';
                                                     }
                                                     return null;
                                                   },
 
-                                                  minLengthText:
-                                                      "Enter Min Length",
-                                                  minLengthLabelText:
-                                                      "Min Length",
-                                                  minLengthController:
-                                                      controller
-                                                          .minLengthController,
-                                                  minLengthLabeText:
-                                                      "Min Length",
+                                                  minLengthText: "Enter Min Length",
+                                                  minLengthLabelText: "Min Length",
+                                                  minLengthController: controller.minLengthController,
+                                                  minLengthLabeText: "Min Length",
 
-                                                  verboseNameText:
-                                                      "Enter Verbose Name",
-                                                  verboseNameLabeText:
-                                                      "Verbose Name",
-                                                  verboseNameController:
-                                                      controller
-                                                          .verboseNameFields,
-                                                  verboseNameLabelText:
-                                                      "Verbose Name",
-                                                  verboseNameOnChange: (val) =>
-                                                      controller
-                                                          .updateVerboseNamePluralFields(),
-                                                  verboseNameValidation:
-                                                      (value) {
-                                                    if (value == null ||
-                                                        value.trim().isEmpty) {
+                                                  verboseNameText: "Enter Verbose Name",
+                                                  verboseNameLabeText: "Verbose Name",
+                                                  verboseNameController: controller.verboseNameFields,
+                                                  verboseNameLabelText: "Verbose Name",
+                                                  verboseNameOnChange: (val) => controller.updateVerboseNamePluralFields(),
+                                                  verboseNameValidation: (value) {
+                                                    if (value == null ||   value.trim().isEmpty) {
                                                       return 'Please enter Verbose Name';
                                                     }
                                                     return null;
                                                   },
 
-                                                  verboseNamePluralText:
-                                                      "Enter Verbose Name Plural",
-                                                  verboseNamePluralLabeText:
-                                                      "Verbose Name Plural",
-                                                  verboseNamePluralController:
-                                                      TextEditingController(
-                                                          text: controller
-                                                              .verboseNamePluralFields
-                                                              .value),
-                                                  verboseNamePluralLabelText:
-                                                      "Max Length",
+                                                  verboseNamePluralText: "Enter Verbose Name Plural",
+                                                  verboseNamePluralLabeText: "Verbose Name Plural",
+                                                  verboseNamePluralController: TextEditingController(
+                                                    text: controller.verboseNamePluralFields.value),
+                                                  verboseNamePluralLabelText: "Max Length",
 
-                                                  relatedNameText:
-                                                      "Enter Related Name",
-                                                  relatedNameLabelText:
-                                                      "Related Name",
-                                                  relatedNameController:
-                                                      controller
-                                                          .relatedNameController,
-                                                  relatedNameLabeText:
-                                                      "Related Name",
+                                                  relatedNameText: "Enter Related Name",
+                                                  relatedNameLabelText: "Related Name",
+                                                  relatedNameController: controller.relatedNameController,
+                                                  relatedNameLabeText: "Related Name",
 
-                                                  maxDigitsText:
-                                                      "Enter Max Digits",
-                                                  maxDigitsLabelText:
-                                                      "Max Digits",
-                                                  maxDigitsController:
-                                                      controller
-                                                          .maxDigitsController,
-                                                  maxDigitsLabeText:
-                                                      "Max Digits",
+                                                  maxDigitsText: "Enter Max Digits",
+                                                  maxDigitsLabelText: "Max Digits",
+                                                  maxDigitsController: controller.maxDigitsController,
+                                                  maxDigitsLabeText: "Max Digits",
                                                   maxDigitsValidation: (value) {
-                                                    if (value == null ||
-                                                        value.isEmpty) {
+                                                    if (value == null ||   value.isEmpty) {
                                                       return 'Please enter Max Digits';
                                                     }
                                                     return null;
                                                   },
 
-                                                  decimalText:
-                                                      "Enter Decimal Place",
-                                                  decimalLabelText:
-                                                      "Decimal Place",
-                                                  decimalController: controller
-                                                      .decimalPlacesController,
-                                                  decimalLabeText:
-                                                      "Decimal Place",
+                                                  decimalText: "Enter Decimal Place",
+                                                  decimalLabelText: "Decimal Place",
+                                                  decimalController: controller.decimalPlacesController,
+                                                  decimalLabeText: "Decimal Place",
                                                   decimalValidation: (value) {
-                                                    if (value == null ||
-                                                        value.isEmpty) {
+                                                    if (value == null ||   value.isEmpty) {
                                                       return 'Please enter Decimal Place';
                                                     }
                                                     return null;
@@ -1391,73 +1267,38 @@ Widget buildChildFieldList() {
 
                                                   clearButtonText: "Clear",
                                                   clearButtonOnTap: () {
-                                                    print(
-                                                        "Printing the Data ${jsonEncode(controller.formFields)}");
-                                                    controller
-                                                        .addFieldsDisposeController();
+                                                    print(   "Printing the Data ${jsonEncode(controller.formFields)}");
+                                                    controller.addFieldsDisposeController();
                                                     controller.update();
                                                   },
 
                                                   filterOnTap: () async {
-                                                    showDialog(
-                                                      barrierDismissible: false,
-                                                      context: context,
-                                                      builder: (BuildContext
+                                                    showDialog( barrierDismissible: false, context: context, builder: (BuildContext
                                                           context) {
-                                                        return GetBuilder<
-                                                            DynamicController>(
+                                                            return GetBuilder<DynamicController>(
                                                           builder: (_) {
                                                             return AlertDialog(
-                                                              actionsAlignment:
-                                                                  MainAxisAlignment
-                                                                      .center,
+                                                              actionsAlignment: MainAxisAlignment.center,
                                                               title: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
+                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                 children: [
-                                                                  Text(
-                                                                    "Advance Filters",
-                                                                    style:
-                                                                        TextStyle(
-                                                                      fontSize:
-                                                                          18,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w600,
-                                                                      color: Colors
-                                                                              .grey[
-                                                                          800],
+                                                                  Text("Advance Filters",
+                                                                    style: TextStyle(fontSize:18,fontWeight:FontWeight.w600,color: Colors.grey[800],
                                                                     ),
                                                                   ),
                                                                   IconButton(
-                                                                    icon: const Icon(
-                                                                        Icons
-                                                                            .close),
-                                                                    onPressed:
-                                                                        () {
-                                                                      advanceFilterController
-                                                                          .clearFilters();
-                                                                      Navigator.of(
-                                                                              context)
-                                                                          .pop();
+                                                                    icon: const Icon(Icons.close),
+                                                                    onPressed: () {
+                                                                      advanceFilterController.clearFilters();
+                                                                      Navigator.of(context).pop();
                                                                     },
                                                                   ),
                                                                 ],
                                                               ),
                                                               content: SizedBox(
-                                                                width: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width *
-                                                                    0.8,
-                                                                height: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .height *
-                                                                    0.8,
-                                                                child:
-                                                                    AdvancedFiltersScreen(),
+                                                                width: MediaQuery.of(context).size.width * 0.8,
+                                                                height: MediaQuery.of(context).size.height * 0.8,
+                                                                child: AdvancedFiltersScreen(),
                                                               ),
                                                             );
                                                           },
@@ -1469,28 +1310,21 @@ Widget buildChildFieldList() {
                                               )),
                                           const SizedBox(height: 16),
                                           Visibility(
-                                            visible: controller
-                                                .itemFields.isNotEmpty,
+                                            visible: controller.itemFields.isNotEmpty,
                                             child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.start,
                                               children: [
                                                 const SizedBox(height: 16),
                                                 Text("Children Fields",
                                                     style: TextStyle(
                                                         fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .primary)),
+                                                        fontWeight: FontWeight.w600,
+                                                        color: Theme.of(context).colorScheme.primary)),
                                                 SizedBox(
                                                   height: 300,
                                                   child: SingleChildScrollView(
-                                                    child:
-                                                        buildChildFieldList(),
+                                                    child: buildChildFieldList(),
                                                   ),
                                                 ),
                                               ],

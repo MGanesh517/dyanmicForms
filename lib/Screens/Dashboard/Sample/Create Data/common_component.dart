@@ -17,12 +17,14 @@ class FieldManagementComponent extends StatelessWidget {
   final TextEditingController fieldNameController;
   final String? Function(String?)? fieldNameValidation;
 
-  final String typeHintText;
-  final String typeLabelText;
-  final String? typeValue;
-  final List<DropdownMenuItem<String>> typeItems;
-  final Function(String?) typeOnChanged;
-  final String? Function(String?)? typeValidator;
+  final Widget typeChildWidget;
+
+  // final String typeHintText;
+  // final String typeLabelText;
+  // final String? typeValue;
+  // final List<DropdownMenuItem<String>> typeItems;
+  // final Function(String?) typeOnChanged;
+  // final String? Function(String?)? typeValidator;
   final VoidCallback choiceOnTap;
 
   final String foreignKeyHintText;
@@ -149,13 +151,14 @@ class FieldManagementComponent extends StatelessWidget {
     required this.fieldNameLabeText,
     required this.fieldNameValidation,
     required this.fieldNameLabelText,
-    required this.typeHintText,
-    this.typeValue,
-    required this.typeItems,
-    required this.typeOnChanged,
-    this.typeValidator,
+    required this.typeChildWidget,
+    // required this.typeHintText,
+    // this.typeValue,
+    // required this.typeItems,
+    // required this.typeOnChanged,
+    // this.typeValidator,
     required this.choiceOnTap,
-    required this.typeLabelText,
+    // required this.typeLabelText,
     required this.foreignKeyHintText,
     this.foreignKeyValue,
     required this.foreignKeyItems,
@@ -282,27 +285,28 @@ class FieldManagementComponent extends StatelessWidget {
               ),
               ResponsiveColumn(
                 ResponsiveConstants().buttonBreakpoints,
-                child: DropdownButtonFormField<String>(
-                  dropdownColor: Theme.of(context).colorScheme.secondary,
-                  menuMaxHeight: 250,
-                  focusColor: Theme.of(context).colorScheme.primary,
-                  value: typeValue,
-                  decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide:
-                          BorderSide(color: Colors.grey.shade300, width: 1.5),
-                    ),
-                    hintText: typeHintText,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide:
-                          BorderSide(color: Colors.grey.shade300, width: 1.5),
-                    ),
-                  ),
-                  items: typeItems,
-                  onChanged: typeOnChanged,
-                ),
+                // child: DropdownButtonFormField<String>(
+                //   dropdownColor: Theme.of(context).colorScheme.secondary,
+                //   menuMaxHeight: 250,
+                //   focusColor: Theme.of(context).colorScheme.primary,
+                //   value: typeValue,
+                //   decoration: InputDecoration(
+                //     enabledBorder: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(10.0),
+                //       borderSide:
+                //           BorderSide(color: Colors.grey.shade300, width: 1.5),
+                //     ),
+                //     hintText: typeHintText,
+                //     border: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(10.0),
+                //       borderSide:
+                //           BorderSide(color: Colors.grey.shade300, width: 1.5),
+                //     ),
+                //   ),
+                //   items: typeItems,
+                //   onChanged: typeOnChanged,
+                // ),
+                child: typeChildWidget,
               ),
               // if (controller.selectedFieldType != 'Children' ||
                 //     controller.selectedChildrenFieldType != 'Children')

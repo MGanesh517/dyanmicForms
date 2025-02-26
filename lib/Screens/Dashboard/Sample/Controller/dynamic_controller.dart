@@ -628,6 +628,8 @@ class DynamicController extends GetxController {
       "verbose_name": verboseName.text,
       "verbose_name_plural": verboseNamePlural.value,
       "fields": jsonEncode(combinedFields),
+      "rules": jsonEncode(addRuleList),
+      // "rules": addRuleList,
     };
 
     debugPrint('\n=== Sending Data to API ===');
@@ -961,198 +963,149 @@ class DynamicController extends GetxController {
       closeLoadingDialog();
     }
   }
+
+
+
+
+
+
+
+
+  ////////////////////           Rules           ///////////////////////
+
+  List<Map<String, dynamic>> addRuleList = [];
+  final TextEditingController valueIfCondition = TextEditingController();
+  final TextEditingController valueElseCondition = TextEditingController();
+
+
+  var isNewRecord = false.obs;
+  var isEditRecord = false.obs;
+  var isOnLoad = false.obs;
+  var isOnLeave = false.obs;
+  var isActive = false.obs;
+  // var isOnEnter = false.obs;
+  var isNoCondition = false.obs;
+  var isIfConditionMandatory = RxnBool(null);
+  var isElseConditionMandatory = RxnBool(null);
+  var isIfConditionHide = RxnBool(null);
+  var isElseConditionHide = RxnBool(null);
+  var isIfConditionDisable = RxnBool(null);
+  var isElseConditionDisable = RxnBool(null);
+
+  void updateIsNewRecord(bool value) => isNewRecord.value = value;
+  void updateIsEditRecord(bool value) => isEditRecord.value = value;
+  void updateIsOnLoad(bool value) => isOnLoad.value = value;
+  void updateIsOnLeave(bool value) => isOnLeave.value = value;
+  void updateIsActive(bool value) => isActive.value = value;
+  void updateIsNoCondition(bool value) => isNoCondition.value = value;
+
+  void updateIsIfConditionMandatory(bool? value) => isIfConditionMandatory.value = value;
+  void updateIsElseConditionMandatory(bool? value) => isElseConditionMandatory.value = value;
+
+  // void updateIsIfConditionMandatory(bool value) => isIfConditionMandatory.value = value;
+  // void updateIsElseConditionMandatory(bool value) => isElseConditionMandatory.value = value;
+  void updateIsIfConditionHide(bool? value) => isIfConditionHide.value = value;
+  void updateIsElseConditionHide(bool? value) => isElseConditionHide.value = value;
+  void updateIsIfConditionDisable(bool? value) => isIfConditionDisable.value = value;
+  void updateIsElseConditionDisable(bool? value) => isElseConditionDisable.value = value;
+
+  void updateFieldName(int entryIndex, String oldFieldName, String newFieldName) {
+    if (entryIndex >= 0 && entryIndex < formFields.length) {
+      Map<String, dynamic> entry = formFields[entryIndex];
+      if (entry.containsKey(oldFieldName)) {
+        dynamic value = entry[oldFieldName];
+        entry.remove(oldFieldName);
+        entry[newFieldName] = value;
+        formFields[entryIndex] = entry;
+        update();
+      }
+    }
+  }
+
+  void updateField(int index, String key, dynamic value) {
+    formFields[index][key] = value;
+    update();
+  }
+
+  void addNewRow() {
+    formFields.add({
+      'field_name': '',
+      'change_type': '',
+      'change_field': '',
+      'change_value': '',
+      'mandatory': false,
+      'hide': false,
+      'disable': false,
+    });
+    update();
+  }
+
+  void removeRow(int index) {
+    if (formFields.length > 1) {
+      formFields.removeAt(index);
+      update();
+    }
+  }
+
+  void addRule() {
+  List<String> fieldNames = [];
+  for (var entry in formFields) {
+    fieldNames.addAll(entry.keys.toList());
+  }
+  
+  // Default to the first field name if available
+  String fieldName = fieldNames.isNotEmpty ? fieldNames[0] : "";
+
+    Map<String, dynamic> rule = {
+      "apply_on": {
+        "new": isNewRecord.value,
+        "edit": isEditRecord.value
+      },
+      "evaluate_on": {
+        "on_load": isOnLoad.value,
+        "on_save": isOnLeave.value
+      },
+      "status": isActive.value,
+      "condition": {
+        "AND": [
+          {
+            "GT": {
+              "s1": {"type": "var", "var": "age"},
+              "s2": {"type": "val", "val": 10}
+            }
+          }
+        ]
+      },
+      "no_condition": isNoCondition.value,
+      "if_formatting": [
+        {
+          "field_name": fieldName,
+          "change_type": "",
+          "change_field": "",
+          "change_value": valueIfCondition.text.isNotEmpty
+            ? int.tryParse(valueIfCondition.text)
+            : null,
+          "mandatory": isIfConditionMandatory.value,
+          "hide": isIfConditionHide.value,
+          "disable": isIfConditionDisable.value
+        }
+      ],
+      "else_formatting": [
+        {
+          "field_name": fieldName,
+          "change_type": "",
+          "change_field": "",
+          "change_value": valueElseCondition.text.isNotEmpty
+            ? int.tryParse(valueElseCondition.text)
+            : null,
+          "mandatory": isElseConditionMandatory.value,
+          "hide": isElseConditionHide.value,
+          "disable": isElseConditionDisable.value
+        }
+      ]
+    };
+  //// Storing the Rule in the List
+    addRuleList.add(rule);
+    debugPrint("New Rule Added: $rule");
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//   Map<String, dynamic> generateFieldData() {
-//     final Map<String, dynamic> fieldData = {
-//       'type': selectedFieldType,
-//       ...getFieldOptions(selectedFieldType),
-//     };
-//     if (selectedFieldType == 'Choice' && choices.isNotEmpty) {
-//       fieldData['choices'] = List<List<dynamic>>.from(choices);
-//     }
-//     return {fieldNameController.text: fieldData};
-//   }
-//   Map<String, dynamic> getFieldOptions(String fieldType) {
-//   Map<String, dynamic> baseOptions = {
-//     'required': isRequired.value,
-//     'show_in_view': isView.value,
-//     'show_in_report': isReport.value,
-//     'show_in_edit': isEdit.value,
-//     'show_in_filter': isFilter.value,
-//     'show_in_list': isList.value,
-//     'show_in_add': isAdd.value,
-//   };
-//   switch (fieldType) {
-//     case 'Char':
-//     case 'Text':
-//       return {
-//         ...baseOptions,
-//         'max_length': int.tryParse(maxLengthController.text) ?? 100,
-//         'min_length': int.tryParse(minLengthController.text) ?? 1,
-//       };
-//     // case 'Text':
-//     //   return {
-//     //     ...baseOptions,
-//     //     'max_length': int.tryParse(maxLengthController.text) ?? 1000,
-//     //     'min_length': int.tryParse(minLengthController.text) ?? 5,
-//     //   };
-//     case 'Choice':
-//       return {
-//         ...baseOptions,
-//         'default': choices.isNotEmpty ? choices[0][0] : 1,
-//         'choices': choices.map((choice) => [choice[0], choice[1]]).toList(),
-//       };
-//     case 'Integer':
-//       return {
-//         ...baseOptions,
-//         'default': 0,
-//       };
-//     case 'Decimal':
-//       return {
-//         ...baseOptions,
-//         'max_digits': int.tryParse(maxDigitsController.text) ?? 9,
-//         'decimal_places': int.tryParse(decimalPlacesController.text) ?? 2,
-//         'default': 0,
-//       };
-//     case 'DateTime':
-//     case 'Date':
-//       return {
-//         ...baseOptions,
-//         'read_only': isReadOnly.value,
-//         'range_filter': rangeFilter.value,
-//       };
-//     case 'Time':
-//     case 'Duration':
-//       return {
-//         ...baseOptions,
-//         'read_only': isReadOnly.value,
-//       };
-//     case 'ManyToMany':
-//       return {
-//         ...baseOptions,
-//         'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
-//         'multiple_filter': isMultipleFilter.value,
-//         'read_fields': ['name'],
-//         'filter_data': {},
-//         'related_name': 'sample_show_multi',
-//       };
-//     case 'ForeignKey':
-//       return {
-//         ...baseOptions,
-//         'to': '${appLabel.text}.${modelName.text.toLowerCase()}',
-//         'read_fields': ['name'],
-//         'filter_data': {},
-//         'related_name': 'sample_show',
-//         'import_fields': ['name'],
-//         'export_fields': ['name'],
-//       };
-//     case 'Children':
-//       return {
-//         "fields": jsonEncode(formFields.fold<Map<String, dynamic>>(
-//         {},
-//         (map, element) => {...map, ...element},
-//       ))
-//       };
-//     case 'Boolean':
-//       return {
-//         ...baseOptions,
-//         'default': false,
-//       };
-//     default:
-//       return baseOptions;
-//   }
-// }
-
-
-
-
-//   final _dynamicModelNameList = <DynamicModelsNameData>[].obs;
-//   List<DynamicModelsNameData> get dynamicModelNameList => _dynamicModelNameList;
-//   set dynamicModelNameList(value) => _dynamicModelNameList;
-//   final RxInt _dynamicModelNameListCount = 0.obs;
-//   get dynamicModelNameListCount => _dynamicModelNameListCount.value;
-//   set dynamicModelNameListCount(value) => _dynamicModelNameListCount.value = value;
-// Future<bool> getDynamicModelNameList({bool isLoading = true}) async {
-//     try {
-//       if (isLoading) {
-//         showLoadingDialog();
-//       }
-//       final filterParams = <String, dynamic>{};
-//       final data = await DynamicRepo().getModelNameList(filterParams);
-//       if (data is List<DynamicModelsNameData>) {
-//         _dynamicModelNameList.value = data as List<DynamicModelsNameData>; 
-//         // Remove duplicates based on model name
-//         var seen = <String>{};
-//         _dynamicModelNameList.value = _dynamicModelNameList
-//             .where((model) => seen.add(model.modelName?.toLowerCase() ?? ''))
-//             .toList();
-//         if (isLoading) {
-//           closeLoadingDialog();
-//         }
-//         return true;
-//       } else {
-//         if (isLoading) {
-//           closeLoadingDialog();
-//         }
-//         return false;
-//       }
-//     } catch (e) {
-//       if (isLoading) {
-//         closeLoadingDialog();
-//       }
-//       debugPrint("Error fetching dynamic model list: $e");
-//       rethrow;
-//     }
-//   }
-
-
-
-  // getDynamicModelNameList({bool isLoading = true}) async {
-  //   _dynamicModelNameList.value = <DynamicModelsNameData>[];
-  //   final filterParams = <String, dynamic>{};
-  //   print('filter params getDynamicList :::::::  $filterParams');
-  //   try {
-  //     final data = await DynamicRepo().getModelNameList(filterParams);
-  //     if (data != null) {
-  //       _dynamicModelNameList.value = data ?? [];
-  //       var seen = <String>{};
-  //       List<DynamicModelsNameData> filtered = _dynamicModelNameList
-  //           .where((field) => seen.add(field.toString())).toList();
-  //       _dynamicModelNameList.value = filtered;
-  //       // dynamicModelNameListCount = value.count;
-  //       // _dynamicModelNameList.value = [...dynamicModelNameList, ...value.results ?? []];
-  //       // var seen = <String>{};
-  //       // List<DynamicModelsNameData> filtered = _dynamicModelNameList.where((field) => seen.add(field.id.toString())).toList();
-  //       // _dynamicModelNameList.value = filtered;
-  //       // isRefresh = false;
-  //       // currentPage++;
-  //       // totalPages = (dynamicModelNameListCount / commonService.pageSize).ceil();
-  //       update();
-  //       return true;
-  //     } else {
-  //       closeLoadingDialog();
-  //       return false;
-  //     }
-  //   } catch (e) {
-  //     closeLoadingDialog();
-  //     debugPrint("users error: $e");
-  //     rethrow;
-  //   }
-  // }
